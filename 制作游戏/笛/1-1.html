@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>笛韵千年——中国传统竹笛制作</title>
+    <style>
+        :root { --gold: #c9a96e; --brown: #5a4a3a; --bg: #1a1a1a; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: "PingFang SC", "Microsoft YaHei", serif; color: #fff; }
+        
+        /* 容器与背景 */
+        #game-container { width: 100vw; height: 100vh; position: relative; transition: all 0.5s ease; }
+        #bg-layer { position: absolute; width: 100%; height: 100%; background: url('图片/bg.png') center/cover; background-size: cover; transition: transform 0.3s ease-out; }
+        
+        /* 导航点 */
+        .nav-dots { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background: #555; cursor: pointer; }
+        .dot.active { background: var(--gold); }
+
+        /* 内容区 */
+        .stage-text { position: absolute; bottom: 18%; width: 100%; text-align: center; font-size: 1.2rem; letter-spacing: 2px; color: var(--gold); pointer-events: none; z-index: 2; }
+        
+        /* 交互对象：竹子 */
+        .bamboo-item { position: absolute; bottom: 0; width: 18%; max-width: 160px; transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; z-index: 2; }
+        .bamboo-item img { width: 100%; height: auto; display: block; }
+        .bamboo-item:hover { transform: translateY(-10px) scale(1.03); filter: brightness(1.15); }
+        .bamboo-item.inactive { filter: grayscale(1) brightness(0.75); cursor: not-allowed; }
+        .bamboo-item.left { left: 8%; }
+        .bamboo-item.center { left: 35%; }
+        .bamboo-item.right { left: 72%; }
+
+        /* 引导光标 */
+        .cursor-indicator { position: absolute; width: 60px; height: 60px; border: 2px solid #fff; border-radius: 50%; animation: pulse 2s infinite; pointer-events: none; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="bg-layer"></div>
+    <div class="nav-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+    
+    <div id="stage-content">
+        <div class="stage-text" id="info-text">应取3年以上的老竹，直径2-3公分</div>
+        <div class="bamboo-item inactive left" data-status="bad">
+            <img src="图片/新 1.png" alt="嫩竹" />
+        </div>
+        <div class="bamboo-item inactive center" data-status="bad">
+            <img src="图片/歪.png" alt="歪竹" />
+        </div>
+        <div class="bamboo-item right" data-status="good" id="good-bamboo">
+            <img src="图片/直 1.png" alt="好竹" />
+        </div>
+    </div>
+</div>
+
+<script>
+    const container = document.getElementById('game-container');
+    const bg = document.getElementById('bg-layer');
+    const infoText = document.getElementById('info-text');
+    let scrollProgress = 0;
+
+    // 视差滚动逻辑
+    window.addEventListener('wheel', (e) => {
+        scrollProgress += e.deltaY * 0.001;
+        scrollProgress = Math.max(0, Math.min(scrollProgress, 2)); // 限制在三段范围内
+        
+        // 背景缩放视差
+        bg.style.transform = `scale(${1 + scrollProgress * 0.2})`;
+        
+        // 更新文字状态
+        if(scrollProgress < 0.7) {
+            infoText.innerText = "应取3年以上的老竹，直径2-3公分";
+        } else if(scrollProgress < 1.4) {
+            infoText.innerText = "应取质地均匀、壁厚杆直、无虫蛀的竹材";
+        } else {
+            infoText.innerText = "选中优质竹材，准备进入阴干阶段";
+        }
+    });
+
+    // 这里可以接入您本地的音频采样或者更多逻辑
+    console.log("互动组件已就绪，等待交互");
+</script>
+
+</body>
+</html>

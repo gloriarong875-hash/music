@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>笛韵千年——开孔</title>
+    <style>
+        :root {
+            --gold: #c9a96e;
+            --gold-dim: #8a7a5a;
+            --brown: #5a4a3a;
+            --bg: #1a1a1a;
+            --hole-size: 18px;
+            --hole-glow: rgba(201, 169, 110, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            font-family: "PingFang SC", "Microsoft YaHei", "Noto Serif SC", serif;
+            color: #fff;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* 背景层 */
+        #bg-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #2a2520 0%, #1a1a1a 70%);
+            opacity: 0.6;
+        }
+
+        /* 进度导航点 */
+        .nav-dots {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            z-index: 10;
+        }
+
+        .dot-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #444;
+            border: 2px solid #555;
+            transition: all 0.5s ease;
+        }
+
+        .dot.completed {
+            background: var(--gold-dim);
+            border-color: var(--gold-dim);
+        }
+
+        .dot.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(201, 169, 110, 0.5);
+        }
+
+        .dot-label {
+            font-size: 12px;
+            color: #666;
+            letter-spacing: 2px;
+            transition: all 0.5s ease;
+        }
+
+        .dot-wrapper.completed .dot-label {
+            color: var(--gold-dim);
+        }
+
+        .dot-wrapper.active .dot-label {
+            color: var(--gold);
+        }
+
+        /* 主内容区 */
+        #stage-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 竹管容器 - 始终居中 */
+        .bamboo-container {
+            position: relative;
+            width: 70%;
+            max-width: 900px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -5%;
+        }
+
+        /* 竹管 */
+        #bamboo-pipe {
+            width: 100%;
+            height: auto;
+            max-height: 180px;
+            object-fit: contain;
+            position: relative;
+            z-index: 5;
+            filter: sepia(0.8) brightness(0.85) contrast(1.1);
+        }
+
+        /* 孔位标记层 - 覆盖在竹管上 */
+        .holes-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* 
+         * 孔位定义 - 基于竹管图像比例定位
+         * 竹管宽度视为100%，高度视为100%
+         * left: 从竹管左端开始的百分比位置
+         * top: 从竹管顶部开始的百分比位置（垂直居中偏上）
+         * 
+         * 实际使用时可根据图像微调以下数值
+         */
+        .hole {
+            position: absolute;
+            width: var(--hole-size);
+            height: var(--hole-size);
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        /* 未开孔：墨线标记 */
+        .hole.ink-mark {
+            border: 2px dashed rgba(60, 50, 40, 0.8);
+            background: rgba(40, 35, 30, 0.4);
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+        }
+
+        .hole.ink-mark:hover {
+            border-color: var(--gold-dim);
+            background: rgba(201, 169, 110, 0.15);
+            box-shadow: 0 0 12px rgba(201, 169, 110, 0.3), inset 0 0 4px rgba(0,0,0,0.5);
+        }
+
+        /* 已开孔：焦褐边缘渐变 */
+        .hole.drilled {
+            background: radial-gradient(circle at 30% 30%, #2a1f15 0%, #1a120a 40%, #3d2818 70%, #5a3a20 100%);
+            border: 1px solid #4a3020;
+            box-shadow: 
+                inset 0 0 8px rgba(0,0,0,0.8),
+                0 0 6px rgba(90, 58, 32, 0.6),
+                0 0 15px rgba(201, 169, 110, 0.2);
+        }
+
+        /* 孔位标签 */
+        .hole-label {
+            position: absolute;
+            font-size: 11px;
+            color: var(--gold-dim);
+            letter-spacing: 1px;
+            transform: translateX(-50%);
+            pointer-events: none;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .hole.drilled + .hole-label,
+        .hole.drilled ~ .hole-label {
+            color: var(--gold);
+            opacity: 1;
+        }
+
+        /* 
+         * 孔位位置定义 - 可按图像比例手动修改
+         * 吹孔（最左端）
+         * 膜孔（吹孔右侧）
+         * 六个音孔（依次向右）
+         */
+        .hole-1 { left: 12%; top: 48%; }   /* 吹孔 */
+        .hole-2 { left: 22%; top: 48%; }   /* 膜孔 */
+        .hole-3 { left: 38%; top: 48%; }   /* 第一音孔 */
+        .hole-4 { left: 48%; top: 48%; }   /* 第二音孔 */
+        .hole-5 { left: 58%; top: 48%; }   /* 第三音孔 */
+        .hole-6 { left: 68%; top: 48%; }   /* 第四音孔 */
+        .hole-7 { left: 78%; top: 48%; }   /* 第五音孔 */
+        .hole-8 { left: 88%; top: 48%; }   /* 第六音孔 */
+
+        .label-1 { left: 12%; top: 35%; }
+        .label-2 { left: 22%; top: 35%; }
+        .label-3 { left: 38%; top: 35%; }
+        .label-4 { left: 48%; top: 35%; }
+        .label-5 { left: 58%; top: 35%; }
+        .label-6 { left: 68%; top: 35%; }
+        .label-7 { left: 78%; top: 35%; }
+        .label-8 { left: 88%; top: 35%; }
+
+        /* 木屑粒子效果 */
+        .chip-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        @keyframes chipFly {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* 同心圆光波 */
+        .sound-wave {
+            position: absolute;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 15;
+            opacity: 0;
+        }
+
+        @keyframes waveExpand {
+            0% { width: var(--hole-size); height: var(--hole-size); opacity: 0.8; }
+            100% { width: 80px; height: 80px; opacity: 0; }
+        }
+
+        /* 律管尺度图 */
+        .scale-overlay {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            width: 80%;
+            max-width: 700px;
+            padding: 20px 30px;
+            background: rgba(26, 26, 26, 0.85);
+            border: 1px solid var(--gold-dim);
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.6s ease;
+            z-index: 8;
+        }
+
+        .scale-overlay.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .scale-title {
+            font-size: 14px;
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .scale-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .scale-item {
+            text-align: center;
+        }
+
+        .scale-note {
+            font-size: 24px;
+            color: var(--gold);
+            font-family: "Noto Serif SC", serif;
+        }
+
+        .scale-name {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        .scale-line {
+            width: 1px;
+            height: 30px;
+            background: var(--gold-dim);
+            opacity: 0.5;
+        }
+
+        /* 工尺谱显示区 - 右侧竖排 */
+        .gongche-panel {
+            position: absolute;
+            right: 3%;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            z-index: 12;
+        }
+
+        .gongche-panel.visible {
+            opacity: 1;
+        }
+
+        .gongche-title {
+            font-size: 12px;
+            color: var(--gold-dim);
+            letter-spacing: 4px;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--gold-dim);
+            padding-bottom: 10px;
+        }
+
+        .gongche-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .gongche-char {
+            font-size: 22px;
+            color: var(--gold);
+            font-family: "Noto Serif SC", serif;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+            padding: 4px 0;
+            position: relative;
+        }
+
+        .gongche-char.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gongche-char:hover {
+            text-shadow: 0 0 10px rgba(201, 169, 110, 0.6);
+        }
+
+        /* 悬停提示气泡 */
+        .gongche-tooltip {
+            position: absolute;
+            right: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid var(--gold-dim);
+            border-radius: 4px;
+            padding: 8px 14px;
+            font-size: 12px;
+            color: var(--gold);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .gongche-tooltip::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 5px 0 5px 6px;
+            border-style: solid;
+            border-color: transparent transparent transparent var(--gold-dim);
+        }
+
+        .gongche-char:hover + .gongche-tooltip,
+        .gongche-tooltip:hover {
+            opacity: 1;
+            right: 50px;
+        }
+
+        /* 底部提示文字 */
+        .stage-text {
+            position: absolute;
+            bottom: 15%;
+            width: 100%;
+            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: var(--gold);
+            opacity: 0.9;
+            transition: all 0.5s ease;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .stage-text.sub {
+            font-size: 0.9rem;
+            color: var(--gold-dim);
+            bottom: 11%;
+            letter-spacing: 2px;
+        }
+
+        /* 完成提示 */
+        .complete-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 26, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+            z-index: 20;
+        }
+
+        .complete-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .complete-text {
+            font-size: 2rem;
+            color: var(--gold);
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+        }
+
+        .complete-sub {
+            font-size: 1rem;
+            color: #888;
+            letter-spacing: 2px;
+        }
+
+        /* 触摸设备适配 */
+        @media (max-width: 768px) {
+            .bamboo-container {
+                width: 95%;
+            }
+            .hole {
+                width: 24px;
+                height: 24px;
+            }
+            .hole-label {
+                font-size: 9px;
+            }
+            .scale-overlay {
+                width: 95%;
+                padding: 15px;
+            }
+            .scale-note {
+                font-size: 18px;
+            }
+            .gongche-panel {
+                right: 1%;
+            }
+            .gongche-char {
+                font-size: 18px;
+            }
+            .gongche-tooltip {
+                right: 40px;
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+            .stage-text {
+                font-size: 0.9rem;
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="bg-layer"></div>
+
+<!-- 进度导航 -->
+<div class="nav-dots">
+    <div class="dot-wrapper completed">
+        <div class="dot completed"></div>
+        <div class="dot-label">择竹</div>
+    </div>
+    <div class="dot-wrapper completed">
+        <div class="dot completed"></div>
+        <div class="dot-label">汗青</div>
+    </div>
+    <div class="dot-wrapper active">
+        <div class="dot active"></div>
+        <div class="dot-label">开孔</div>
+    </div>
+    <div class="dot-wrapper">
+        <div class="dot"></div>
+        <div class="dot-label">试音</div>
+    </div>
+</div>
+
+<!-- 律管尺度图 -->
+<div class="scale-overlay" id="scale-overlay">
+    <div class="scale-title">十二律管尺度</div>
+    <div class="scale-content">
+        <div class="scale-item">
+            <div class="scale-note">黄钟</div>
+            <div class="scale-name">宫</div>
+        </div>
+        <div class="scale-line"></div>
+        <div class="scale-item">
+            <div class="scale-note">大吕</div>
+            <div class="scale-name">商</div>
+        </div>
+        <div class="scale-line"></div>
+        <div class="scale-item">
+            <div class="scale-note">太簇</div>
+            <div class="scale-name">角</div>
+        </div>
+        <div class="scale-line"></div>
+        <div class="scale-item">
+            <div class="scale-note">夹钟</div>
+            <div class="scale-name">徵</div>
+        </div>
+        <div class="scale-line"></div>
+        <div class="scale-item">
+            <div class="scale-note">姑洗</div>
+            <div class="scale-name">羽</div>
+        </div>
+        <div class="scale-line"></div>
+        <div class="scale-item">
+            <div class="scale-note">仲吕</div>
+            <div class="scale-name">变宫</div>
+        </div>
+        <div class="scale-line"></div>
+        <div class="scale-item">
+            <div class="scale-note">蕤宾</div>
+            <div class="scale-name">变徵</div>
+        </div>
+    </div>
+</div>
+
+<!-- 主内容 -->
+<div id="stage-content">
+    <div class="bamboo-container" id="bamboo-container">
+        <img id="bamboo-pipe" src="干.png" alt="竹管">
+
+        <!-- 孔位层 -->
+        <div class="holes-layer" id="holes-layer">
+            <!-- 
+                孔位定义：
+                如需调整位置，修改 left 和 top 百分比即可
+                竹管图像宽度视为100%，高度视为100%
+            -->
+            <div class="hole ink-mark hole-1" data-index="0" data-name="吹孔" data-note="上" data-tone="宫"></div>
+            <div class="hole-label label-1">吹孔</div>
+
+            <div class="hole ink-mark hole-2" data-index="1" data-name="膜孔" data-note="尺" data-tone="商"></div>
+            <div class="hole-label label-2">膜孔</div>
+
+            <div class="hole ink-mark hole-3" data-index="2" data-name="第一音孔" data-note="工" data-tone="角"></div>
+            <div class="hole-label label-3">一孔</div>
+
+            <div class="hole ink-mark hole-4" data-index="3" data-name="第二音孔" data-note="凡" data-tone="徵"></div>
+            <div class="hole-label label-4">二孔</div>
+
+            <div class="hole ink-mark hole-5" data-index="4" data-name="第三音孔" data-note="六" data-tone="羽"></div>
+            <div class="hole-label label-5">三孔</div>
+
+            <div class="hole ink-mark hole-6" data-index="5" data-name="第四音孔" data-note="五" data-tone="变宫"></div>
+            <div class="hole-label label-6">四孔</div>
+
+            <div class="hole ink-mark hole-7" data-index="6" data-name="第五音孔" data-note="乙" data-tone="变徵"></div>
+            <div class="hole-label label-7">五孔</div>
+
+            <div class="hole ink-mark hole-8" data-index="7" data-name="第六音孔" data-note="仩" data-tone="清角"></div>
+            <div class="hole-label label-8">六孔</div>
+        </div>
+    </div>
+
+    <!-- 工尺谱面板 - 右侧竖排 -->
+    <div class="gongche-panel" id="gongche-panel">
+        <div class="gongche-title">工尺谱</div>
+        <div id="gongche-chars"></div>
+    </div>
+</div>
+
+<!-- 底部提示 -->
+<div class="stage-text" id="main-text">依十二律开孔，吹孔为宫，膜孔应商，六孔配五声二变</div>
+<div class="stage-text sub" id="sub-text">点击墨线标记处为竹管开孔</div>
+
+<!-- 完成覆盖层 -->
+<div class="complete-overlay" id="complete-overlay">
+    <div class="complete-text">七孔俱全</div>
+    <div class="complete-sub">笛开七孔，上应七星。五声二变，清浊自辨</div>
+</div>
+
+<script>
+    // ===================== 音频系统 =====================
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    // 烙铁灼竹爆裂声
+    function playDrillSound() {
+        if (!audioCtx) return;
+
+        // 爆裂声
+        const noise = audioCtx.createBufferSource();
+        const bufferSize = audioCtx.sampleRate * 0.15;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * 0.4;
+        }
+        noise.buffer = buffer;
+
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+
+        noise.connect(noiseGain);
+        noiseGain.connect(audioCtx.destination);
+        noise.start();
+
+        // 低频灼烧声
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(120 + Math.random() * 60, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.25);
+
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+
+        // 高频嘶嘶声
+        const hiss = audioCtx.createOscillator();
+        const hissGain = audioCtx.createGain();
+        hiss.type = 'sine';
+        hiss.frequency.setValueAtTime(3000, audioCtx.currentTime);
+        hiss.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
+
+        hissGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        hissGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+
+        hiss.connect(hissGain);
+        hissGain.connect(audioCtx.destination);
+        hiss.start();
+        hiss.stop(audioCtx.currentTime + 0.15);
+    }
+
+    // 完成音效
+    function playCompleteSound() {
+        if (!audioCtx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+
+            gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.12);
+            gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + i * 0.12 + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.6);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + i * 0.12);
+            osc.stop(audioCtx.currentTime + i * 0.12 + 0.6);
+        });
+    }
+
+    // ===================== 交互逻辑 =====================
+    const holes = document.querySelectorAll('.hole');
+    const mainText = document.getElementById('main-text');
+    const subText = document.getElementById('sub-text');
+    const scaleOverlay = document.getElementById('scale-overlay');
+    const gongchePanel = document.getElementById('gongche-panel');
+    const gongcheChars = document.getElementById('gongche-chars');
+    const completeOverlay = document.getElementById('complete-overlay');
+
+    let drilledCount = 0;
+    const TOTAL_HOLES = 8;
+    let lastDrilledName = '';
+    let lastDrilledNote = '';
+
+    // 创建木屑粒子
+    function createChips(x, y) {
+        const container = document.getElementById('bamboo-container');
+        for (let i = 0; i < 8; i++) {
+            const chip = document.createElement('div');
+            chip.className = 'chip-particle';
+            chip.style.left = x + 'px';
+            chip.style.top = y + 'px';
+
+            const angle = (Math.PI * 2 * i) / 8 + Math.random() * 0.5;
+            const distance = 20 + Math.random() * 40;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+
+            chip.style.setProperty('--tx', tx + 'px');
+            chip.style.setProperty('--ty', ty + 'px');
+            chip.style.animation = `chipFly 0.6s ease-out forwards`;
+            chip.style.animationDelay = (Math.random() * 0.1) + 's';
+
+            container.appendChild(chip);
+            setTimeout(() => chip.remove(), 700);
+        }
+    }
+
+    // 创建同心圆光波
+    function createSoundWave(x, y) {
+        const container = document.getElementById('bamboo-container');
+        const wave = document.createElement('div');
+        wave.className = 'sound-wave';
+        wave.style.left = x + 'px';
+        wave.style.top = y + 'px';
+        wave.style.transform = 'translate(-50%, -50%)';
+        wave.style.animation = 'waveExpand 0.8s ease-out forwards';
+
+        container.appendChild(wave);
+        setTimeout(() => wave.remove(), 800);
+    }
+
+    // 添加工尺谱字 - 带悬停提示
+    function addGongcheChar(note, name, tone) {
+        const item = document.createElement('div');
+        item.className = 'gongche-item';
+
+        const char = document.createElement('div');
+        char.className = 'gongche-char';
+        char.textContent = note;
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'gongche-tooltip';
+        tooltip.textContent = `${name} · ${tone}`;
+
+        item.appendChild(char);
+        item.appendChild(tooltip);
+        gongcheChars.appendChild(item);
+
+        // 触发重排后显示
+        requestAnimationFrame(() => {
+            char.classList.add('visible');
+        });
+    }
+
+    // 开孔处理
+    function drillHole(hole) {
+        if (hole.classList.contains('drilled')) return;
+
+        initAudio();
+        playDrillSound();
+
+        hole.classList.remove('ink-mark');
+        hole.classList.add('drilled');
+
+        const rect = hole.getBoundingClientRect();
+        const containerRect = document.getElementById('bamboo-container').getBoundingClientRect();
+        const x = rect.left - containerRect.left + rect.width / 2;
+        const y = rect.top - containerRect.top + rect.height / 2;
+
+        createChips(x, y);
+        createSoundWave(x, y);
+
+        const index = parseInt(hole.dataset.index);
+        const name = hole.dataset.name;
+        const note = hole.dataset.note;
+        const tone = hole.dataset.tone;
+
+        drilledCount++;
+
+        // 显示律管尺度图
+        scaleOverlay.classList.add('visible');
+        setTimeout(() => {
+            scaleOverlay.classList.remove('visible');
+        }, 2500);
+
+        // 显示工尺谱
+        gongchePanel.classList.add('visible');
+        addGongcheChar(note, name, tone);
+
+        // 更新提示 - 新提示覆盖旧提示
+        mainText.innerText = `已开${name}，对应工尺谱「${note}」，${tone}音`;
+
+        const remaining = TOTAL_HOLES - drilledCount;
+        if (remaining > 0) {
+            subText.innerText = `还差 ${remaining} 个孔位`;
+        } else {
+            subText.innerText = '七孔俱全，上应七星';
+        }
+
+        // 保存当前开孔信息
+        lastDrilledName = name;
+        lastDrilledNote = note;
+
+        // 检查完成
+        if (drilledCount >= TOTAL_HOLES) {
+            setTimeout(() => {
+                playCompleteSound();
+                completeOverlay.classList.add('active');
+                mainText.innerText = '笛开七孔，上应七星。五声二变，清浊自辨';
+                subText.innerText = '等待进入第四步：试音';
+            }, 800);
+        }
+    }
+
+    // 事件绑定
+    holes.forEach(hole => {
+        hole.addEventListener('click', (e) => {
+            e.stopPropagation();
+            drillHole(hole);
+        });
+
+        hole.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            drillHole(hole);
+        });
+    });
+
+    console.log('开孔工序已就绪 - 点击墨线标记处开孔');
+</script>
+
+</body>
+</html>
