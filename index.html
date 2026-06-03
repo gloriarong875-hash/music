@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金声玉振 — 中国古代十大乐器交互展</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500&display=swap');
+
+        :root {
+            --primary-dark: #2a1f18;
+            --primary-brown: #7E6445;
+            --accent-gold: #c9a96e;
+            --text-cream: #f5f0e8;
+            --text-light: #e8e0d0;
+            --nav-bg: rgba(0, 0, 0, 0.75);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Serif SC', 'Songti SC', serif;
+            background: #1a1410;
+            color: var(--text-cream);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 60px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            padding: 0 60px;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2.5s ease-out, transform 2.5s ease-out;
+            transform: translateY(-20px);
+        }
+
+        .top-nav.visible {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,1);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+            will-change: opacity;
+        }
+
+        .intro-image {
+            max-width: 38vw;
+            max-height: 38vh;
+            width: auto;
+            height: auto;
+            transform: scale(1);
+            filter: blur(0px);
+            opacity: 1;
+            will-change: transform, opacity, filter;
+            transition: none;
+        }
+
+        .intro-overlay.intro-out .intro-image {
+            opacity: 0;
+            filter: blur(16px);
+            transform: scale(2);
+        }
+
+        .intro-progress {
+            width: 60%;
+            max-width: 680px;
+            height: 4px;
+            margin-top: 48px;
+            background: rgba(245, 240, 232, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+            opacity: 1;
+            transition: opacity 2s ease;
+        }
+
+        .intro-progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(201,169,110,0.9), rgba(245,240,232,0.6));
+            transform-origin: left;
+            will-change: width;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 12px rgba(201,169,110,0.4);
+        }
+
+        #app {
+            width: 100vw;
+            height: 100vh;
+            min-width: 100vw;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: var(--primary-brown);
+            box-shadow: none;
+            transform: scale(var(--app-scale, 1));
+            transition: transform 0.2s ease;
+        }
+
+        /* 顶部导航 */
+        .page {
+            position: absolute;
+            top: 60px; left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            overflow: hidden;
+        }
+
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background: var(--accent-gold);
+            transition: width 0.3s;
+        }
+
+        .nav-item:hover, .nav-item.active { color: var(--accent-gold); }
+        .nav-item:hover::after, .nav-item.active::after { width: 100%; }
+
+        .nav-divider {
+            width: 1px; height: 20px;
+            background: rgba(201, 169, 110, 0.3);
+            margin-right: 80px;
+        }
+
+        /* 页面容器 */
+        .page {
+            position: absolute;
+            top: 60px; left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            overflow: hidden;
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* ================= 首页 ================= */
+        #home-page {
+            background: linear-gradient(180deg, #7E6445 0%, #5a4530 100%);
+        }
+
+        .home-scroll-container {
+            width: 100%; height: 100%;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .home-scroll-container.scrolled {
+            transform: translateY(-100%);
+        }
+
+        .home-hero {
+            width: 100%; height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 画卷容器 */
+        .scroll-wrapper {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        .scroll-wrapper:active { cursor: grabbing; }
+
+        .scroll-track {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            display: flex;
+            will-change: transform;
+        }
+
+        .scroll-item {
+            height: 100%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .hele-bg {
+            height: 100%;
+            width: auto;
+            display: block;
+        }
+
+        /* 标题区域 */
+        .home-title {
+            position: absolute;
+            right: -2cm;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+            transition: transform 0.3s ease-out;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title-img {
+            width: auto;
+            height: 90vh;
+            max-height: 90vh;
+            filter: drop-shadow(0 4px 20px rgba(0,0,0,0.6));
+            opacity: 0;
+        }
+
+        .title-en {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 28px;
+            color: var(--accent-gold);
+            letter-spacing: 3px;
+            margin-top: 30px;
+            font-weight: 300;
+            text-transform: uppercase;
+            opacity: 0;
+        }
+
+        /* 滚轮提示 */
+        .wheel-hint {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-gold);
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            opacity: 0.7;
+            animation: float-hint 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .wheel-hint .hint-icon {
+            width: 32px; height: 32px;
+            border: 1px solid rgba(201, 169, 110, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        @keyframes float-hint {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-6px); }
+        }
+
+        /* 向下探索提示 */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            z-index: 50;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-gold);
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 13px;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            transition: all 0.3s;
+            animation: float-hint-side 3s ease-in-out infinite;
+        }
+
+        .scroll-hint:hover { opacity: 1; color: #fff; }
+
+        .scroll-hint .hint-arrow {
+            width: 28px; height: 28px;
+            border: 1px solid var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .scroll-hint:hover .hint-arrow {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+        }
+
+        @keyframes float-hint-side {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* ================= 第二屏：知识区 ================= */
+        .home-knowledge {
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, #5a4530 0%, #3d2b1f 100%);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .home-knowledge::-webkit-scrollbar { width: 6px; }
+        .home-knowledge::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .home-knowledge::-webkit-scrollbar-thumb { background: rgba(201, 169, 110, 0.3); border-radius: 3px; }
+
+        .knowledge-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 40px 60px;
+            position: relative;
+        }
+
+        .knowledge-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--accent-gold);
+            text-align: center;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+
+        .knowledge-subtitle {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 14px;
+            color: var(--text-light);
+            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+            opacity: 0.7;
+        }
+
+        /* 画中乐伎卡片组 */
+        .musicians-section {
+            margin-bottom: 50px;
+        }
+
+        .musicians-section h3 {
+            font-size: 24px;
+            color: var(--text-cream);
+            letter-spacing: 6px;
+            margin-bottom: 24px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+            display: inline-block;
+        }
+
+        .musicians-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .musician-card {
+            position: relative;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(201, 169, 110, 0.15);
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .musician-card:hover {
+            border-color: var(--accent-gold);
+            background: rgba(201, 169, 110, 0.08);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 20px rgba(201,169,110,0.15);
+        }
+
+        .musician-card .card-img-wrap {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .musician-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85) sepia(0.2);
+            transition: all 0.4s;
+        }
+
+        .musician-card:hover img {
+            filter: brightness(1.05) sepia(0);
+            transform: scale(1.08);
+        }
+
+        .musician-card .card-info {
+            padding: 16px;
+            text-align: center;
+        }
+
+        .musician-card .card-name {
+            font-size: 18px;
+            color: var(--text-cream);
+            letter-spacing: 4px;
+            margin-bottom: 4px;
+        }
+
+        .musician-card .card-role {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 12px;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        /* 卡片悬浮信息栏 */
+        .card-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            width: 86%;
+            background: rgba(20, 15, 10, 0.95);
+            border: 1px solid var(--accent-gold);
+            padding: 18px;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s ease;
+            z-index: 20;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        .musician-card:hover .card-popup {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: all;
+        }
+
+        .card-popup h4 {
+            font-size: 18px;
+            color: var(--accent-gold);
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .card-popup p {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 12.5px;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+
+        .card-popup .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            background: rgba(201, 169, 110, 0.15);
+            color: var(--accent-gold);
+            font-size: 11px;
+            border-radius: 2px;
+            margin-top: 8px;
+            letter-spacing: 1px;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        /* 知识文字区 */
+        .knowledge-section {
+            margin-bottom: 45px;
+        }
+
+        .knowledge-section h3 {
+            font-size: 24px;
+            color: var(--text-cream);
+            letter-spacing: 6px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+            display: inline-block;
+        }
+
+        .knowledge-section .section-desc {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 15px;
+            line-height: 2;
+            color: var(--text-light);
+            margin-bottom: 18px;
+            opacity: 0.9;
+        }
+
+        .eight-sounds {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .sound-card {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(201, 169, 110, 0.15);
+            padding: 20px 12px;
+            text-align: center;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .sound-card:hover {
+            border-color: var(--accent-gold);
+            background: rgba(201, 169, 110, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .sound-icon {
+            font-size: 26px;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+        }
+
+        .sound-name {
+            font-size: 17px;
+            color: var(--text-cream);
+            letter-spacing: 4px;
+            margin-bottom: 6px;
+        }
+
+        .sound-desc {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .orchestra-sections {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 14px;
+        }
+
+        .orchestra-card {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(201, 169, 110, 0.15);
+            padding: 24px;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .orchestra-card:hover {
+            border-color: var(--accent-gold);
+            background: rgba(201, 169, 110, 0.08);
+        }
+
+        .orchestra-card h4 {
+            font-size: 17px;
+            color: var(--accent-gold);
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+
+        .orchestra-card p {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--text-light);
+            opacity: 0.85;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+            margin-top: 14px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 6px;
+            bottom: 6px;
+            width: 1px;
+            background: rgba(201, 169, 110, 0.3);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 26px;
+            padding-left: 24px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 6px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            border: 2px solid var(--primary-brown);
+        }
+
+        .timeline-item h4 {
+            font-size: 17px;
+            color: var(--accent-gold);
+            letter-spacing: 3px;
+            margin-bottom: 6px;
+        }
+
+        .timeline-item p {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--text-light);
+            opacity: 0.85;
+        }
+
+        .back-to-top {
+            text-align: center;
+            margin: 30px auto 0;
+            padding: 12px 36px;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            display: block;
+            width: fit-content;
+            cursor: pointer;
+            font-family: 'Noto Serif SC', serif;
+            letter-spacing: 4px;
+            transition: all 0.3s;
+            font-size: 15px;
+            border-radius: 2px;
+        }
+
+        .back-to-top:hover {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+        }
+
+        /* ================= 分类页 ================= */
+        .category-page {
+            background: #81623e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-scroll-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -55%);
+            width: 1100px;
+            height: 420px;
+            background: rgba(212, 197, 176, 0.1);
+            border: 1px solid rgba(201, 169, 110, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .category-scroll-frame::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('图片/合乐图.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.12;
+            filter: sepia(0.8) brightness(0.9);
+        }
+
+        .category-scroll-frame::after {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px;
+            right: 10px; bottom: 10px;
+            border: 1px solid rgba(201, 169, 110, 0.12);
+            pointer-events: none;
+        }
+
+        .category-header {
+            position: absolute;
+            top: 60px;
+            right: 120px;
+            z-index: 10;
+            text-align: right;
+        }
+
+        .category-title {
+            font-size: 72px;
+            font-weight: 900;
+            color: var(--text-cream);
+            letter-spacing: 12px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            font-family: 'Noto Serif SC', serif;
+            line-height: 1.2;
+        }
+
+        .category-subtitle {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 18px;
+            color: var(--accent-gold);
+            letter-spacing: 6px;
+            margin-top: 10px;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        .instruments-container {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 50px;
+            width: 90%;
+            z-index: 20;
+        }
+
+        #melody-page .instruments-container {
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            bottom: 60px;
+            width: 96%;
+        }
+
+        #melody-page .instrument-card {
+            flex: 0 0 auto;
+            width: 140px;
+        }
+
+        #melody-page .instrument-card img {
+            height: auto;
+            width: 100%;
+            max-height: 180px;
+        }
+
+        .instrument-card {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .instrument-card:hover {
+            transform: translateY(-20px) scale(1.05);
+        }
+
+        .instrument-card img {
+            height: 200px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+            transition: all 0.4s;
+        }
+
+        .instrument-card:hover img {
+            filter: drop-shadow(0 20px 40px rgba(201, 169, 110, 0.3));
+        }
+
+        .instrument-name {
+            margin-top: 20px;
+            font-size: 24px;
+            color: var(--text-cream);
+            letter-spacing: 6px;
+            opacity: 0.8;
+            transition: all 0.3s;
+        }
+
+        .instrument-card:hover .instrument-name {
+            opacity: 1;
+            color: var(--accent-gold);
+        }
+
+        #melody-page .instrument-card .instrument-name {
+            display: none;
+        }
+
+        #melody-page .instrument-card {
+            transition: transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        #melody-page .instrument-card:hover {
+            transform: translateY(-24px) scale(1.06);
+            box-shadow: none;
+        }
+
+        #melody-page .instrument-card:hover img {
+            transform: scale(1.04);
+        }
+
+        #melody-page {
+            position: relative;
+        }
+
+        #melody-page .category-scroll-frame {
+            background: transparent;
+        }
+
+        #melody-page .category-scroll-frame::before {
+            background-image: url('图片/山径春行图.jpg');
+            background-position: center bottom;
+            background-size: cover;
+            filter: none;
+            opacity: 1;
+        }
+
+        #melody-page .category-scroll-frame::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        #melody-page .instruments-container {
+            position: absolute;
+            left: 50%;
+            bottom: calc(60px + 3cm);
+            transform: translateX(-50%);
+            flex-wrap: nowrap;
+            gap: 2px;
+            justify-content: center;
+            width: 96%;
+            overflow-x: hidden;
+            padding-bottom: 0;
+            z-index: 20;
+        }
+
+        #melody-page .instrument-card {
+            flex: 0 0 auto;
+                width: 255px;
+                transition: transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease, box-shadow 0.35s ease;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+            }
+
+            #melody-page .instrument-card img {
+                width: 100%;
+                height: 420px;
+        }
+
+        #melody-page .instrument-card .instrument-name {
+            display: none;
+        }
+
+        #melody-page .instrument-card.hovered {
+            opacity: 1;
+            filter: saturate(1.08);
+            box-shadow: none;
+        }
+
+        #melody-page .instrument-card.dimmed {
+            opacity: 0.28;
+            filter: saturate(0.6);
+        }
+
+        @keyframes float-instruments {
+            0% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-12px); }
+            100% { transform: translateX(-50%) translateY(-22px); }
+        }
+
+        @keyframes float-card {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(-14px); }
+        }
+
+        #melody-page .melody-preview-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 40;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #melody-page .melody-preview-overlay.visible {
+            opacity: 1;
+        }
+
+        #melody-page .melody-preview-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            max-width: 100%;
+            max-height: 100%;
+            padding: 24px;
+        }
+
+        #melody-page .melody-preview-overlay .preview-img {
+            max-height: calc(100vh - 160px);
+            max-width: 72vw;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: none;
+            transition: transform 0.3s ease;
+        }
+
+        #melody-page .melody-preview-overlay .preview-label {
+            display: inline-block;
+            color: var(--accent-gold);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 40px;
+            letter-spacing: 8px;
+            line-height: 1.1;
+            background: rgba(20, 15, 10, 0.88);
+            padding: 20px 28px;
+            border-radius: 32px;
+            border: 1px solid rgba(201, 169, 110, 0.18);
+            white-space: nowrap;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .instrument-card {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .instrument-card:nth-child(2) { animation-delay: 0.5s; }
+        .instrument-card:nth-child(3) { animation-delay: 1s; }
+        .instrument-card:nth-child(4) { animation-delay: 1.5s; }
+        .instrument-card:nth-child(5) { animation-delay: 2s; }
+        .instrument-card:nth-child(6) { animation-delay: 2.5s; }
+
+        .instrument-card:hover {
+            animation-play-state: paused;
+        }
+
+        /* ================= 乐器详情页 ================= */
+        #detail-page {
+            background: linear-gradient(180deg, #7E6445 0%, #3d2b1f 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-header {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            padding: 0 60px;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+        }
+
+        .back-btn {
+            font-size: 16px;
+            color: var(--accent-gold);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover { color: #fff; }
+
+        .detail-content {
+            flex: 1;
+            display: flex;
+            padding: 40px 80px;
+            gap: 60px;
+        }
+
+        .detail-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .detail-title {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--accent-gold);
+            letter-spacing: 10px;
+            margin-bottom: 30px;
+        }
+
+        .detail-info {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 16px;
+            line-height: 2;
+            color: var(--text-light);
+            max-width: 500px;
+        }
+
+        .detail-tags {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .detail-tag {
+            padding: 6px 18px;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            font-size: 14px;
+            border-radius: 2px;
+            letter-spacing: 2px;
+        }
+
+        .detail-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .detail-img {
+            max-height: 500px;
+            max-width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 50px rgba(0,0,0,0.6));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .interaction-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent-gold);
+            font-size: 14px;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            animation: pulse-text 2s infinite;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* 装饰 */
+        .corner-ornament {
+            position: absolute;
+            width: 80px; height: 80px;
+            border: 1px solid rgba(201, 169, 110, 0.2);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .corner-ornament.tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .corner-ornament.tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .corner-ornament.bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .corner-ornament.br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        .scroll-decor-left, .scroll-decor-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 440px;
+            background: linear-gradient(90deg, #2a1f18, #3d2b1f);
+            border: 1px solid rgba(201, 169, 110, 0.3);
+            z-index: 5;
+        }
+
+        .scroll-decor-left {
+            left: -15px;
+            border-radius: 4px 0 0 4px;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.3);
+        }
+
+        .scroll-decor-right {
+            right: -15px;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+        }
+
+        .size-hint {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+            z-index: 9999;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 顶部导航 -->
+        <nav class="top-nav">
+            <div class="nav-item active" data-page="home">首页</div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" data-page="rhythm">节律部</div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" data-page="melody">旋律部</div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" data-page="harmony">和声部</div>
+        </nav>
+
+        <div class="intro-overlay" id="introOverlay">
+            <img src="图片/听阮图.png" alt="听阮图" class="intro-image" id="introImage">
+            <div class="intro-progress">
+                <div class="intro-progress-fill" id="introProgressFill"></div>
+            </div>
+        </div>
+
+        <!-- ================= 首页 ================= -->
+        <section id="home-page" class="page active">
+            <div class="home-scroll-container" id="homeScrollContainer">
+                <!-- 第一屏：画卷 -->
+                <div class="home-hero">
+                    <div class="scroll-wrapper" id="scrollWrapper">
+                        <div class="scroll-track" id="scrollTrack">
+                            <div class="scroll-item" id="scrollItem1">
+                                <img src="图片/合乐图.jpg" class="hele-bg" alt="合乐图" id="heleImg1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 标题 -->
+                    <div class="home-title">
+                        <img src="图片/标题文字.png" class="title-img" alt="金声玉振">
+                        <div class="title-en">A Resounding Melodious Tone</div>
+                    </div>
+
+                    <!-- 滚轮提示 -->
+                    <div class="wheel-hint" id="wheelHint">
+                        <div class="hint-icon">↔</div>
+                        <span>滚轮滑动画卷</span>
+                    </div>
+
+                    <!-- 向下探索提示 -->
+                    <div class="scroll-hint" id="scrollHint">
+                        <span>向下探索</span>
+                        <div class="hint-arrow">↓</div>
+                    </div>
+
+                    <!-- 装饰角花 -->
+                    <div class="corner-ornament tl"></div>
+                    <div class="corner-ornament tr"></div>
+                    <div class="corner-ornament bl"></div>
+                    <div class="corner-ornament br"></div>
+                </div>
+
+                <!-- 第二屏：知识区（含乐器人物卡片） -->
+                <div class="home-knowledge" id="homeKnowledge">
+                    <div class="knowledge-content">
+                        <h2 class="knowledge-title">礼乐文明 · 千年回响</h2>
+                        <p class="knowledge-subtitle">从庙堂钟磬到市井弦歌，探溯华夏音乐文化之源流</p>
+
+                        <!-- 画中乐伎卡片组 -->
+                        <section class="musicians-section">
+                            <h3>合乐图 · 乐伎群像</h3>
+                            <div class="musicians-grid" id="musiciansGrid">
+                                <!-- 由 JS 生成 -->
+                            </div>
+                        </section>
+
+                        <!-- 八音分类 -->
+                        <section class="knowledge-section">
+                            <h3>八音克谐</h3>
+                            <p class="section-desc">《周礼·春官》将乐器按材质分为八类，所谓"八音克谐，无相夺伦"，此乃中国最早的乐器科学分类法。</p>
+                            <div class="eight-sounds">
+                                <div class="sound-card">
+                                    <div class="sound-icon">金</div>
+                                    <div class="sound-name">金</div>
+                                    <div class="sound-desc">钟、镈、铙<br>击金而鸣，其声宏亮<br>为众音之纲</div>
+                                </div>
+                                <div class="sound-card">
+                                    <div class="sound-icon">石</div>
+                                    <div class="sound-name">石</div>
+                                    <div class="sound-desc">磬<br>玉石相击，清越以长<br>通于神明</div>
+                                </div>
+                                <div class="sound-card">
+                                    <div class="sound-icon">土</div>
+                                    <div class="sound-name">土</div>
+                                    <div class="sound-desc">埙、缶<br>土火既济，其声浊而幽<br>近于人道</div>
+                                </div>
+                                <div class="sound-card">
+                                    <div class="sound-icon">革</div>
+                                    <div class="sound-name">革</div>
+                                    <div class="sound-desc">鼓、鼗<br>革木相搏，节奏之宗<br>动乎干戚</div>
+                                </div>
+                                <div class="sound-card">
+                                    <div class="sound-icon">丝</div>
+                                    <div class="sound-name">丝</div>
+                                    <div class="sound-desc">琴、瑟、筝、琵琶<br>丝声哀哀，游鱼出听<br>六马仰秣</div>
+                                </div>
+                                <div class="sound-card">
+                                    <div class="sound-icon">木</div>
+                                    <div class="sound-name">木</div>
+                                    <div class="sound-desc">柷、敔<br>木声丁丁<br>所以起止众音</div>
+                                </div>
+                                <div class="sound-card">
+                                    <div class="sound-icon">匏</div>
+                                    <div class="sound-name">匏</div>
+                                    <div class="sound-desc">笙、竽<br>匏竹相合，凤翼参差<br>能和众声</div>
+                                </div>
+                                <div class="sound-card">
+                                    <div class="sound-icon">竹</div>
+                                    <div class="sound-name">竹</div>
+                                    <div class="sound-desc">笛、箫、篪<br>竹声浏亮，龙吟凤吹<br>清远悠扬</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- 乐团编制 -->
+                        <section class="knowledge-section">
+                            <h3>乐团编制</h3>
+                            <p class="section-desc">古代乐团因场合而异，雅乐重礼制，燕乐尚技艺，民间则因地制宜，各臻其妙。</p>
+                            <div class="orchestra-sections">
+                                <div class="orchestra-card">
+                                    <h4>宫廷雅乐</h4>
+                                    <p>周代设"大司乐"掌成均之法，以乐德、乐语、乐舞教国子。轩悬三面，宫悬四面，钟磬为主，干羽为容，其声庄重肃穆，用于祭祀朝会。</p>
+                                </div>
+                                <div class="orchestra-card">
+                                    <h4>宴飨燕乐</h4>
+                                    <p>唐设教坊、梨园，分坐部伎与立部伎。坐部贵于堂上，丝竹更奏；立部立于堂下，击鼓吹笙，歌舞递起，其声靡曼繁促。</p>
+                                </div>
+                                <div class="orchestra-card">
+                                    <h4>民间俗乐</h4>
+                                    <p>宋有"细乐""清乐"，明清戏曲勃兴。十番锣鼓，弦索重调，市井勾栏，声容并茂。由庙堂走向市井，音乐遂成百姓日用。</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- 音乐演变 -->
+                        <section class="knowledge-section">
+                            <h3>乐脉流变</h3>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <h4>先秦 · 礼乐刑政</h4>
+                                    <p>钟磬之乐，八音克谐，神人以和。周公制礼作乐，音乐与政治伦理深度融合，"兴于诗，立于礼，成于乐"。</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h4>汉唐 · 丝路驼铃</h4>
+                                    <p>张骞凿空，西域音乐入华。胡笳羌笛，琵琶横吹，融汇胡汉，新声妙入神。隋唐宫廷燕乐集大成，空前繁盛。</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h4>宋元 · 勾栏瓦舍</h4>
+                                    <p>市民阶层勃兴，勾栏瓦舍遍布都城。杂剧南戏，诸宫调起，音乐由庙堂走向市井，由雅正趋于俗趣。</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <h4>明清 · 雅俗共赏</h4>
+                                    <p>昆曲雅正，皮黄慷慨。器乐独奏臻于化境，琴棋书画成为文人雅集之标配，传统音乐在传承与变革中生生不息。</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <div class="back-to-top" id="backToTop">↑ 返回画卷</div>
+                    </div>
+                    <div class="corner-ornament tl"></div>
+                    <div class="corner-ornament tr"></div>
+                    <div class="corner-ornament bl"></div>
+                    <div class="corner-ornament br"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 节律部 ================= -->
+        <section id="rhythm-page" class="page category-page">
+            <div class="category-header">
+                <div class="category-title">节律部</div>
+                <div class="category-subtitle">Rhythmic Section</div>
+            </div>
+            <div class="category-scroll-frame">
+                <div class="scroll-decor-left"></div>
+                <div class="scroll-decor-right"></div>
+            </div>
+            <div class="instruments-container">
+                <div class="instrument-card" data-instrument="钟">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Zeng_Hou_Yi_bianzhong.jpg/440px-Zeng_Hou_Yi_bianzhong.jpg" alt="钟">
+                    <div class="instrument-name">钟</div>
+                </div>
+                <div class="instrument-card" data-instrument="鼓">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Tang_dynasty_drum.jpg/440px-Tang_dynasty_drum.jpg" alt="鼓">
+                    <div class="instrument-name">鼓</div>
+                </div>
+                <div class="instrument-card" data-instrument="编钟">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Zeng_Hou_Yi_bianzhong.jpg/440px-Zeng_Hou_Yi_bianzhong.jpg" alt="编钟">
+                    <div class="instrument-name">编钟</div>
+                </div>
+                <div class="instrument-card" data-instrument="埙">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Xun_ancient_chinese_instrument.jpg/440px-Xun_ancient_chinese_instrument.jpg" alt="埙">
+                    <div class="instrument-name">埙</div>
+                </div>
+            </div>
+            <div class="corner-ornament tl"></div>
+            <div class="corner-ornament tr"></div>
+            <div class="corner-ornament bl"></div>
+            <div class="corner-ornament br"></div>
+        </section>
+
+        <!-- ================= 旋律部 ================= -->
+        <section id="melody-page" class="page category-page">
+            <div class="category-header">
+                <div class="category-title">旋律部</div>
+                <div class="category-subtitle">Melodic Section</div>
+            </div>
+            <div class="category-scroll-frame">
+                <div class="scroll-decor-left"></div>
+                <div class="scroll-decor-right"></div>
+            </div>
+            <div class="instruments-container">
+                <div class="instrument-card" data-instrument="琵琶">
+                    <img src="图片/琵琶.png" alt="琵琶">
+                    <div class="instrument-name">琵琶</div>
+                </div>
+                <div class="instrument-card" data-instrument="箫">
+                    <img src="图片/箫.png" alt="箫">
+                    <div class="instrument-name">箫</div>
+                </div>
+                <div class="instrument-card" data-instrument="笛">
+                    <img src="图片/笛.png" alt="笛">
+                    <div class="instrument-name">笛</div>
+                </div>
+                <div class="instrument-card" data-instrument="二胡">
+                    <img src="图片/二胡.png" alt="二胡">
+                    <div class="instrument-name">二胡</div>
+                </div>
+                <div class="instrument-card" data-instrument="琴">
+                    <img src="图片/琴.png" alt="琴">
+                    <div class="instrument-name">琴</div>
+                </div>
+                <div class="instrument-card" data-instrument="瑟">
+                    <img src="图片/瑟.png" alt="瑟">
+                    <div class="instrument-name">瑟</div>
+                </div>
+            </div>
+            <div class="corner-ornament tl"></div>
+            <div class="corner-ornament tr"></div>
+            <div class="corner-ornament bl"></div>
+            <div class="corner-ornament br"></div>
+        </section>
+
+        <!-- ================= 和声部 ================= -->
+        <section id="harmony-page" class="page category-page">
+            <div class="category-header">
+                <div class="category-title">和声部</div>
+                <div class="category-subtitle">Harmonic Section</div>
+            </div>
+            <div class="category-scroll-frame">
+                <div class="scroll-decor-left"></div>
+                <div class="scroll-decor-right"></div>
+            </div>
+            <div class="instruments-container">
+                <div class="instrument-card" data-instrument="笙">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Sheng_instrument.jpg/440px-Sheng_instrument.jpg" alt="笙">
+                    <div class="instrument-name">笙</div>
+                </div>
+                <div class="instrument-card" data-instrument="阮">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ruan_instrument.jpg/440px-Ruan_instrument.jpg" alt="阮">
+                    <div class="instrument-name">阮</div>
+                </div>
+                <div class="instrument-card" data-instrument="筝">
+                    <img src="图片/瑟.png" alt="筝">
+                    <div class="instrument-name">筝</div>
+                </div>
+            </div>
+            <div class="corner-ornament tl"></div>
+            <div class="corner-ornament tr"></div>
+            <div class="corner-ornament bl"></div>
+            <div class="corner-ornament br"></div>
+        </section>
+
+        <!-- ================= 乐器详情页 ================= -->
+        <section id="detail-page" class="page">
+            <div class="detail-header">
+                <div class="back-btn" id="backBtn">
+                    <span>←</span> 返回
+                </div>
+            </div>
+            <div class="detail-content">
+                <div class="detail-left">
+                    <h1 class="detail-title" id="detailTitle">琵琶</h1>
+                    <p class="detail-info" id="detailInfo">
+                        琵琶，弹拨乐器首座，拨弦类弦鸣乐器。木制或竹等制成，音箱呈半梨形，上装四弦，原先是用丝线，现多用钢丝、钢绳、尼龙制成。颈与面板上设有以确定音位的"相"和"品"。<br><br>
+                        演奏时竖抱，左手按弦，右手五指弹奏，是可独奏、伴奏、重奏、合奏的重要民族乐器。
+                    </p>
+                    <div class="detail-tags" id="detailTags">
+                        <span class="detail-tag">弹拨乐器</span>
+                        <span class="detail-tag">四弦</span>
+                        <span class="detail-tag">梨形音箱</span>
+                    </div>
+                </div>
+                <div class="detail-right">
+                    <img src="" class="detail-img" id="detailImg" alt="乐器详情">
+                    <div class="interaction-hint">点击乐器聆听音色 · 拖拽旋转视角</div>
+                </div>
+            </div>
+            <div class="corner-ornament tl"></div>
+            <div class="corner-ornament tr"></div>
+            <div class="corner-ornament bl"></div>
+            <div class="corner-ornament br"></div>
+        </section>
+    </div>
+
+    <script>
+        // ================= 画卷滚轮控制系统 =================
+        const scrollWrapper = document.getElementById('scrollWrapper');
+        const scrollTrack = document.getElementById('scrollTrack');
+        const scrollItem1 = document.getElementById('scrollItem1');
+        const heleImg1 = document.getElementById('heleImg1');
+
+        const VIEWPORT_W = 1440;
+        const VIEWPORT_H = 840;
+
+        let scaledImgW = 0;
+        let scrollPos = 0;
+        let minPos = 0;
+        const maxPos = 0;
+
+        // 图片加载后计算尺寸
+        heleImg1.onload = function() {
+            const imgW = heleImg1.naturalWidth || 2400;
+            const imgH = heleImg1.naturalHeight || 900;
+            const scale = VIEWPORT_H / imgH;
+            scaledImgW = imgW * scale;
+            minPos = -(scaledImgW - VIEWPORT_W);
+            scrollPos = minPos; // 初始位置：画作最右端
+            scrollTrack.style.width = scaledImgW + 'px';
+            scrollItem1.style.width = scaledImgW + 'px';
+            scrollTrack.style.transform = `translateX(${scrollPos}px)`;
+        };
+
+        // 如果图片已缓存，手动触发
+        if (heleImg1.complete) {
+            heleImg1.onload();
+        }
+
+        // 滚轮控制水平滚动 - 优化流畅度
+        const homeHero = document.querySelector('.home-hero');
+        let targetScrollPos = scrollPos;
+        let isScrolling = false;
+
+        function smoothScroll() {
+            if (!isScrolling) return;
+            const diff = targetScrollPos - scrollPos;
+            if (Math.abs(diff) < 0.5) {
+                scrollPos = targetScrollPos;
+                scrollTrack.style.transform = `translateX(${scrollPos}px)`;
+                isScrolling = false;
+                return;
+            }
+            scrollPos += diff * 0.12;
+            scrollTrack.style.transform = `translateX(${scrollPos}px)`;
+            requestAnimationFrame(smoothScroll);
+        }
+
+        homeHero.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            targetScrollPos -= e.deltaY * 1.2;
+            targetScrollPos = Math.max(minPos, Math.min(maxPos, targetScrollPos));
+            if (!isScrolling) {
+                isScrolling = true;
+                smoothScroll();
+            }
+        }, { passive: false });
+
+        // ================= 第二屏：乐器人物卡片 =================
+        const musiciansData = [
+            {
+                name: '竖箜篌',
+                person: '立姿乐伎',
+                img: '图片/琵琶.png',
+                desc: '竖箜篌，又名胡箜篌，约于汉灵帝时期由西域传入。音箱向上，曲木为颈，张弦数条，双手从两侧拨奏。音色清越空灵，如流泉漱石，隋唐燕乐大曲中常用之。',
+                tag: '旋律部 · 弹拨 · 丝'
+            },
+            {
+                name: '曲项琵琶',
+                person: '坐姿乐伎',
+                img: '图片/琵琶.png',
+                desc: '曲项琵琶，四弦四柱，横抱于怀，以拨子弹奏。源自波斯，南北朝时经丝绸之路传入中原，至唐代成为燕乐核心乐器。白居易《琵琶行》誉其"大珠小珠落玉盘"。',
+                tag: '旋律部 · 弹拨 · 丝'
+            },
+            {
+                name: '横笛',
+                person: '坐姿乐伎',
+                img: '图片/笛.png',
+                desc: '横笛，竹制吹管乐器，六孔（前五后一），横吹。音色嘹亮悠扬，既能表现婉转柔美的旋律，亦可吹奏高亢激越的曲调，是唐宋教坊必备乐器。',
+                tag: '旋律部 · 吹管 · 竹'
+            },
+            {
+                name: '筝',
+                person: '坐姿乐伎',
+                img: '图片/瑟.png',
+                desc: '筝，十三弦（唐制），长方形木制音箱，弦下设柱（雁柱）以调音。一弦一音，双手托劈勾剔，音色优美华丽，既可独奏，亦为合奏中坚。',
+                tag: '旋律部 · 弹拨 · 丝'
+            },
+            {
+                name: '方响',
+                person: '坐姿乐伎',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Zeng_Hou_Yi_bianzhong.jpg/440px-Zeng_Hou_Yi_bianzhong.jpg',
+                desc: '方响，由十六块大小相同的长方形铁片或铜片组成，分上下两层悬挂于架。以槌击之，音色清脆悦耳，犹如银铃坠地，多用于宫廷燕乐与法曲。',
+                tag: '节律部 · 打击 · 金'
+            },
+            {
+                name: '笙',
+                person: '坐姿乐伎',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Sheng_instrument.jpg/440px-Sheng_instrument.jpg',
+                desc: '笙，世界上最早使用自由簧的吹管乐器，由笙苗（竹管）、笙斗（匏制）和簧片组成。能同时奏出多音，形成和声，音色清越透亮。',
+                tag: '和声部 · 吹管 · 匏'
+            },
+            {
+                name: '建鼓',
+                person: '坐姿乐伎',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Tang_dynasty_drum.jpg/440px-Tang_dynasty_drum.jpg',
+                desc: '建鼓，大型打击乐器，以木为框，两面蒙革，竖立于鼓座之上。以槌击之，声如雷鸣，气势恢宏，为古代仪仗、祭祀、宴飨之乐中统领节奏的核心。',
+                tag: '节律部 · 打击 · 革'
+            },
+            {
+                name: '编磬',
+                person: '立姿乐伎',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Zeng_Hou_Yi_bianzhong.jpg/440px-Zeng_Hou_Yi_bianzhong.jpg',
+                desc: '编磬，由若干块石磬或玉磬按音阶编列悬挂于架。以槌击之，音色清越典雅，余音袅袅，与编钟并称"金石之声"，为宫廷雅乐中最重要的旋律性打击乐器。',
+                tag: '节律部 · 打击 · 石'
+            }
+        ];
+
+        function createMusicianCards() {
+            const grid = document.getElementById('musiciansGrid');
+            musiciansData.forEach((data, index) => {
+                const card = document.createElement('div');
+                card.className = 'musician-card';
+                card.dataset.index = index;
+
+                card.innerHTML = `
+                    <div class="card-img-wrap">
+                        <img src="${data.img}" alt="${data.name}">
+                    </div>
+                    <div class="card-info">
+                        <div class="card-name">${data.name}</div>
+                        <div class="card-role">${data.person}</div>
+                    </div>
+                    <div class="card-popup">
+                        <h4>${data.name}</h4>
+                        <p>${data.desc}</p>
+                        <span class="tag">${data.tag}</span>
+                    </div>
+                `;
+
+                // 点击跳转详情页
+                card.addEventListener('click', () => {
+                    const targetName = data.name === '曲项琵琶' ? '琵琶' : data.name;
+                    if (instrumentData[targetName]) {
+                        showDetail(targetName);
+                    }
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ================= 乐器数据库 =================
+        const instrumentData = {
+            '琵琶': {
+                title: '琵琶',
+                info: '琵琶，弹拨乐器首座，拨弦类弦鸣乐器。木制或竹等制成，音箱呈半梨形，上装四弦，原先是用丝线，现多用钢丝、钢绳、尼龙制成。颈与面板上设有以确定音位的"相"和"品"。<br><br>演奏时竖抱，左手按弦，右手五指弹奏，是可独奏、伴奏、重奏、合奏的重要民族乐器。源自波斯，南北朝时经丝绸之路传入中原，至唐代成为燕乐核心乐器。',
+                tags: ['弹拨乐器', '四弦', '梨形音箱'],
+                img: '图片/琵琶.png'
+            },
+            '竖箜篌': {
+                title: '竖箜篌',
+                info: '竖箜篌，又名胡箜篌，约于汉灵帝时期由西域传入。音箱向上，曲木为颈，张弦数条，双手从两侧拨奏。音色清越空灵，如流泉漱石，隋唐燕乐大曲中常用之。<br><br>其形制与西方竖琴（Harp）有渊源关系，是丝绸之路上中西音乐文化交流的重要见证。',
+                tags: ['弹拨乐器', '多弦', '西域传入'],
+                img: '图片/琵琶.png'
+            },
+            '曲项琵琶': {
+                title: '曲项琵琶',
+                info: '曲项琵琶，四弦四柱，横抱于怀，以拨子弹奏。源自波斯，南北朝时经丝绸之路传入中原，至唐代成为燕乐核心乐器。<br><br>白居易《琵琶行》誉其"大珠小珠落玉盘"。演奏技法丰富，既可表现金戈铁马之雄壮，亦可演绎婉转缠绵之柔情。',
+                tags: ['弹拨乐器', '四弦', '曲项'],
+                img: '图片/琵琶.png'
+            },
+            '横笛': {
+                title: '横笛',
+                info: '横笛，竹制吹管乐器，六孔（前五后一），横吹。音色嘹亮悠扬，既能表现婉转柔美的旋律，亦可吹奏高亢激越的曲调。<br><br>是唐宋教坊必备乐器，所谓"羌笛何须怨杨柳"。中国竹笛一般分为曲笛、梆笛和中音笛，各具特色。',
+                tags: ['吹管乐器', '竹制', '横吹'],
+                img: '图片/笛.png'
+            },
+            '筝': {
+                title: '筝',
+                info: '筝，十三弦（唐制），长方形木制音箱，弦下设柱（雁柱）以调音。一弦一音，双手托劈勾剔，音色优美华丽。<br><br>既可独奏，亦为合奏中坚。有"秦声最悲"之叹，历代文人墨客留下无数咏筝佳句。现代常用二十一弦筝。',
+                tags: ['弹拨乐器', '十三弦', '雁柱'],
+                img: '图片/瑟.png'
+            },
+            '方响': {
+                title: '方响',
+                info: '方响，由十六块大小相同的长方形铁片或铜片组成，分上下两层悬挂于架。以槌击之，音色清脆悦耳，犹如银铃坠地。<br><br>多用于宫廷燕乐与法曲，是旋律性打击乐器。其音高固定，可演奏旋律，与编磬有相似之处。',
+                tags: ['打击乐器', '金属片', '旋律性'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Zeng_Hou_Yi_bianzhong.jpg/440px-Zeng_Hou_Yi_bianzhong.jpg'
+            },
+            '笙': {
+                title: '笙',
+                info: '笙，世界上最早使用自由簧的吹管乐器，由笙苗（竹管）、笙斗（匏制）和簧片组成。能同时奏出多音，形成和声。<br><br>音色清越透亮，有"凤吹笙竽"之美誉。在传统器乐和昆曲里，笙常常被用作伴奏乐器；在现代国乐团中，笙可以担任旋律或伴奏的角色。',
+                tags: ['吹管乐器', '簧片', '和声'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Sheng_instrument.jpg/440px-Sheng_instrument.jpg'
+            },
+            '建鼓': {
+                title: '建鼓',
+                info: '建鼓，大型打击乐器，以木为框，两面蒙革，竖立于鼓座之上。以槌击之，声如雷鸣，气势恢宏。<br><br>为古代仪仗、祭祀、宴飨之乐中统领节奏、统摄众音的核心。《仪礼》记载，建鼓常用于宫廷雅乐，是礼乐制度的重要象征。',
+                tags: ['打击乐器', '膜鸣', '礼乐器'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Tang_dynasty_drum.jpg/440px-Tang_dynasty_drum.jpg'
+            },
+            '编磬': {
+                title: '编磬',
+                info: '编磬，由若干块石磬或玉磬按音阶编列悬挂于架。以槌击之，音色清越典雅，余音袅袅。<br><br>与编钟并称"金石之声"，为宫廷雅乐中最重要的旋律性打击乐器。《尚书》云"击石拊石，百兽率舞"，即指磬乐。',
+                tags: ['打击乐器', '石制', '旋律性'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Zeng_Hou_Yi_bianzhong.jpg/440px-Zeng_Hou_Yi_bianzhong.jpg'
+            },
+            '笛': {
+                title: '笛',
+                info: '笛子，古老的汉族乐器，也是汉族乐器中最具代表性最有民族特色的吹奏乐器。中国传统音乐中常用的横吹木管乐器之一，中国竹笛，一般分为南方的曲笛、北方的梆笛和介于两者之间的中音笛。<br><br>音域一般能达到两个八度多两个，常用于独奏、合奏及伴奏。',
+                tags: ['吹管乐器', '竹制', '横吹'],
+                img: '图片/笛.png'
+            },
+            '箫': {
+                title: '箫',
+                info: '箫，分为洞箫和琴箫，皆为单管、竖吹，是一种非常古老的汉族吹奏乐器。箫历史悠久，音色圆润轻柔，幽静典雅，适于独奏和重奏。<br><br>它一般由竹子制成，吹孔在上端。按"音孔"数量区分为六孔箫和八孔箫。六孔箫的按音孔为前五后一，八孔箫则为前七后一。',
+                tags: ['吹管乐器', '竹制', '竖吹'],
+                img: '图片/箫.png'
+            },
+            '二胡': {
+                title: '二胡',
+                info: '二胡，即二弦胡琴，又名"南胡"、"嗡子"，是中华民族乐器家族中主要的弓弦乐器（擦弦乐器）之一。<br><br>二胡音色接近人声，情感表现力极高，在独奏、民族器乐合奏、丝竹乐演奏及戏曲伴奏中均占有重要地位。其构造包括琴筒、琴杆、琴皮、琴弦、琴弓等。',
+                tags: ['拉弦乐器', '二弦', '琴筒蒙皮'],
+                img: '图片/二胡.png'
+            },
+            '琴': {
+                title: '琴',
+                info: '古琴，又称瑶琴、玉琴、七弦琴，是中国传统拨弦乐器，有三千年以上历史，属于八音中的丝。古琴音域宽广，音色深沉，余音悠远。<br><br>古琴造型优美，常见的为伏羲式、仲尼式、连珠式、落霞式、灵机式等。琴身以梧桐木为主，面圆底平，象征天地。',
+                tags: ['弹拨乐器', '七弦', '梧桐木制'],
+                img: '图片/琴.png'
+            },
+            '瑟': {
+                title: '瑟',
+                info: '瑟，汉族拨弦乐器，形状似琴，有25根弦，弦的粗细不同。每弦瑟有一柱。按五声音阶定弦。最早的瑟有五十弦，故又称"五十弦"。<br><br>瑟音量较大，音色悲凉，常用来伴奏歌唱。在古代，瑟与琴并称，有"琴瑟和鸣"之说，象征夫妻恩爱、和谐美满。',
+                tags: ['弹拨乐器', '二十五弦', '柱定音'],
+                img: '图片/瑟.png'
+            },
+            '钟': {
+                title: '钟',
+                info: '编钟是中国古代重要的打击乐器，是钟的一种。编钟兴起于周朝，盛于春秋战国直至秦汉。编钟由若干个大小不同的钟有次序地悬挂在木架上编成一组或几组，每个钟敲击的音高各不相同。<br><br>由于年代不同，编钟的形状也不尽相同，但钟身都绘有精美的图案。',
+                tags: ['打击乐器', '青铜制', '礼乐器'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Zeng_Hou_Yi_bianzhong.jpg/440px-Zeng_Hou_Yi_bianzhong.jpg'
+            },
+            '鼓': {
+                title: '鼓',
+                info: '鼓是一种打击乐器，在坚固的且一般为圆桶形的鼓身的一面或双面蒙上一块拉紧的膜。鼓可以用手或鼓杵敲击出声。<br><br>鼓在非洲的传统音乐以及在现代音乐中是一种比较重要的乐器，有的乐队完全由以鼓为主的打击乐器组成。除了作为乐器外，鼓在古代许多文明中还用来传播信息。',
+                tags: ['打击乐器', '膜鸣', '节奏核心'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Tang_dynasty_drum.jpg/440px-Tang_dynasty_drum.jpg'
+            },
+            '编钟': {
+                title: '编钟',
+                info: '编钟是中国古代大型打击乐器，编钟兴起于周朝，盛于春秋战国直至秦汉。中国是制造和使用乐钟最早的国家。<br><br>它用青铜铸成，由大小不同的扁圆钟按照音调高低的次序排列起来，悬挂在一个巨大的钟架上，用丁字形的木锤和长形的棒分别敲打铜钟，能发出不同的乐音。',
+                tags: ['打击乐器', '青铜制', '多音阶'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Zeng_Hou_Yi_bianzhong.jpg/440px-Zeng_Hou_Yi_bianzhong.jpg'
+            },
+            '埙': {
+                title: '埙',
+                info: '埙是开口吹奏乐器，音色朴拙抱素独为天籁，在世界原始艺术史中占有重要的地位。埙的早期雏形是狩猎用的石头。<br><br>埙的气孔包括吹孔和音孔，音孔按音阶排列，常见的有八孔埙和十孔埙。其音色幽深、哀婉、绵绵不绝，具有一种独特的音乐品质。',
+                tags: ['吹管乐器', '陶制', '古八音'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Xun_ancient_chinese_instrument.jpg/440px-Xun_ancient_chinese_instrument.jpg'
+            },
+            '阮': {
+                title: '阮',
+                info: '阮，阮咸的简称，还有一意即长颈琵琶，与从龟兹传来的曲项琵琶不同。西晋竹林七贤之一阮咸善奏此乐器，因此得名。<br><br>阮音色圆润丰满，颇具特色，并且音域宽广。现代改良的阮分为小阮、中阮、大阮和低音阮，是民族乐团中重要的弹拨乐器。',
+                tags: ['弹拨乐器', '圆形音箱', '四弦'],
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ruan_instrument.jpg/440px-Ruan_instrument.jpg'
+            }
+        };
+
+        // ================= 页面切换逻辑 =================
+        const navItems = document.querySelectorAll('.nav-item');
+        const pages = document.querySelectorAll('.page');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetPage = item.dataset.page;
+                switchPage(targetPage);
+                navItems.forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        function switchPage(pageName) {
+            pages.forEach(page => page.classList.remove('active'));
+            if (pageName === 'home') {
+                document.getElementById('home-page').classList.add('active');
+                document.getElementById('homeScrollContainer').classList.remove('scrolled');
+            } else if (pageName === 'rhythm') {
+                document.getElementById('rhythm-page').classList.add('active');
+            } else if (pageName === 'melody') {
+                document.getElementById('melody-page').classList.add('active');
+            } else if (pageName === 'harmony') {
+                document.getElementById('harmony-page').classList.add('active');
+            }
+        }
+
+        // ================= 首页滚动交互 =================
+        const scrollHint = document.getElementById('scrollHint');
+        const homeScrollContainer = document.getElementById('homeScrollContainer');
+        const backToTop = document.getElementById('backToTop');
+
+        scrollHint.addEventListener('click', () => {
+            homeScrollContainer.classList.add('scrolled');
+        });
+
+        backToTop.addEventListener('click', () => {
+            homeScrollContainer.classList.remove('scrolled');
+        });
+
+        // ================= 分类页乐器卡片点击 =================
+        const instrumentCards = document.querySelectorAll('.instrument-card');
+        instrumentCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const instrument = card.dataset.instrument;
+                if (instrument === '笛') {
+                    window.location.href = '制作游戏/笛/整合.html';
+                    return;
+                }
+                if (instrumentData[instrument]) {
+                    showDetail(instrument);
+                }
+            });
+        });
+
+        // ================= 旋律部卡片交互 =================
+        const melodyCards = document.querySelectorAll('#melody-page .instrument-card');
+        const melodyPreviewOverlay = document.createElement('div');
+        melodyPreviewOverlay.className = 'melody-preview-overlay';
+        melodyPreviewOverlay.innerHTML = `
+            <div class="melody-preview-wrapper">
+                <img class="preview-img" src="" alt="预览乐器">
+                <div class="preview-label"></div>
+            </div>
+        `;
+        document.getElementById('melody-page').appendChild(melodyPreviewOverlay);
+        const previewImg = melodyPreviewOverlay.querySelector('.preview-img');
+        const previewLabel = melodyPreviewOverlay.querySelector('.preview-label');
+
+        melodyCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                melodyCards.forEach(other => {
+                    if (other !== card) {
+                        other.classList.add('dimmed');
+                    }
+                });
+                card.classList.add('hovered');
+                card.style.zIndex = '30';
+
+                previewImg.src = card.querySelector('img').src;
+                previewImg.alt = card.dataset.instrument;
+                previewLabel.textContent = card.dataset.instrument;
+                melodyPreviewOverlay.classList.add('visible');
+            });
+
+            card.addEventListener('mouseleave', () => {
+                melodyCards.forEach(other => other.classList.remove('dimmed'));
+                card.classList.remove('hovered');
+                card.style.zIndex = '';
+                melodyPreviewOverlay.classList.remove('visible');
+            });
+        });
+
+        // ================= 详情页逻辑 =================
+        const detailPage = document.getElementById('detail-page');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailInfo = document.getElementById('detailInfo');
+        const detailImg = document.getElementById('detailImg');
+        const detailTags = document.getElementById('detailTags');
+        const backBtn = document.getElementById('backBtn');
+
+        function showDetail(instrument) {
+            const data = instrumentData[instrument];
+            if (!data) return;
+
+            detailTitle.textContent = data.title;
+            detailInfo.innerHTML = data.info;
+            detailImg.src = data.img;
+            detailImg.alt = data.title;
+
+            detailTags.innerHTML = '';
+            data.tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'detail-tag';
+                span.textContent = tag;
+                detailTags.appendChild(span);
+            });
+
+            pages.forEach(page => page.classList.remove('active'));
+            detailPage.classList.add('active');
+        }
+
+        backBtn.addEventListener('click', () => {
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById('home-page').classList.add('active');
+            navItems.forEach(n => n.classList.remove('active'));
+            navItems[0].classList.add('active');
+        });
+
+        // ================= 视差效果 =================
+        const homePageEl = document.getElementById('home-page');
+        homePageEl.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 10;
+            const y = (e.clientY / window.innerHeight - 0.5) * 10;
+            document.querySelector('.home-title').style.transform = `translateY(-50%) translate(${x}px, ${y}px)`;
+        });
+
+        const detailRight = document.querySelector('.detail-right');
+        detailRight.addEventListener('mousemove', (e) => {
+            const rect = detailRight.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20;
+            const y = ((e.clientY - rect.top) / rect.height - 0.5) * 20;
+            detailImg.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
+        });
+
+        detailRight.addEventListener('mouseleave', () => {
+            detailImg.style.transform = 'rotateY(0) rotateX(0)';
+        });
+
+        // ================= 首页开幕动画 =================
+        const introOverlay = document.getElementById('introOverlay');
+        const introImage = document.getElementById('introImage');
+        const topNav = document.querySelector('.top-nav');
+        let introStarted = false;
+        let introFading = false;
+
+        const introProgressFill = document.getElementById('introProgressFill');
+        const introProgressBar = document.querySelector('.intro-progress');
+        const introDuration = 4000;
+        const fadeDuration = 3500;
+        let introStartTime = null;
+        let fadeStartTime = null;
+
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        function easeInOutQuad(t) {
+            return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        }
+
+        function easeOutQuart(t) {
+            return 1 - Math.pow(1 - t, 4);
+        }
+
+        function updateIntroState(progress) {
+            // 第一阶段：0-3秒，黑幕保持纯黑，听阮图完全清晰，进度条丝滑填充
+            const eased = easeOutCubic(progress);
+
+            // 听阮图始终保持清晰，无缩放
+            introImage.style.transform = 'scale(1)';
+            introImage.style.filter = 'blur(0px)';
+            introImage.style.opacity = 1;
+
+            // 黑幕保持纯黑
+            introOverlay.style.background = 'rgba(0,0,0,1)';
+            introOverlay.style.opacity = 1;
+
+            // 进度条丝滑填充到100%
+            introProgressFill.style.width = `${eased * 100}%`;
+            introProgressBar.style.opacity = 1;
+            introProgressFill.style.opacity = 1;
+
+            // 底层页面保持微小缩放
+            const screenScale = 1 + eased * 0.02;
+            document.documentElement.style.setProperty('--app-scale', screenScale.toFixed(3));
+        }
+
+        function updateFadeState(progress) {
+            // 第二阶段：0-2秒，黑幕+听阮图一起放大、模糊、透明
+            const eased = easeOutQuart(progress);
+
+            // 听阮图放大更明显(1→1.5)、模糊更强烈(0→20px)
+            const imgScale = 1 + eased * 0.5;
+            const blur = eased * 20;
+            const opacity = Math.max(0, 1 - eased);
+
+            // 听阮图放大+模糊+透明
+            introImage.style.transform = `scale(${imgScale})`;
+            introImage.style.filter = `blur(${blur}px)`;
+            introImage.style.opacity = opacity;
+
+            // 黑幕保持纯黑但逐渐透明
+            introOverlay.style.background = 'rgba(0,0,0,1)';
+            introOverlay.style.opacity = opacity;
+
+            // 进度条同步淡出
+            introProgressBar.style.opacity = opacity;
+            introProgressFill.style.opacity = opacity;
+
+            // 底层页面逐渐恢复正常缩放
+            const screenScale = 1.02 - eased * 0.02;
+            document.documentElement.style.setProperty('--app-scale', screenScale.toFixed(3));
+        }
+
+        function completeIntro() {
+            introStarted = true;
+            introOverlay.style.opacity = '0';
+            introOverlay.style.pointerEvents = 'none';
+            introOverlay.style.display = 'none';
+            introOverlay.style.visibility = 'hidden';
+            // 导航栏与标题同步显现
+            topNav.classList.add('visible');
+            // 标题文字同步淡入
+            const titleImg = document.querySelector('.title-img');
+            const titleEn = document.querySelector('.title-en');
+            if (titleImg) {
+                titleImg.style.opacity = '0';
+                titleImg.style.transform = 'translateY(30px)';
+                titleImg.style.transition = 'opacity 2.5s ease-out, transform 2.5s ease-out';
+                requestAnimationFrame(() => {
+                    titleImg.style.opacity = '1';
+                    titleImg.style.transform = 'translateY(0)';
+                });
+            }
+            if (titleEn) {
+                titleEn.style.opacity = '0';
+                titleEn.style.transform = 'translateY(20px)';
+                titleEn.style.transition = 'opacity 2.5s ease-out 0.3s, transform 2.5s ease-out 0.3s';
+                requestAnimationFrame(() => {
+                    titleEn.style.opacity = '1';
+                    titleEn.style.transform = 'translateY(0)';
+                });
+            }
+            document.documentElement.style.setProperty('--app-scale', '1');
+        }
+
+        function animateIntro(timestamp) {
+            if (!introStartTime) introStartTime = timestamp;
+            const elapsed = timestamp - introStartTime;
+            
+            if (!introFading) {
+                const progress = Math.min(1, elapsed / introDuration);
+                updateIntroState(progress);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateIntro);
+                } else {
+                    introFading = true;
+                    fadeStartTime = timestamp;
+                    requestAnimationFrame(animateIntro);
+                }
+            } else {
+                const fadeElapsed = timestamp - fadeStartTime;
+                const fadeProgress = Math.min(1, fadeElapsed / fadeDuration);
+                updateFadeState(fadeProgress);
+                
+                if (fadeProgress < 1) {
+                    requestAnimationFrame(animateIntro);
+                } else {
+                    completeIntro();
+                }
+            }
+        }
+
+        const targetInstrument = new URLSearchParams(window.location.search).get('instrument');
+
+        if (!targetInstrument || !instrumentData[targetInstrument]) {
+            requestAnimationFrame(animateIntro);
+        }
+
+        // ================= 初始化 =================
+        createMusicianCards();
+
+        if (targetInstrument && instrumentData[targetInstrument]) {
+            completeIntro();
+            showDetail(targetInstrument);
+        }
+    </script>
+</body>
+</html>

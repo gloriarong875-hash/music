@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>笛韵千年——汗青</title>
+    <style>
+        :root {
+            --gold: #c9a96e;
+            --gold-dim: #8a7a5a;
+            --brown: #5a4a3a;
+            --bg: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            font-family: "PingFang SC", "Microsoft YaHei", "Noto Serif SC", serif;
+            color: #fff;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* 背景层 */
+        #bg-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #2a2520 0%, #1a1a1a 70%);
+            opacity: 0.6;
+        }
+
+        /* 炭火/热源效果 */
+        .fire-glow {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 120px;
+            background: radial-gradient(ellipse at center, rgba(201, 169, 110, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: firePulse 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes firePulse {
+            0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.7; transform: translateX(-50%) scale(1.1); }
+        }
+
+        /* 进度导航点 */
+        .nav-dots {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            z-index: 10;
+        }
+
+        .dot-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #444;
+            border: 2px solid #555;
+            transition: all 0.5s ease;
+        }
+
+        .dot.completed {
+            background: var(--gold-dim);
+            border-color: var(--gold-dim);
+        }
+
+        .dot.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(201, 169, 110, 0.5);
+        }
+
+        .dot-label {
+            font-size: 12px;
+            color: #666;
+            letter-spacing: 2px;
+            transition: all 0.5s ease;
+        }
+
+        .dot-wrapper.completed .dot-label {
+            color: var(--gold-dim);
+        }
+
+        .dot-wrapper.active .dot-label {
+            color: var(--gold);
+        }
+
+        /* 主内容区 */
+        #stage-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 竹管容器 - 始终居中 */
+        .bamboo-container {
+            position: relative;
+            width: 70%;
+            max-width: 900px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -5%;
+        }
+
+        /* 竹管 - 始终居中不动 */
+        #bamboo-pipe {
+            width: 100%;
+            height: auto;
+            max-height: 180px;
+            object-fit: contain;
+            transition: filter 0.3s ease;
+            position: relative;
+            z-index: 5;
+            filter: sepia(0.3) brightness(0.9);
+        }
+
+        #bamboo-pipe.baking {
+            filter: sepia(0.5) brightness(1.1) saturate(1.2);
+        }
+
+        #bamboo-pipe.baked {
+            filter: sepia(0.8) brightness(0.85) contrast(1.1);
+        }
+
+        /* 烘烤时的热气效果 */
+        .steam {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .steam.active {
+            opacity: 1;
+        }
+
+        .steam-particle {
+            position: absolute;
+            width: 3px;
+            height: 30px;
+            background: linear-gradient(to top, rgba(201, 169, 110, 0.3), transparent);
+            border-radius: 50%;
+            animation: steamRise 2s ease-out infinite;
+        }
+
+        @keyframes steamRise {
+            0% { transform: translateY(0) scaleX(1); opacity: 0.6; }
+            100% { transform: translateY(-80px) scaleX(0.5); opacity: 0; }
+        }
+
+        /* 滑动提示 - 上下箭头 */
+        .swipe-hint {
+            position: absolute;
+            left: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            opacity: 0.8;
+            transition: opacity 0.5s;
+        }
+
+        .swipe-hint.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .swipe-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .swipe-arrow svg {
+            width: 30px;
+            height: 40px;
+            stroke: var(--gold);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .swipe-text {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            font-size: 14px;
+            color: var(--gold);
+            letter-spacing: 4px;
+            line-height: 1.8;
+        }
+
+        /* 来回计数指示器 */
+        .swipe-counter {
+            position: absolute;
+            bottom: 32%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .swipe-counter.visible {
+            opacity: 1;
+        }
+
+        .swipe-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #444;
+            border: 1px solid #555;
+            transition: all 0.3s ease;
+        }
+
+        .swipe-dot.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            box-shadow: 0 0 8px rgba(201, 169, 110, 0.5);
+        }
+
+        /* 底部提示文字 */
+        .stage-text {
+            position: absolute;
+            bottom: 15%;
+            width: 100%;
+            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: var(--gold);
+            opacity: 0.9;
+            transition: all 0.5s ease;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .stage-text.sub {
+            font-size: 0.9rem;
+            color: var(--gold-dim);
+            bottom: 11%;
+            letter-spacing: 2px;
+        }
+
+        /* 打通内节动画 */
+        .node-clear-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: none;
+        }
+
+        .node-clear-animation.active {
+            display: block;
+        }
+
+        .clear-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        @keyframes clearBurst {
+            0% { transform: scale(0); opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        /* 完成提示 */
+        .complete-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 26, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+            z-index: 20;
+        }
+
+        .complete-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .complete-text {
+            font-size: 2rem;
+            color: var(--gold);
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+        }
+
+        .complete-sub {
+            font-size: 1rem;
+            color: #888;
+            letter-spacing: 2px;
+        }
+
+        /* 凿子工具按钮 */
+        .chisel-tool {
+            position: absolute;
+            right: 8%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 70px;
+            height: 70px;
+            border: 2px solid var(--gold-dim);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.5;
+            transition: all 0.5s;
+            cursor: pointer;
+            background: transparent;
+            z-index: 15;
+        }
+
+        .chisel-tool.active {
+            opacity: 1;
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(201, 169, 110, 0.3);
+            cursor: pointer;
+        }
+
+        .chisel-tool:hover.active {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 0 30px rgba(201, 169, 110, 0.5);
+        }
+
+        .chisel-tool:active.active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .chisel-tool svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--gold);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
+        /* 凿子点击动画 */
+        .chisel-tool.clicking {
+            animation: chiselClick 0.3s ease-out;
+        }
+
+        @keyframes chiselClick {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            30% { transform: translateY(-45%) rotate(-15deg); }
+            60% { transform: translateY(-55%) rotate(5deg); }
+            100% { transform: translateY(-50%) rotate(0deg); }
+        }
+
+        /* 凿子提示文字 */
+        .chisel-hint {
+            position: absolute;
+            right: 7%;
+            top: 35%;
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+
+        .chisel-hint.visible {
+            opacity: 0.8;
+        }
+
+        /* 触摸设备适配 */
+        @media (max-width: 768px) {
+            .bamboo-container {
+                width: 90%;
+            }
+            .swipe-hint {
+                left: 2%;
+            }
+            .swipe-text {
+                font-size: 12px;
+            }
+            .stage-text {
+                font-size: 0.9rem;
+                padding: 0 20px;
+            }
+            .chisel-tool {
+                right: 5%;
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="bg-layer"></div>
+<div class="fire-glow"></div>
+
+<!-- 进度导航 -->
+<div class="nav-dots">
+    <div class="dot-wrapper completed">
+        <div class="dot completed"></div>
+        <div class="dot-label">择竹</div>
+    </div>
+    <div class="dot-wrapper active">
+        <div class="dot active"></div>
+        <div class="dot-label">汗青</div>
+    </div>
+    <div class="dot-wrapper">
+        <div class="dot"></div>
+        <div class="dot-label">开孔</div>
+    </div>
+    <div class="dot-wrapper">
+        <div class="dot"></div>
+        <div class="dot-label">试音</div>
+    </div>
+</div>
+
+<!-- 主内容 -->
+<div id="stage-content">
+    <div class="bamboo-container" id="bamboo-container">
+        <img id="bamboo-pipe" src="干.png" alt="竹管">
+
+        <!-- 热气粒子 -->
+        <div class="steam" id="steam">
+            <div class="steam-particle" style="left: 20%; bottom: 30%;"></div>
+            <div class="steam-particle" style="left: 40%; bottom: 40%; animation-delay: 0.3s;"></div>
+            <div class="steam-particle" style="left: 60%; bottom: 35%; animation-delay: 0.6s;"></div>
+            <div class="steam-particle" style="left: 80%; bottom: 45%; animation-delay: 0.9s;"></div>
+        </div>
+
+        <!-- 打通动画 -->
+        <div class="node-clear-animation" id="clear-animation">
+            <div class="clear-particle" style="left: 25%; top: 50%;"></div>
+            <div class="clear-particle" style="left: 50%; top: 50%; animation-delay: 0.2s;"></div>
+            <div class="clear-particle" style="left: 75%; top: 50%; animation-delay: 0.4s;"></div>
+        </div>
+    </div>
+
+    <!-- 滑动提示 - 上下箭头 -->
+    <div class="swipe-hint" id="swipe-hint">
+        <div class="swipe-arrow">
+            <svg viewBox="0 0 30 40">
+                <path d="M15 35 L15 5 M5 15 L15 5 L25 15" />
+            </svg>
+            <svg viewBox="0 0 30 40" style="transform: rotate(180deg);">
+                <path d="M15 35 L15 5 M5 15 L15 5 L25 15" />
+            </svg>
+        </div>
+        <div class="swipe-text">来回滑动烘烤竹管</div>
+    </div>
+
+    <!-- 来回计数指示器 -->
+    <div class="swipe-counter" id="swipe-counter">
+        <div class="swipe-dot" id="dot-1"></div>
+        <div class="swipe-dot" id="dot-2"></div>
+        <div class="swipe-dot" id="dot-3"></div>
+    </div>
+
+    <!-- 凿子工具按钮 -->
+    <div class="chisel-hint" id="chisel-hint">点击凿子打通内节</div>
+    <button class="chisel-tool" id="chisel-tool" aria-label="凿子">
+        <svg viewBox="0 0 24 24">
+            <!-- 凿子图标 -->
+            <path d="M4 20 L8 16 L18 6 L20 4 L22 6 L20 8 L10 18 L6 22 Z" />
+            <path d="M16 4 L20 8" stroke-linecap="round"/>
+            <path d="M8 16 L10 18" stroke-linecap="round"/>
+        </svg>
+    </button>
+
+    <!-- 进度条 -->
+    <div class="progress-container" id="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+</div>
+
+<!-- 底部提示 -->
+<div class="stage-text" id="main-text">新竹砍下需要阴干2年以上</div>
+<div class="stage-text sub" id="sub-text">烘烤去湿可防止竹笛后期开裂</div>
+
+<!-- 完成覆盖层 -->
+<div class="complete-overlay" id="complete-overlay">
+    <div class="complete-text">汗青完成</div>
+    <div class="complete-sub">竹管已去湿定型，内节已通</div>
+</div>
+
+<script>
+    // ===================== 音频系统 =====================
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    // 烘烤爆裂声
+    function playBakeSound() {
+        if (!audioCtx) return;
+        const noise = audioCtx.createBufferSource();
+
+        const bufferSize = audioCtx.sampleRate * 0.1;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * 0.3;
+        }
+        noise.buffer = buffer;
+
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+
+        noise.connect(noiseGain);
+        noiseGain.connect(audioCtx.destination);
+        noise.start();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(80 + Math.random() * 40, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+    }
+
+    // 凿子打通声
+    function playChiselSound() {
+        if (!audioCtx) return;
+
+        // 敲击声
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.1);
+
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+
+        // 木屑声
+        const noise = audioCtx.createBufferSource();
+        const bufferSize = audioCtx.sampleRate * 0.08;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * 0.2;
+        }
+        noise.buffer = buffer;
+
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+
+        noise.connect(noiseGain);
+        noiseGain.connect(audioCtx.destination);
+        noise.start();
+    }
+
+    // 完成音效
+    function playCompleteSound() {
+        if (!audioCtx) return;
+        const notes = [523.25, 659.25, 783.99];
+        notes.forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+
+            gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.15);
+            gain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + i * 0.15 + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.15 + 0.8);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + i * 0.15);
+            osc.stop(audioCtx.currentTime + i * 0.15 + 0.8);
+        });
+    }
+
+    // ===================== 交互逻辑 =====================
+    const bambooPipe = document.getElementById('bamboo-pipe');
+    const bambooContainer = document.getElementById('bamboo-container');
+    const swipeHint = document.getElementById('swipe-hint');
+    const swipeCounter = document.getElementById('swipe-counter');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const steam = document.getElementById('steam');
+    const mainText = document.getElementById('main-text');
+    const subText = document.getElementById('sub-text');
+    const chiselTool = document.getElementById('chisel-tool');
+    const chiselHint = document.getElementById('chisel-hint');
+    const clearAnimation = document.getElementById('clear-animation');
+    const completeOverlay = document.getElementById('complete-overlay');
+
+    // 来回计数相关
+    let isDragging = false;
+    let lastY = 0;
+    let direction = 0; // 1=下, -1=上
+    let lastDirection = 0;
+    let swipeCount = 0;
+    const TOTAL_SWIPES_NEEDED = 3;
+    let phase = 'bake'; // 'bake' | 'clear' | 'clearing' | 'done'
+
+    // ===================== 烘烤：上下滑动 =====================
+    function handleStart(e) {
+        if (phase !== 'bake') return;
+        initAudio();
+        isDragging = true;
+        lastY = getY(e);
+        direction = 0;
+        lastDirection = 0;
+        bambooPipe.classList.add('baking');
+        steam.classList.add('active');
+        progressContainer.classList.add('visible');
+        swipeCounter.classList.add('visible');
+    }
+
+    function handleMove(e) {
+        if (!isDragging || phase !== 'bake') return;
+        e.preventDefault();
+
+        const currentY = getY(e);
+        const delta = currentY - lastY;
+
+        // 检测方向变化（最小移动阈值15px）
+        if (Math.abs(delta) > 15) {
+            const newDirection = delta > 0 ? 1 : -1;
+
+            // 方向改变且不是首次移动，计为一次来回
+            if (lastDirection !== 0 && newDirection !== lastDirection) {
+                swipeCount++;
+                updateSwipeCounter();
+                playBakeSound();
+
+                // 更新进度条
+                const progress = Math.min((swipeCount / TOTAL_SWIPES_NEEDED) * 100, 100);
+                progressBar.style.width = progress + '%';
+
+                // 更新文字提示
+                if (swipeCount === 1) {
+                    mainText.innerText = '竹管受热，水分开始蒸发';
+                } else if (swipeCount === 2) {
+                    mainText.innerText = '色泽转深，竹质紧实';
+                }
+            }
+
+            lastDirection = newDirection;
+            lastY = currentY;
+        }
+
+        // 检查完成
+        if (swipeCount >= TOTAL_SWIPES_NEEDED && phase === 'bake') {
+            finishBaking();
+        }
+    }
+
+    function handleEnd() {
+        isDragging = false;
+        bambooPipe.classList.remove('baking');
+        steam.classList.remove('active');
+    }
+
+    function getY(e) {
+        return e.touches ? e.touches[0].clientY : e.clientY;
+    }
+
+    // 更新来回计数圆点
+    function updateSwipeCounter() {
+        for (let i = 1; i <= TOTAL_SWIPES_NEEDED; i++) {
+            const dot = document.getElementById('dot-' + i);
+            if (dot && i <= swipeCount) {
+                dot.classList.add('active');
+            }
+        }
+    }
+
+    // 完成烘烤
+    function finishBaking() {
+        phase = 'clear';
+        bambooPipe.classList.add('baked');
+        swipeHint.classList.add('hidden');
+        swipeCounter.style.opacity = '0';
+        progressContainer.style.opacity = '0';
+
+        // 更新提示
+        mainText.innerText = '烘烤完成，点击右侧凿子打通内节';
+        subText.innerText = '通节修内是为了保证气流通畅，为开孔调音打下基础';
+
+        // 激活凿子按钮
+        chiselTool.classList.add('active');
+        chiselHint.classList.add('visible');
+
+        // 竹管脉动提示
+        bambooPipe.style.animation = 'pulse 2s ease-in-out infinite';
+    }
+
+    // ===================== 打通内节：点击凿子 =====================
+    let clearClicks = 0;
+    const TOTAL_CLEAR_CLICKS = 3;
+
+    function handleChiselClick(e) {
+        if (phase !== 'clear' && phase !== 'clearing') return;
+        e.preventDefault();
+        e.stopPropagation();
+        initAudio();
+
+        phase = 'clearing';
+        clearClicks++;
+
+        // 凿子点击动画
+        chiselTool.classList.remove('clicking');
+        void chiselTool.offsetWidth; // 触发重排
+        chiselTool.classList.add('clicking');
+
+        // 播放音效
+        playChiselSound();
+
+        // 竹管震动
+        bambooPipe.style.animation = 'shake 0.3s ease-in-out';
+        setTimeout(() => {
+            if (phase === 'clearing' || phase === 'clear') {
+                bambooPipe.style.animation = 'pulse 2s ease-in-out infinite';
+            }
+        }, 300);
+
+        // 粒子效果
+        const particles = clearAnimation.querySelectorAll('.clear-particle');
+        particles.forEach((p, i) => {
+            setTimeout(() => {
+                p.style.animation = 'none';
+                void p.offsetWidth;
+                p.style.animation = 'clearBurst 0.5s ease-out forwards';
+            }, i * 100);
+        });
+        clearAnimation.classList.add('active');
+        setTimeout(() => {
+            clearAnimation.classList.remove('active');
+        }, 600);
+
+        // 更新文字
+        if (clearClicks === 1) {
+            mainText.innerText = '凿子破节，竹屑纷飞';
+        } else if (clearClicks === 2) {
+            mainText.innerText = '内节渐通，气流将畅';
+        }
+
+        // 检查完成
+        if (clearClicks >= TOTAL_CLEAR_CLICKS) {
+            finishClearing();
+        }
+    }
+
+    // 完成打通
+    function finishClearing() {
+        phase = 'done';
+        chiselTool.classList.remove('active');
+        chiselHint.classList.remove('visible');
+        bambooPipe.style.animation = '';
+
+        mainText.innerText = '内节已通，气流通畅';
+        subText.innerText = '竹管内外壁已修整平滑';
+
+        setTimeout(() => {
+            playCompleteSound();
+            completeOverlay.classList.add('active');
+
+            setTimeout(() => {
+                mainText.innerText = '汗青工序完成';
+                subText.innerText = '等待进入第三步：开孔';
+            }, 1000);
+        }, 500);
+    }
+
+    // 事件绑定 - 竹管区域上下滑动
+    bambooContainer.addEventListener('mousedown', handleStart);
+    bambooContainer.addEventListener('mousemove', handleMove);
+    bambooContainer.addEventListener('mouseup', handleEnd);
+    bambooContainer.addEventListener('mouseleave', handleEnd);
+
+    bambooContainer.addEventListener('touchstart', handleStart, { passive: false });
+    bambooContainer.addEventListener('touchmove', handleMove, { passive: false });
+    bambooContainer.addEventListener('touchend', handleEnd);
+
+    // 事件绑定 - 凿子按钮
+    chiselTool.addEventListener('click', handleChiselClick);
+    chiselTool.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        handleChiselClick(e);
+    });
+
+    // 添加CSS动画
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    console.log('汗青工序已就绪 - 上下滑动3次烘烤，点击凿子3次打通');
+</script>
+
+</body>
+</html>
