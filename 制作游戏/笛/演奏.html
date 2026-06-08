@@ -23,11 +23,11 @@
     }
 
     .game-container {
-      max-width: 750px;
+      max-width: 800px;
       width: 100%;
       background: transparent;
       border-radius: 48px;
-      padding: 25px 20px 30px;
+      padding: 15px 10px 25px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -38,100 +38,159 @@
       display: block;
       width: 100%;
       height: auto;
-      max-width: 650px;
+      max-width: 700px;
       background: transparent;
-      border-radius: 60px;
-      margin: 5px 0 10px;
-      filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.7));
+      border-radius: 30px;
+      margin: 5px 0 8px;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
       transition: filter 0.2s;
-    }
-    canvas:active {
-      filter: drop-shadow(0 8px 15px rgba(201, 169, 110, 0.5));
+      cursor: pointer;
     }
 
-    .keyboard-hint {
+    .fingering-panel {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       justify-content: center;
-      gap: 15px;
-      margin: 20px 0 5px;
-      background: rgba(26, 26, 26, 0.7);
+      gap: 12px;
+      margin: 10px 0 5px;
+      background: rgba(26, 26, 26, 0.75);
       backdrop-filter: blur(5px);
-      padding: 10px 25px;
+      padding: 12px 28px;
       border-radius: 50px;
       border: 1px solid #5a4a3a;
       color: #d4c5a9;
-      font-weight: 500;
     }
 
     .key-item {
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(42, 36, 28, 0.8);
-      padding: 5px 16px;
+      background: rgba(42, 36, 28, 0.85);
+      padding: 5px 14px;
       border-radius: 30px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       border: 1px solid #5a4a3a;
+      transition: all 0.15s ease;
+    }
+    .key-item.active {
+      border-color: #c9a96e;
+      box-shadow: 0 0 16px rgba(201, 169, 110, 0.45);
+      background: rgba(60, 48, 32, 0.9);
     }
 
     .key-badge {
       background: #5a4a3a;
       color: #c9a96e;
       border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       box-shadow: 0 0 8px rgba(201, 169, 110, 0.3);
       border: 1px solid #c9a96e;
+      transition: all 0.15s ease;
+    }
+    .key-item.active .key-badge {
+      background: #7a5a3a;
+      box-shadow: 0 0 16px rgba(255, 180, 80, 0.6);
+    }
+
+    .key-note {
+      color: #b0a080;
+      font-size: 0.85rem;
+      min-width: 28px;
+      text-align: center;
+    }
+    .key-item.active .key-note {
+      color: #f0d090;
     }
 
     .instruction {
       color: #8a7a6a;
-      margin-top: 8px;
-      font-size: 0.95rem;
+      margin-top: 6px;
+      font-size: 0.9rem;
       opacity: 0.85;
       text-shadow: 0 0 4px rgba(0,0,0,0.5);
       text-align: center;
+      line-height: 1.6;
+    }
+    .instruction .now-playing {
+      color: #c9a96e;
+      font-weight: bold;
+      font-size: 1.05rem;
     }
 
     @media (max-width: 500px) {
-      .keyboard-hint {
-        gap: 8px;
+      .fingering-panel {
+        gap: 6px;
+        padding: 8px 14px;
+      }
+      .key-item {
+        padding: 4px 10px;
+        gap: 4px;
+        font-size: 0.9rem;
+      }
+      .key-badge {
+        width: 26px;
+        height: 26px;
+        font-size: 0.95rem;
       }
     }
   </style>
 </head>
 <body>
 <div class="game-container">
-  <!-- 水墨笛子绘制区域 (五音将在此canvas上浮现) -->
-  <canvas id="bambooFluteCanvas" width="1800" height="100" aria-label="水墨竹笛，按键对应数字1-7"></canvas>
+  <canvas id="bambooFluteCanvas" width="1800" height="320" aria-label="水墨竹笛，按键对应数字1-7，带指法孔位亮起"></canvas>
 
-  <!-- 键盘指法提示 (仅保留数字按键) -->
- 
-  <div class="instruction">
-    ✦ 按下数字键 1~7 吹奏竹笛 ✦ 鼠标点击/触摸笛孔亦可 ✦
+  <div class="fingering-panel" id="fingeringPanel">
+    <!-- JS 动态生成 -->
+  </div>
+
+  <div class="instruction" id="instructionBar">
+    ✦ 按下数字键 <b>1~7</b> 吹奏竹笛 ✦ 鼠标点击 / 触摸笛孔亦可 ✦<br>
+    <span class="now-playing" id="nowPlaying"></span>
   </div>
 </div>
 
 <script>
   (function() {
-    // ---------- 五音与数字映射 ----------
+    // ──────────────── 音高映射 ────────────────
     const toneMap = {
-      '1': { wuYin: '宫', noteName: '1 · 宫', freq: 523.25 },
-      '2': { wuYin: '商', noteName: '2 · 商', freq: 587.33 },
-      '3': { wuYin: '角', noteName: '3 · 角', freq: 659.25 },
-      '4': { wuYin: '清角', noteName: '4 · 清角', freq: 698.46 },
-      '5': { wuYin: '徵', noteName: '5 · 徵', freq: 783.99 },
-      '6': { wuYin: '羽', noteName: '6 · 羽', freq: 880.00 },
-      '7': { wuYin: '变宫', noteName: '7 · 变宫', freq: 987.77 }
+      '1': { wuYin: '宫', noteName: '1 · 宫', freq: 523.25, desc: 'Do / C' },
+      '2': { wuYin: '商', noteName: '2 · 商', freq: 587.33, desc: 'Re / D' },
+      '3': { wuYin: '角', noteName: '3 · 角', freq: 659.25, desc: 'Mi / E' },
+      '4': { wuYin: '清角',noteName: '4 · 清角',freq: 698.46, desc: 'Fa / F' },
+      '5': { wuYin: '徵', noteName: '5 · 徵', freq: 783.99, desc: 'Sol / G' },
+      '6': { wuYin: '羽', noteName: '6 · 羽', freq: 880.00, desc: 'La / A' },
+      '7': { wuYin: '变宫',noteName: '7 · 变宫',freq: 987.77, desc: 'Ti / B' }
     };
 
+    // ──────────────── 指法表 (筒音作5) ────────────────
+    // 孔位索引 0~6 对应画布上从左到右的7个孔
+    //   [0] 膜孔/辅助孔 (key '1') — 永远不按
+    //   [1] 第6孔 — 左手食指 (key '2')
+    //   [2] 第5孔 — 左手中指 (key '3')
+    //   [3] 第4孔 — 左手无名指 (key '4')
+    //   [4] 第3孔 — 右手无名指 (key '5')
+    //   [5] 第2孔 — 右手中指 (key '6')
+    //   [6] 第1孔 — 右手食指 (key '7')
+    // true = 闭孔（亮起）, false = 开孔（暗色）
+    const fingeringMap = {
+      '5': [false, true,  true,  true,  true,  true,  true ], // 筒音=全按
+      '6': [false, true,  true,  true,  true,  true,  false], // 开第①孔
+      '7': [false, true,  true,  true,  true,  false, false], // 开①②
+      '1': [false, true,  true,  true,  false, false, false], // 开①②③
+      '2': [false, true,  true,  false, false, false, false], // 开①②③④
+      '3': [false, true,  false, false, false, false, false], // 开①②③④⑤
+      '4': [false, false, true,  true,  false, false, false], // 交叉：开①②③⑥·按④⑤
+    };
+
+    // ──────────────── DOM 引用 ────────────────
     const canvas = document.getElementById('bambooFluteCanvas');
     const ctx = canvas.getContext('2d');
     const fluteImage = new Image();
@@ -139,326 +198,416 @@
 
     fluteImage.onload = () => {
       fluteImageLoaded = true;
-      drawFluteWithFloatingTexts();
+      drawFrame();
     };
-    fluteImage.src = '笛.svg';
+    fluteImage.src = '图片/笛.svg';
 
-    let audioCtx = null;
-    let activeOscillator = null;
-    let activeGain = null;
+    // 如果 SVG 加载失败，回退到程序绘制
+    fluteImage.onerror = () => {
+      console.warn('SVG 笛身加载失败，使用程序绘制');
+      drawFrame();
+    };
 
-    // 动画相关：记录浮现的五音文字及其透明度/位置
-    let floatingTexts = [];  // 每个元素: { key, x, y, opacity, startTime }
+    // ──────────────── 画布布局常量 ────────────────
+    const CANVAS_W = 1800;
+    const CANVAS_H = 320;
+    const FLUTE_IMG_X = 138;        // SVG 绘制起始 X
+    const FLUTE_IMG_Y = 100;        // SVG 绘制起始 Y
+    const FLUTE_IMG_W = 1523;       // SVG 原始宽度
+    const FLUTE_IMG_H = 98;         // SVG 缩放后高度
+    const FLUTE_CENTER_Y = FLUTE_IMG_Y + FLUTE_IMG_H / 2; // ≈149
 
-    // 笛孔位置定义 (用于绘制与交互检测)
+    // 笛孔位置 (从左到右排列在竹管上)
     const fluteHoles = [
-      { key: '1', x: 245, y:55, radius: 16 },
-      { key: '2', x: 410, y: 55, radius: 16 },
-      { key: '3', x: 675, y: 55, radius: 16 },
-      { key: '4', x: 840, y: 55, radius: 16 },
-      { key: '5', x: 1000, y: 55, radius: 16 },
-      { key: '6', x: 1200, y: 55, radius: 16 },
-      { key: '7', x: 1450, y: 55, radius: 16 }
+      { key: '1', x: 200,  y: FLUTE_CENTER_Y, radius: 15, label: '膜' },    // 膜孔
+      { key: '2', x: 380,  y: FLUTE_CENTER_Y, radius: 16, label: '⑥' },    // 第6孔 (左食指)
+      { key: '3', x: 530,  y: FLUTE_CENTER_Y, radius: 16, label: '⑤' },    // 第5孔 (左中指)
+      { key: '4', x: 750,  y: FLUTE_CENTER_Y, radius: 16, label: '④' },    // 第4孔 (左无名指)
+      { key: '5', x: 920,  y: FLUTE_CENTER_Y, radius: 16, label: '③' },    // 第3孔 (右无名指)
+      { key: '6', x: 1120, y: FLUTE_CENTER_Y, radius: 16, label: '②' },    // 第2孔 (右中指)
+      { key: '7', x: 1350, y: FLUTE_CENTER_Y, radius: 16, label: '①' },    // 第1孔 (右食指)
     ];
 
-    // ---------- 动画循环 (用于浮现文字淡出) ----------
-    function startAnimationLoop() {
-      function step() {
-        // 更新浮动文字状态
-        const now = Date.now();
-        floatingTexts = floatingTexts.filter(text => {
-          const elapsed = (now - text.startTime) / 1000; // 秒
-          text.opacity = Math.max(0, 1 - elapsed * 1.2); // 1.2秒内淡出
-          return text.opacity > 0.02;
-        });
-        
-        // 重绘画布 (包含浮动文字)
-        drawFluteWithFloatingTexts();
-        requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
+    // 吹孔
+    const blowHole = { x: 105, y: FLUTE_CENTER_Y - 9, radius: 11 };
+
+    // ──────────────── 状态 ────────────────
+    let audioCtx = null;
+    let activeOscillators = [];
+    let activeGainNode = null;
+
+    // 当前激活的音符（用于孔位亮起）
+    let activeKey = null;
+
+    // 孔位亮度过渡 (0~1，每个孔独立)
+    let holeGlow = [0, 0, 0, 0, 0, 0, 0];       // 当前值
+    let holeGlowTarget = [0, 0, 0, 0, 0, 0, 0]; // 目标值
+
+    // 浮动文字
+    let floatingTexts = [];
+
+    // ──────────────── 音频引擎 ────────────────
+    function initAudio() {
+      if (audioCtx) return;
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch(e) { console.warn('无法创建 AudioContext'); }
     }
 
-    // 添加浮动文字
+    function stopSound() {
+      activeOscillators.forEach(o => {
+        try { o.stop(); } catch(e) {}
+      });
+      activeOscillators = [];
+      activeGainNode = null;
+    }
+
+    function playTone(key) {
+      if (!audioCtx) { initAudio(); if (!audioCtx) return; }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      stopSound();
+      const freq = toneMap[key].freq;
+      if (!freq) return;
+
+      const now = audioCtx.currentTime;
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.45, now + 0.05);
+      gain.gain.setValueAtTime(0.40, now + 0.25);
+      gain.gain.linearRampToValueAtTime(0.32, now + 1.2);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+
+      // 基频 + 泛音
+      const harmonics = [
+        { mult: 1, type: 'sine', vol: 0.65 },
+        { mult: 2, type: 'triangle', vol: 0.22 },
+        { mult: 3, type: 'sine', vol: 0.08 },
+      ];
+
+      harmonics.forEach(h => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = h.type;
+        osc.frequency.setValueAtTime(freq * h.mult, now);
+        g.gain.setValueAtTime(h.vol, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+        osc.connect(g);
+        g.connect(gain);
+        osc.start(now);
+        osc.stop(now + 2.1);
+        activeOscillators.push(osc);
+      });
+
+      gain.connect(audioCtx.destination);
+      activeGainNode = gain;
+    }
+
+    // ──────────────── 指法亮孔逻辑 ────────────────
+    function updateFingeringDisplay(key) {
+      // 设置目标：该音符指法中需要按下的孔 glow=1，其余 glow=0
+      const fingering = fingeringMap[key];
+      if (!fingering) {
+        // 清空所有
+        for (let i = 0; i < 7; i++) holeGlowTarget[i] = 0;
+        return;
+      }
+      for (let i = 0; i < 7; i++) {
+        holeGlowTarget[i] = fingering[i] ? 1.0 : 0.0;
+      }
+    }
+
+    function clearFingeringDisplay() {
+      for (let i = 0; i < 7; i++) holeGlowTarget[i] = 0;
+    }
+
+    // ──────────────── 浮动文字 ────────────────
     function addFloatingText(key, holeX, holeY) {
-      // 移除同一按键的旧浮动文字，避免重叠
       floatingTexts = floatingTexts.filter(t => t.key !== key);
       floatingTexts.push({
-        key: key,
+        key,
         x: holeX,
-        y: holeY - 28, // 从孔上方开始浮现
+        y: holeY - 36,
         opacity: 1.0,
-        startTime: Date.now()
+        startTime: performance.now()
       });
     }
 
-    // ---------- 绘制水墨竹笛 (包含浮动五音) ----------
-    function drawFluteWithFloatingTexts() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // ──────────────── 绘制 ────────────────
+    function drawFrame() {
+      ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
 
-      const fluteXStart = 70;
-      const fluteXEnd = 600;
-      const fluteYCenter = 160;
+      // ── 背景：淡淡的水墨晕染 ──
+      const bgGrad = ctx.createRadialGradient(900, 160, 50, 900, 160, 1000);
+      bgGrad.addColorStop(0, 'rgba(40,35,30,0.25)');
+      bgGrad.addColorStop(1, 'rgba(26,26,26,0)');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
-      ctx.save();
+      // ── 笛身 SVG 题图 ──
       if (fluteImageLoaded) {
-        ctx.drawImage(fluteImage, 0, 0, canvas.width, canvas.height);
-      } else {
-        // 笛身主渐变
-        const gradient = ctx.createLinearGradient(fluteXStart, fluteYCenter - 25, fluteXStart, fluteYCenter + 25);
-        gradient.addColorStop(0, '#cbb286');
-        gradient.addColorStop(0.3, '#e7d0a8');
-        gradient.addColorStop(0.5, '#f0dbb8');
-        gradient.addColorStop(0.7, '#d4b482');
-        gradient.addColorStop(1, '#9e7e54');
-
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-        ctx.shadowBlur = 14;
-        ctx.shadowOffsetX = 3;
-        ctx.shadowOffsetY = 5;
-
-        const radius = 26;
-        ctx.beginPath();
-        ctx.moveTo(fluteXStart + radius, fluteYCenter - 24);
-        ctx.lineTo(fluteXEnd - radius, fluteYCenter - 24);
-        ctx.quadraticCurveTo(fluteXEnd, fluteYCenter - 24, fluteXEnd, fluteYCenter - 24 + radius);
-        ctx.lineTo(fluteXEnd, fluteYCenter + 24 - radius);
-        ctx.quadraticCurveTo(fluteXEnd, fluteYCenter + 24, fluteXEnd - radius, fluteYCenter + 24);
-        ctx.lineTo(fluteXStart + radius, fluteYCenter + 24);
-        ctx.quadraticCurveTo(fluteXStart, fluteYCenter + 24, fluteXStart, fluteYCenter + 24 - radius);
-        ctx.lineTo(fluteXStart, fluteYCenter - 24 + radius);
-        ctx.quadraticCurveTo(fluteXStart, fluteYCenter - 24, fluteXStart + radius, fluteYCenter - 24);
-        ctx.closePath();
-
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        ctx.shadowBlur = 8;
-        ctx.strokeStyle = '#4a3e2c';
-        ctx.lineWidth = 2.4;
-        ctx.stroke();
-
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-
-        // 竹节纹路
         ctx.save();
-      }
-      if (!fluteImageLoaded) {
-        ctx.strokeStyle = '#5e4c34';
-        ctx.lineWidth = 2;
-        ctx.globalAlpha = 0.6;
+        ctx.shadowColor = 'rgba(0,0,0,0.6)';
+        ctx.shadowBlur = 18;
+        ctx.shadowOffsetX = 4;
+        ctx.shadowOffsetY = 8;
+        ctx.drawImage(fluteImage, FLUTE_IMG_X, FLUTE_IMG_Y, FLUTE_IMG_W, FLUTE_IMG_H);
+        ctx.restore();
+
+        // 膜孔位置指示 (在 SVG 上标记)
+        ctx.save();
+        ctx.fillStyle = 'rgba(200,180,150,0.35)';
         ctx.beginPath();
-      ctx.moveTo(105, fluteYCenter-20);
-      ctx.quadraticCurveTo(108, fluteYCenter, 105, fluteYCenter+20);
-      ctx.stroke();
+        ctx.arc(200, FLUTE_CENTER_Y, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else {
+        // ── 回退：程序绘制笛身 ──
+        drawFallbackFlute();
+      }
+
+      // ── 吹孔 ──
+      ctx.save();
+      ctx.shadowColor = '#0a0a0a';
+      ctx.shadowBlur = 6;
+      const blowGrad = ctx.createRadialGradient(blowHole.x-2, blowHole.y-2, 2, blowHole.x, blowHole.y, blowHole.radius);
+      blowGrad.addColorStop(0, '#4a3525');
+      blowGrad.addColorStop(0.6, '#2a1a10');
+      blowGrad.addColorStop(1, '#0f0804');
       ctx.beginPath();
-      ctx.moveTo(112, fluteYCenter-21);
-      ctx.quadraticCurveTo(115, fluteYCenter, 112, fluteYCenter+21);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(555, fluteYCenter-19);
-      ctx.quadraticCurveTo(558, fluteYCenter, 555, fluteYCenter+19);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(562, fluteYCenter-20);
-      ctx.quadraticCurveTo(565, fluteYCenter, 562, fluteYCenter+20);
+      ctx.arc(blowHole.x, blowHole.y, blowHole.radius, 0, Math.PI*2);
+      ctx.fillStyle = blowGrad;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#c9a96e';
+      ctx.lineWidth = 1.6;
       ctx.stroke();
       ctx.restore();
-      }
-      
-      // 绘制所有笛孔 (不高亮，因为浮动文字替代了高亮)
-      fluteHoles.forEach(hole => {
+
+      // ── 绘制所有指孔（带发光过渡） ──
+      fluteHoles.forEach((hole, idx) => {
+        const glow = holeGlow[idx];
         ctx.save();
+
+        if (glow > 0.02) {
+          // 外层光晕
+          const outerGlow = ctx.createRadialGradient(hole.x, hole.y, hole.radius * 0.6, hole.x, hole.y, hole.radius * 2.2);
+          outerGlow.addColorStop(0, `rgba(255,180,60,${0.7 * glow})`);
+          outerGlow.addColorStop(0.5, `rgba(255,150,30,${0.35 * glow})`);
+          outerGlow.addColorStop(1, `rgba(255,120,10,0)`);
+          ctx.beginPath();
+          ctx.arc(hole.x, hole.y, hole.radius * 2.2, 0, Math.PI*2);
+          ctx.fillStyle = outerGlow;
+          ctx.fill();
+
+          // 中层暖光
+          const midGlow = ctx.createRadialGradient(hole.x, hole.y, 2, hole.x, hole.y, hole.radius * 1.3);
+          midGlow.addColorStop(0, `rgba(255,200,100,${0.9 * glow})`);
+          midGlow.addColorStop(0.6, `rgba(220,140,50,${0.5 * glow})`);
+          midGlow.addColorStop(1, `rgba(180,100,30,0)`);
+          ctx.beginPath();
+          ctx.arc(hole.x, hole.y, hole.radius * 1.3, 0, Math.PI*2);
+          ctx.fillStyle = midGlow;
+          ctx.fill();
+        }
+
+        // 孔洞主体
         ctx.shadowColor = '#0a0a0a';
-        ctx.shadowBlur = 5;
+        ctx.shadowBlur = glow > 0.1 ? 3 : 5;
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
-        
-        const holeGrad = ctx.createRadialGradient(hole.x-2, hole.y-2, 2, hole.x, hole.y, hole.radius);
-        holeGrad.addColorStop(0, '#5a4530');
-        holeGrad.addColorStop(0.7, '#2f2417');
-        holeGrad.addColorStop(1, '#140f0a');
-        
+
+        const holeInner = ctx.createRadialGradient(hole.x-2, hole.y-2, 1, hole.x, hole.y, hole.radius);
+        if (glow > 0.05) {
+          // 按下的孔：偏暖、偏亮
+          holeInner.addColorStop(0, `rgba(${80+60*glow},${50+30*glow},${25+15*glow},1)`);
+          holeInner.addColorStop(0.6, `rgba(${55+35*glow},${35+20*glow},${18+10*glow},1)`);
+          holeInner.addColorStop(1, `rgba(${25+15*glow},${15+8*glow},${8+4*glow},1)`);
+        } else {
+          holeInner.addColorStop(0, '#5a4530');
+          holeInner.addColorStop(0.7, '#2f2417');
+          holeInner.addColorStop(1, '#140f0a');
+        }
+
         ctx.beginPath();
-        ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI * 2);
-        ctx.fillStyle = holeGrad;
+        ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI*2);
+        ctx.fillStyle = holeInner;
         ctx.fill();
-        
+
         ctx.shadowBlur = 0;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
-        ctx.strokeStyle = '#c9a96e';
-        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = glow > 0.1
+          ? `rgba(${220+35*glow},${170+70*glow},${80+80*glow},${0.5+0.5*glow})`
+          : '#7a6a50';
+        ctx.lineWidth = glow > 0.3 ? 1.8 : 1.2;
         ctx.stroke();
+
         ctx.restore();
       });
-      
-      // 吹孔
-      ctx.save();
-      ctx.shadowColor = '#1a140e';
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.arc(88, fluteYCenter-4, 10, 0, Math.PI*2);
-      ctx.fillStyle = '#3d3224';
-      ctx.fill();
-      ctx.strokeStyle = '#c9a96e';
-      ctx.lineWidth = 1.8;
-      ctx.stroke();
-      ctx.restore();
-      
-      // 笛塞
-      ctx.fillStyle = '#6b5a40';
-      ctx.beginPath();
-      ctx.ellipse(78, fluteYCenter-4, 4, 8, 0, 0, Math.PI*2);
-      ctx.fill();
-      
-      // 穗子
-      ctx.beginPath();
-      ctx.moveTo(68, fluteYCenter-4);
-      ctx.lineTo(52, fluteYCenter-18);
-      ctx.lineTo(56, fluteYCenter-8);
-      ctx.lineTo(48, fluteYCenter+2);
-      ctx.strokeStyle = '#b34a3a';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-      ctx.fillStyle = '#c05540';
-      ctx.beginPath();
-      ctx.arc(52, fluteYCenter-20, 3, 0, Math.PI*2);
-      ctx.fill();
-      
-      // ---- 绘制浮动五音文字 (演奏时浮现) ----
+
+      // ── 浮动文字 ──
       floatingTexts.forEach(text => {
         if (text.opacity <= 0.02) return;
         ctx.save();
         ctx.globalAlpha = text.opacity;
-        ctx.font = 'bold 22px "楷体", "KaiTi", "Noto Serif SC"';
-        ctx.fillStyle = '#c9a96e';
-        ctx.shadowColor = '#000000';
-        ctx.shadowBlur = 8;
-        // 文字位置轻微向上偏移，制造浮现感
-        const offsetY = (1 - text.opacity) * 12; 
+        ctx.font = 'bold 22px "楷体", "KaiTi", "Noto Serif SC", serif';
+        ctx.fillStyle = '#f0d080';
+        ctx.shadowColor = '#000';
+        ctx.shadowBlur = 10;
+        const offsetY = (1 - text.opacity) * 14;
         ctx.fillText(toneMap[text.key].wuYin, text.x - 20, text.y - offsetY);
         ctx.restore();
       });
-      
+
+      // ── 当前音符标签 ──
+      if (activeKey && toneMap[activeKey]) {
+        ctx.save();
+        ctx.font = 'italic 16px "楷体", "KaiTi", "Noto Serif SC", serif';
+        ctx.fillStyle = 'rgba(200,170,120,0.8)';
+        ctx.textAlign = 'right';
+        ctx.fillText(`筒音作5 · ${toneMap[activeKey].wuYin}`, CANVAS_W - 60, 45);
+        ctx.textAlign = 'start';
+        ctx.restore();
+      }
+    }
+
+    // 回退笛身绘制（SVG 不可用时）
+    function drawFallbackFlute() {
+      ctx.save();
+      const fy = FLUTE_CENTER_Y;
+      const grad = ctx.createLinearGradient(130, fy-28, 130, fy+28);
+      grad.addColorStop(0, '#cbb286');
+      grad.addColorStop(0.3, '#e7d0a8');
+      grad.addColorStop(0.5, '#f0dbb8');
+      grad.addColorStop(0.7, '#d4b482');
+      grad.addColorStop(1, '#9e7e54');
+
+      ctx.shadowColor = 'rgba(0,0,0,0.7)';
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 5;
+
+      const r = 28;
+      const sx = 140, ex = 1660;
+      ctx.beginPath();
+      ctx.moveTo(sx + r, fy - 26);
+      ctx.lineTo(ex - r, fy - 26);
+      ctx.quadraticCurveTo(ex, fy - 26, ex, fy - 26 + r);
+      ctx.lineTo(ex, fy + 26 - r);
+      ctx.quadraticCurveTo(ex, fy + 26, ex - r, fy + 26);
+      ctx.lineTo(sx + r, fy + 26);
+      ctx.quadraticCurveTo(sx, fy + 26, sx, fy + 26 - r);
+      ctx.lineTo(sx, fy - 26 + r);
+      ctx.quadraticCurveTo(sx, fy - 26, sx + r, fy - 26);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.shadowBlur = 6;
+      ctx.strokeStyle = '#4a3e2c';
+      ctx.lineWidth = 2.4;
+      ctx.stroke();
       ctx.restore();
     }
 
-    // ---------- 音频引擎 ----------
-    function initAudioContext() {
-      if (audioCtx) return;
-      try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      } catch (e) {
-        console.warn('无法创建音频上下文', e);
-      }
-    }
-
-    function stopSound() {
-      if (activeOscillator) {
-        try {
-          activeOscillator.stop();
-        } catch (e) {}
-        activeOscillator = null;
-      }
-      if (activeGain) {
-        activeGain = null;
-      }
-    }
-
-    function playTone(key) {
-      if (!audioCtx) {
-        initAudioContext();
-        if (!audioCtx) return;
-      }
-      
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      
-      stopSound();
-      
-      const freq = toneMap[key].freq;
-      if (!freq) return;
-      
-      const now = audioCtx.currentTime;
-      
-      const gainNode = audioCtx.createGain();
-      gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(0.45, now + 0.06);
-      gainNode.gain.linearRampToValueAtTime(0.38, now + 0.2);
-      
-      const osc1 = audioCtx.createOscillator();
-      const osc2 = audioCtx.createOscillator();
-      const osc3 = audioCtx.createOscillator();
-      
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(freq, now);
-      
-      osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(freq * 2, now);
-      
-      osc3.type = 'sine';
-      osc3.frequency.setValueAtTime(freq * 3, now);
-      
-      const gain1 = audioCtx.createGain();
-      gain1.gain.setValueAtTime(0.7, now);
-      const gain2 = audioCtx.createGain();
-      gain2.gain.setValueAtTime(0.2, now);
-      const gain3 = audioCtx.createGain();
-      gain3.gain.setValueAtTime(0.08, now);
-      
-      osc1.connect(gain1);
-      osc2.connect(gain2);
-      osc3.connect(gain3);
-      
-      gain1.connect(gainNode);
-      gain2.connect(gainNode);
-      gain3.connect(gainNode);
-      
-      gainNode.connect(audioCtx.destination);
-      
-      osc1.start(now);
-      osc2.start(now);
-      osc3.start(now);
-      
-      activeOscillator = { osc1, osc2, osc3 };
-      activeGain = gainNode;
-      
-      const stopTime = now + 1.8;
-      gainNode.gain.linearRampToValueAtTime(0.35, now + 1.0);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, stopTime);
-      
-      osc1.stop(stopTime + 0.05);
-      osc2.stop(stopTime + 0.05);
-      osc3.stop(stopTime + 0.05);
-      
-      setTimeout(() => {
-        if (activeOscillator && activeOscillator.osc1 === osc1) {
-          activeOscillator = null;
-          activeGain = null;
+    // ──────────────── 动画循环 ────────────────
+    function animationLoop(now) {
+      // 更新孔位发光过渡
+      for (let i = 0; i < 7; i++) {
+        const diff = holeGlowTarget[i] - holeGlow[i];
+        if (Math.abs(diff) < 0.01) {
+          holeGlow[i] = holeGlowTarget[i];
+        } else {
+          holeGlow[i] += diff * 0.18; // 平滑过渡
         }
-      }, 2000);
+      }
+
+      // 更新浮动文字
+      floatingTexts = floatingTexts.filter(text => {
+        const elapsed = (now - text.startTime) / 1000;
+        text.opacity = Math.max(0, 1 - elapsed * 1.3);
+        return text.opacity > 0.015;
+      });
+
+      drawFrame();
+      requestAnimationFrame(animationLoop);
     }
 
-    // 触发吹奏：播放声音 + 添加浮动五音文字
+    // ──────────────── 交互触发 ────────────────
     function triggerTone(key) {
       if (!toneMap[key]) return;
-      
+
       playTone(key);
-      
-      // 找到对应笛孔位置，添加浮动文字
+      updateFingeringDisplay(key);
+
+      // 更新 UI 面板
+      updatePanelActive(key);
+
+      // 更新指令栏
+      const np = document.getElementById('nowPlaying');
+      if (np) {
+        np.textContent = `当前吹奏：${toneMap[key].noteName}（${toneMap[key].desc}）`;
+      }
+
+      // 浮动文字 - 在所有对应按孔上方浮现
       const hole = fluteHoles.find(h => h.key === key);
       if (hole) {
         addFloatingText(key, hole.x, hole.y);
+        // 同时激活孔位的发光
+        activeKey = key;
       }
+
+      // 音效结束后清除
+      clearTimeout(window._toneTimeout);
+      window._toneTimeout = setTimeout(() => {
+        activeKey = null;
+        clearFingeringDisplay();
+        updatePanelActive(null);
+        const np2 = document.getElementById('nowPlaying');
+        if (np2) np2.textContent = '';
+      }, 2200);
     }
 
-    // ---------- 事件绑定 ----------
+    // ──────────────── 键盘提示面板 ────────────────
+    function buildFingeringPanel() {
+      const panel = document.getElementById('fingeringPanel');
+      if (!panel) return;
+
+      const keys = ['5','6','7','1','2','3','4']; // 从低到高排列
+      panel.innerHTML = keys.map(k => {
+        const t = toneMap[k];
+        const holes = fingeringMap[k];
+        const fingerStr = holes
+          ? holes.slice(1).map((pressed, i) => pressed ? '●' : '○').join(' ')
+          : '';
+        return `
+          <div class="key-item" data-key="${k}">
+            <span class="key-badge">${k}</span>
+            <span class="key-note">${t.wuYin}</span>
+            <span style="font-size:0.7rem;color:#6a5a4a;letter-spacing:1px;min-width:72px;">${fingerStr}</span>
+          </div>`;
+      }).join('');
+
+      // 点击面板触发
+      panel.querySelectorAll('.key-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const k = el.dataset.key;
+          if (k) triggerTone(k);
+        });
+      });
+    }
+
+    function updatePanelActive(key) {
+      const panel = document.getElementById('fingeringPanel');
+      if (!panel) return;
+      panel.querySelectorAll('.key-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.key === key);
+      });
+    }
+
+    // ──────────────── 事件绑定 ────────────────
     function setupEvents() {
+      // 键盘
       window.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
         const key = e.key;
@@ -467,69 +616,67 @@
           triggerTone(key);
         }
       });
-      
+
+      // 鼠标点击
       canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const mouseX = (e.clientX - rect.left) * scaleX;
-        const mouseY = (e.clientY - rect.top) * scaleY;
-        
+        const scaleX = CANVAS_W / rect.width;
+        const scaleY = CANVAS_H / rect.height;
+        const mx = (e.clientX - rect.left) * scaleX;
+        const my = (e.clientY - rect.top) * scaleY;
+
+        // 检查吹孔
+        const bdx = mx - blowHole.x, bdy = my - blowHole.y;
+        if (Math.sqrt(bdx*bdx + bdy*bdy) <= blowHole.radius + 6) {
+          // 点击吹孔：吹奏当前选中的音，或默认筒音5
+          triggerTone(activeKey || '5');
+          return;
+        }
+
         for (let hole of fluteHoles) {
-          const dx = mouseX - hole.x;
-          const dy = mouseY - hole.y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist <= hole.radius + 6) {
+          const dx = mx - hole.x, dy = my - hole.y;
+          if (Math.sqrt(dx*dx + dy*dy) <= hole.radius + 8) {
             triggerTone(hole.key);
-            break;
+            return;
           }
         }
       });
-      
+
+      // 触摸
       canvas.addEventListener('touchstart', (e) => {
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
         const touch = e.touches[0];
         if (!touch) return;
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const touchX = (touch.clientX - rect.left) * scaleX;
-        const touchY = (touch.clientY - rect.top) * scaleY;
-        
+        const scaleX = CANVAS_W / rect.width;
+        const scaleY = CANVAS_H / rect.height;
+        const tx = (touch.clientX - rect.left) * scaleX;
+        const ty = (touch.clientY - rect.top) * scaleY;
+
         for (let hole of fluteHoles) {
-          const dx = touchX - hole.x;
-          const dy = touchY - hole.y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist <= hole.radius + 8) {
+          const dx = tx - hole.x, dy = ty - hole.y;
+          if (Math.sqrt(dx*dx + dy*dy) <= hole.radius + 10) {
             triggerTone(hole.key);
-            break;
+            return;
           }
         }
       }, { passive: false });
-      
-      window.addEventListener('blur', () => {
-        stopSound();
-      });
+
+      window.addEventListener('blur', () => stopSound());
     }
 
-    // 初始绘制
-    function initialRender() {
-      initAudioContext();
-      drawFluteWithFloatingTexts();
-    }
-
+    // ──────────────── 启动 ────────────────
     window.addEventListener('load', () => {
-      initialRender();
+      initAudio();
+      buildFingeringPanel();
       setupEvents();
-      startAnimationLoop();
-      
-      document.body.addEventListener('click', function activateAudio() {
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
+      requestAnimationFrame(animationLoop);
+
+      // 首次交互解锁音频
+      document.body.addEventListener('click', function unlockAudio() {
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
       }, { once: false });
     });
-
   })();
 </script>
 </body>
