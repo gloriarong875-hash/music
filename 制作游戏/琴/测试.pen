@@ -6,27 +6,13 @@
       "id": "sogGx",
       "x": -2861.464889260693,
       "y": -658.4658053706262,
-      "name": "琴1-1",
+      "name": "琴1-2",
       "clip": true,
       "width": 1440,
       "height": 900,
       "fill": "#88a993ff",
       "layout": "none",
       "children": [
-        {
-          "type": "rectangle",
-          "id": "S5KvO",
-          "x": -986,
-          "y": -595,
-          "name": "制胚 1",
-          "fill": {
-            "type": "image",
-            "enabled": true,
-            "mode": "fill"
-          },
-          "width": 2108,
-          "height": 1360
-        },
         {
           "type": "frame",
           "id": "v3GMsT",
@@ -179,6 +165,21 @@
               }
             }
           ]
+        },
+        {
+          "type": "rectangle",
+          "id": "ygRw0",
+          "x": -765.5351107393071,
+          "y": -514.5341946293738,
+          "name": "制胚 1",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "%E5%9B%BE/%E5%88%B6%E8%83%9A.png",
+            "mode": "fill"
+          },
+          "width": 1866,
+          "height": 1204
         }
       ]
     },
@@ -187,42 +188,13 @@
       "id": "feN1P",
       "x": -2861.464889260693,
       "y": 284.5341946293738,
-      "name": "琴1-1",
+      "name": "琴1-3",
       "clip": true,
       "width": 1440,
       "height": 900,
       "fill": "#88a993ff",
       "layout": "none",
       "children": [
-        {
-          "type": "rectangle",
-          "id": "v2CICt",
-          "x": -986,
-          "y": -595,
-          "name": "制胚 1",
-          "fill": {
-            "type": "image",
-            "enabled": true,
-            "mode": "fill"
-          },
-          "width": 2108,
-          "height": 1360
-        },
-        {
-          "type": "rectangle",
-          "id": "NPWwl",
-          "x": 0.0011329199187457561,
-          "y": 174,
-          "name": "制胚 2",
-          "rotation": -7.459363184344704,
-          "fill": {
-            "type": "image",
-            "enabled": true,
-            "mode": "stretch"
-          },
-          "width": 1234.059326171875,
-          "height": 338.9317626953125
-        },
         {
           "type": "frame",
           "id": "F63nfg",
@@ -375,6 +347,21 @@
               }
             }
           ]
+        },
+        {
+          "type": "rectangle",
+          "id": "mpjef",
+          "x": -769.5351107393071,
+          "y": -488.5341946293738,
+          "name": "制胚 1",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "%E5%9B%BE/%E5%88%B6%E8%83%9A.png",
+            "mode": "fill"
+          },
+          "width": 1866,
+          "height": 1204
         }
       ]
     },
@@ -383,7 +370,7 @@
       "id": "qtdZS",
       "x": -1358.4648892606929,
       "y": -658.4658053706262,
-      "name": "排箫1-1",
+      "name": "排箫2-2",
       "clip": true,
       "width": 1440,
       "height": 900,
@@ -406,6 +393,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
+                "url": "%E5%9B%BE/2%E9%AB%B9%E6%BC%86.png",
                 "mode": "fill"
               },
               "width": 1411.244384765625,
@@ -417,7 +405,7 @@
               "x": 326.7681630551815,
               "y": 659.8233642578125,
               "name": "Rectangle 114",
-              "fill": "#b5bbcdff",
+              "fill": "#2d324069",
               "width": 1084.479736328125,
               "height": 124.70355987548828
             }
@@ -532,7 +520,7 @@
       "id": "gBwjt",
       "x": -1358.4648892606929,
       "y": 284.5341946293738,
-      "name": "排箫1-1",
+      "name": "排箫2-3",
       "clip": true,
       "width": 1440,
       "height": 900,
@@ -555,6 +543,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
+                "url": "%E5%9B%BE/%E7%90%B4.png",
                 "mode": "stretch"
               },
               "width": 1127,
@@ -566,7 +555,7 @@
               "x": 42.76824951171875,
               "y": 23.8233642578125,
               "name": "Rectangle 114",
-              "fill": "#b5bbcdff",
+              "fill": "#2d324069",
               "width": 1084.479736328125,
               "height": 124.70355987548828
             }
@@ -693,7 +682,7 @@
       "id": "u7KGJY",
       "x": -1358.4648892606929,
       "y": 1227.5341946293738,
-      "name": "排箫1-1",
+      "name": "排箫2-4",
       "clip": true,
       "width": 1440,
       "height": 900,
@@ -716,6 +705,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
+                "url": "%E5%9B%BE/%E7%90%B4.png",
                 "mode": "stretch"
               },
               "width": 1127,
@@ -727,7 +717,7 @@
               "x": 0,
               "y": 0,
               "name": "Rectangle 114",
-              "fill": "#c6a39fff",
+              "fill": "#433634c4",
               "width": 1119,
               "height": 163
             }
@@ -842,7 +832,7 @@
       "id": "OHy0l",
       "x": 173.53511073930713,
       "y": -658.4658053706262,
-      "name": "排箫1-1",
+      "name": "排箫3-2",
       "clip": true,
       "width": 1440,
       "height": 900,
@@ -859,32 +849,34 @@
             {
               "type": "rectangle",
               "id": "i4E6N",
-              "x": 238.27423095703853,
-              "y": 0,
+              "x": 534.4822344481411,
+              "y": 36.46580537064074,
               "name": "选弦 3",
               "opacity": 0.5,
               "fill": {
                 "type": "image",
                 "enabled": true,
+                "url": "%E5%9B%BE/%E9%80%89%E5%BC%A6%203.png",
                 "mode": "stretch"
               },
-              "width": 1500.443115234375,
-              "height": 751.5833740234375
+              "width": 1218,
+              "height": 610
             },
             {
               "type": "rectangle",
               "id": "K5ywbe",
-              "x": 121.17733764649165,
-              "y": 44.93148422242666,
+              "x": 439.46488926070015,
+              "y": 72.92510181690983,
               "name": "选弦 1",
               "opacity": 0.5,
               "fill": {
                 "type": "image",
                 "enabled": true,
+                "url": "%E5%9B%BE/%E9%80%89%E5%BC%A6%203.png",
                 "mode": "stretch"
               },
-              "width": 1512.6971435546875,
-              "height": 765.198974609375
+              "width": 1227,
+              "height": 621
             },
             {
               "type": "rectangle",
@@ -895,6 +887,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
+                "url": "%E5%9B%BE/%E9%80%89%E5%BC%A6.png",
                 "mode": "fill"
               },
               "width": 3112.534423828125,
@@ -1059,7 +1052,7 @@
       "id": "J82Dk",
       "x": 1659.5351107393071,
       "y": -658.4658053706262,
-      "name": "排箫1-1",
+      "name": "排箫4-2",
       "clip": true,
       "width": 1440,
       "height": 900,
@@ -1114,6 +1107,7 @@
           "fill": {
             "type": "image",
             "enabled": true,
+            "url": "%E5%9B%BE/%E8%B0%83%E9%9F%B3%E4%B8%8A%E5%BC%A6.png",
             "mode": "fill"
           },
           "width": 1053,
@@ -1244,6 +1238,7 @@
           "fill": {
             "type": "image",
             "enabled": true,
+            "url": "%E5%9B%BE/%E5%88%B6%E8%83%9A.png",
             "mode": "fill"
           },
           "width": 896,
@@ -1397,7 +1392,7 @@
       "id": "ip2jm",
       "x": -1335.4648892606929,
       "y": -2272.465805370626,
-      "name": "排箫1-1",
+      "name": "排箫2-1",
       "clip": true,
       "width": 1440,
       "height": 900,
@@ -1407,12 +1402,13 @@
         {
           "type": "rectangle",
           "id": "uLwkF",
-          "x": 273,
-          "y": 105,
+          "x": 257.46488926069287,
+          "y": 138.46580537062619,
           "name": "2髹漆 1",
           "fill": {
             "type": "image",
             "enabled": true,
+            "url": "%E5%9B%BE/2%E9%AB%B9%E6%BC%86.png",
             "mode": "fill"
           },
           "width": 894,
@@ -1554,7 +1550,7 @@
       "id": "MtMtz",
       "x": 147.53511073930713,
       "y": -2272.465805370626,
-      "name": "排箫1-1",
+      "name": "排箫3-1",
       "clip": true,
       "width": 1440,
       "height": 900,
@@ -1570,6 +1566,7 @@
           "fill": {
             "type": "image",
             "enabled": true,
+            "url": "%E5%9B%BE/%E9%80%89%E5%BC%A6.png",
             "mode": "fill"
           },
           "width": 1089,
@@ -1716,7 +1713,7 @@
       "id": "I0x8Y",
       "x": 1630.5351107393071,
       "y": -2272.465805370626,
-      "name": "排箫1-1",
+      "name": "排箫4-1",
       "clip": true,
       "width": 1440,
       "height": 900,
@@ -1770,6 +1767,7 @@
           "fill": {
             "type": "image",
             "enabled": true,
+            "url": "%E5%9B%BE/%E8%B0%83%E9%9F%B3%E4%B8%8A%E5%BC%A6.png",
             "mode": "fill"
           },
           "width": 569,
