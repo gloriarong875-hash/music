@@ -1751,6 +1751,7 @@ let lastInputTime    = 0;
 let parallaxAnimId   = null;
 let selected         = null;
 let activeDot        = 0;  // step dot index with hysteresis
+let currentNavStage  = 0;  // 0=择竹, 1=汗青, 2=开孔, 3=试音
 
 const SNAP_POINTS       = [0, 0.5, 1.0];
 const SNAP_THRESHOLD    = 0.07;
@@ -1873,30 +1874,27 @@ stepDots.forEach(d => {
     });
 });
 
-// Back button — return to previous step or main page
+// Back button — always go back exactly one step
 backBtn.addEventListener('click', () => {
-    if (phase && phase !== 'bake' && phase !== 'clear' && phase !== 'clearing' && phase !== 'drill' && phase !== 'tone' && phase !== 'done') {
-        // Still in parallax stage (phase hasn't been set yet) — go to main page
-        window.location.href = '../../index.html?instrument=%E7%AC%9B';
-        return;
+    switch (currentNavStage) {
+        case 0:
+            // Parallax is the first step — exit to main page
+            window.location.href = '../../index.html?instrument=%E7%AC%9B';
+            break;
+        case 1:
+            // From bake → back to parallax
+            showParallaxStage();
+            break;
+        case 2:
+            // From drill → back to bake (start of baking)
+            showBakeStage();
+            currentNavStage = 1;
+            break;
+        case 3:
+            // From tone → back to drill
+            backToDrill();
+            break;
     }
-    if (phase === 'bake' || phase === 'clear' || phase === 'clearing') {
-        // In bake stage — go back to parallax (restart)
-        location.reload();
-        return;
-    }
-    if (phase === 'drill') {
-        // In drill stage — go back to bake finish, but simpler: reload
-        location.reload();
-        return;
-    }
-    if (phase === 'tone' || phase === 'done') {
-        // In final stage — go back to main page
-        window.location.href = '../../index.html?instrument=%E7%AC%9B';
-        return;
-    }
-    // Default: go to main page
-    window.location.href = '../../index.html?instrument=%E7%AC%9B';
 });
 
 // Bamboo selection
@@ -1979,7 +1977,56 @@ window.addEventListener('resize', () => { if (parallaxActive) { apply(scrollProg
 // === TRANSITION: PARALLAX → BAKE ===
 // ============================================================
 
+// ============================================================
+// === BACK NAVIGATION HELPERS ===
+// ============================================================
+
+function showParallaxStage() {
+    currentNavStage = 0;
+    parallaxActive = true;
+
+    // Hide later stages
+    stageBake.classList.add('hidden');
+    finalStage.classList.remove('visible');
+
+    // Hide global bake/tone elements
+    navDots.classList.remove('visible');
+    bgLayer.style.display = 'none';
+    fireGlow.style.display = 'none';
+
+    // Show parallax stage
+    parallaxStage.classList.remove('hidden');
+    stepIndicator.style.opacity = '1';
+    parallaxProgressFill.style.width = '0%';
+    scrollHint.style.opacity = '1';
+    scrollHint.classList.add('pulse');
+
+    // Reset parallax state
+    scrollTarget = 0;
+    scrollProgress = 0;
+    lastProgress = 0;
+    lastInputTime = 0;
+    selected = null;
+    activeDot = 0;
+    allLayers.forEach(l => l.classList.remove('selected'));
+    selectBadge.classList.remove('show');
+    stepDots.forEach((d, i) => d.classList.toggle('active', i === 0));
+
+    // Reset phase (in case we're coming back from bake)
+    phase = 'bake';
+    isDragging = false;
+    swipeCount = 0;
+    clearClicks = 0;
+    bambooOffset = 0;
+
+    // Apply initial state and restart loop
+    apply(0);
+    startParallaxLoop();
+    posTooltip();
+}
+
 function transitionToBake() {
+    currentNavStage = 1;
     parallaxActive = false;
     if (parallaxAnimId) cancelAnimationFrame(parallaxAnimId);
     parallaxStage.classList.add('hidden');
@@ -2225,6 +2272,7 @@ function finishClearing() {
 
 function showDrillStage() {
     phase = 'drill';
+    currentNavStage = 2;
     setNavStage(2);
     finalStage.classList.remove('visible');
     holesLayer.style.display = 'block';
@@ -2325,6 +2373,7 @@ function drillHole(hole) {
 
 function showToneStage() {
     phase = 'tone';
+    currentNavStage = 3;
     stageBake.classList.add('hidden');
     finalStage.classList.add('visible');
     finalMembraneStage.classList.remove('hidden');
@@ -2338,6 +2387,66 @@ function showToneStage() {
     chiselTool.style.display = 'none';
     chiselHint.style.display = 'none';
     setNavStage(3);
+}
+
+function backToDrill() {
+    currentNavStage = 2;
+    phase = 'drill';
+
+    // Hide final stage, show bake stage (which hosts drill UI)
+    finalStage.classList.remove('visible');
+    stageBake.classList.remove('hidden');
+
+    // Show global elements
+    navDots.classList.add('visible');
+    bgLayer.style.display = 'block';
+    fireGlow.style.display = 'block';
+    setNavStage(2);
+
+    // Set bamboo to baked, centered position
+    bambooPipe.classList.add('baked');
+    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(0deg)';
+    bambooPipe.style.bottom = '25%';
+    bambooPipe.style.animation = '';
+
+    // Hide bake-specific elements
+    furnace.classList.add('hidden');
+    swipeHint.classList.add('hidden');
+    swipeCounter.classList.remove('visible');
+    progressContainer.style.opacity = '0';
+    progressBar.style.width = '0%';
+    chiselTool.style.display = 'none';
+    chiselHint.style.display = 'none';
+    completeOverlay.classList.remove('active');
+
+    // Show drill UI
+    holesLayer.style.display = 'block';
+    holesLayer.querySelectorAll('.hole').forEach(hole => {
+        hole.classList.remove('drilled');
+        hole.classList.add('ink-mark');
+    });
+    drilledCount = 0;
+    gongcheChars.innerHTML = '';
+    gongchePanel.classList.remove('visible');
+    scaleOverlay.classList.remove('visible');
+    scaleOverlay.style.display = 'none';
+
+    mainText.innerText = '开孔工序开始';
+    subText.innerText = '点击竹管上的墨线标记逐一开孔';
+
+    // Reset final stage internal state
+    finalMembraneStage.classList.remove('hidden');
+    finalPlayStage.classList.remove('visible');
+    finalEndButtons.classList.remove('visible');
+    selectedMembrane = null;
+    currentMembrane = null;
+    finalMembraneItems.forEach(i => i.classList.remove('selected'));
+    finalConfirmBtn.classList.remove('visible');
+    finalNoteDisplay.classList.remove('visible');
+    finalBambooPipe.classList.remove('glowing');
+    const membraneHole = document.getElementById('final-hole-2');
+    if (membraneHole) membraneHole.classList.remove('membrane-covered');
+    finalPlayCount = 0;
 }
 
 // ============================================================
