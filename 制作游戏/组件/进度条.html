@@ -4,81 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>进度条组件</title>
-    // 在脚本中替换原来的 setNavStage 函数
+    <link rel="stylesheet" href="style.css">
+    <!-- 在脚本中替换原来的 setNavStage 函数
     const progressNav = new ProgressNav('progress-nav', ['择竹', '汗青', '开孔', '试音']);
-    // 然后用 progressNav.setStage(1) 代替原来的 setNavStage(1)
-    <style>
-        :root {
-            --gold: #c9a96e;
-            --gold-dim: #8a7a5a;
-            --brown: #5a4a3a;
-        }
-
-        .nav-dots {
-            position: absolute;
-            top: 36px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 32px;
-            z-index: 10;
-        }
-
-        .dot-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #444;
-            border: 2px solid #555;
-            transition: all 0.4s ease;
-        }
-
-        .dot.active {
-            background: var(--gold);
-            border-color: var(--gold);
-            box-shadow: 0 0 18px rgba(201, 169, 110, 0.45);
-        }
-
-        .dot.completed {
-            background: var(--gold-dim);
-            border-color: var(--gold-dim);
-        }
-
-        .dot-label {
-            font-size: 12px;
-            color: #7f7f7f;
-            letter-spacing: 2px;
-            transition: color 0.4s ease;
-            white-space: nowrap;
-        }
-
-        .dot-wrapper.active .dot-label,
-        .dot-wrapper.completed .dot-label {
-            color: var(--gold);
-        }
-
-        @media (max-width: 768px) {
-            .nav-dots {
-                gap: 20px;
-            }
-
-            .dot {
-                width: 12px;
-                height: 12px;
-            }
-
-            .dot-label {
-                font-size: 10px;
-            }
-        }
-    </style>
+    然后用 progressNav.setStage(1) 代替原来的 setNavStage(1) -->
 </head>
 <body>
 <div class="nav-dots" id="progress-nav">
