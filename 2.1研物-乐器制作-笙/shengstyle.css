@@ -1,0 +1,462 @@
+﻿
+    @charset "UTF-8";
+    /*
+      ======================== 调参索引 / 阅读提示 ========================
+      这个文件是完整整合版：HTML、CSS、JS 都在同一个文件里。
+
+      1. 只想调整画面元素位置：
+         优先找下面 CSS 里的“第 X 幕 / 第 X 关”注释，改 width / left / top / bottom。
+         width 控制图片大小；left/top 控制位置；transform 里的 rotate 控制角度。
+
+      2. 想调整 1-2、1-3 的竹竿：
+         直接改 .app 里的这几组变量：
+         --chosen-bamboo-*  = 1-2 选中紫竹；
+         --saw-bamboo-*     = 1-3 锯切紫竹。
+         注意：不要给图片写固定 height，否则竹竿会被压扁或拉长。
+
+      3. 想调整交互区域：
+         按钮/热区都是 button，例如 .pickHit / .chosenHit / .sawZone / .hold。
+         看不见的热区只负责点击或拖拽，位置也用 left/top/width/height 调。
+
+      4. 想调整动画速度：
+         找 transition 或 animation 后面的时间，例如 .85s、1.18s、.36s。
+
+      5. 想调整声音、进度、判定：
+         到文件底部的 script 脚本区找对应关卡注释：第一关锯切、第二关烤料、第三关刻簧、第四关点砂。
+      ===================================================================
+    */
+
+    /* 基础字体与全局舞台：整页固定 16:9，方便和你的 UI 图保持一致。 */
+    @font-face {
+      font-family: FZLiShu;
+      src: url("fonts/方正隶书简体.TTF") format("truetype");
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      height: 100vh; overflow: hidden; display: grid; place-items: center;
+      background: #0b0d0c; font-family: FZLiShu, "Microsoft YaHei", serif;
+    }
+    .app {
+      position: relative; width: 100vw; height: 100vh;
+      overflow: hidden; background: #252626; color: #fff;
+
+      /* 1-2 选中竹竿参数：只改这些变量就能调大小、位置和角度；图片比例会自动保持。 */
+      --chosen-bamboo-width: 62%;
+      --chosen-bamboo-left: 16%;
+      --chosen-bamboo-top: 20%;
+      --chosen-bamboo-rotate: -2deg;
+
+      /* 1-3 锯切竹竿参数：如果觉得“竹竿被拉伸”，优先把 width 调小，不要添加 height。 */
+      --saw-bamboo-width: 52%;
+      --saw-bamboo-left: 15%;
+      --saw-bamboo-top: 23%;
+      --saw-bamboo-rotate: -2deg;
+    }
+    .bg, .shade, .fade, .scene, .particles { position: absolute; inset: 0; }
+    .bg { background: url("笙制作assets/笙制作背景图.png") center/cover no-repeat; }
+    .shade { background: rgba(14,18,15,.64); }
+    .fade { background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.82)); }
+    .top {
+      position: absolute; z-index: 50; top: 6%; left: 50%; transform: translateX(-50%);
+      width: 36%; text-align: center; pointer-events: none;
+    }
+    /* Top navigation, button and text styles moved to common.css for reuse. */
+    /* See common.css for variables, .nav-dots, .cornerNav, .navBtn and text layer rules. */
+    /* cornerNav/navBtn moved to common.css */
+    /* 场景切换：每个步骤使用不同方向的慢速滑动，避免切换太突兀。 */
+    .scene {
+      opacity: 0; pointer-events: none; transform: scale(1.02) translate(var(--sceneX,0), var(--sceneY,1.4%));
+      filter: blur(2px); transition: opacity .85s ease, transform 1.18s cubic-bezier(.2,.78,.2,1), filter .85s ease;
+    }
+    .scene.active { opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); filter: blur(0); }
+    .scene.active .art { animation: artIn 1.28s cubic-bezier(.2,.78,.2,1) both; }
+    .scene.dark { background: transparent; }
+    .scene[data-scene="pick"], .scene[data-scene="chosen"] { --sceneY: 3.5%; --enterY: 32px; }
+    .scene[data-scene="saw"], .scene[data-scene="cutDone"] { --sceneX: 3%; --enterX: 54px; }
+    .scene[data-scene="bake"], .scene[data-scene="bakeDone"] { --sceneY: -4%; --enterY: -42px; }
+    .scene[data-scene="carve"], .scene[data-scene="carveDone"] { --sceneX: -3%; --enterX: -58px; }
+    .scene[data-scene="tune"], .scene[data-scene="tuneDone"] { --sceneY: 4%; --enterY: 46px; }
+    .scene[data-scene="final"] { --sceneX: 4%; --enterX: 70px; }
+    /*
+      所有图片素材通用规则：
+      height:auto + object-fit:contain 是为了保持 PNG 原始比例，避免横向或纵向被拉伸。
+      后面每个具体素材只写 width、left、top 等定位参数。
+    */
+    .art { position: absolute; display: block; max-width: none; height: auto; object-fit: contain; pointer-events: none; }
+    .halo { filter: drop-shadow(0 0 24px rgba(221,199,137,.42)); }
+    .dim { filter: brightness(.48) saturate(.78); }
+    .copy {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      letter-spacing: 2px; white-space: nowrap; text-shadow: 0 3px 10px #000;
+    }
+    .hint {
+      position: absolute; letter-spacing: 2px;
+      text-shadow: 0 2px 8px #000; text-align: center;
+    }
+    button { position: absolute; z-index: 40; border: 0; background: transparent; cursor: pointer; }
+    /* ======================== 第一关：择竹截管 ======================== */
+
+    /* 1-1 竹堆底图：bottom 越小越往下，width 越大竹堆越大。 */
+    .stack { width: 91%; left: 5%; bottom: -50%; z-index: 10; }
+    .pickText { top: 38.5%; }
+
+    /* 1-1 点击竹堆热区：透明按钮，覆盖竹堆主要区域。 */
+    .pickHit { left: 8%; top: 44%; width: 84%; height: 46%; }
+    .pickHint { left: 50%; top: 54%; transform: translateX(-50%); }
+
+    /*
+      1-2 选中的紫竹：
+      - width/left/top/rotate 都来自 .app 里的 --chosen-bamboo-* 变量；
+      - 如果感觉竹竿太长或压迫画面，只改 --chosen-bamboo-width；
+      - 不要加 height，避免素材比例被拉伸。
+    */
+    .chosen {
+      width: var(--chosen-bamboo-width);
+      left: var(--chosen-bamboo-left);
+      top: var(--chosen-bamboo-top);
+      transform: rotate(var(--chosen-bamboo-rotate));
+      z-index: 16;
+    }
+    /* 1-2 选中紫竹的说明：放到底部，文字与提示靠近，并在竹竿出现后淡入显示 */
+
+    .scene[data-scene="chosen"] .chosenText,
+    .scene[data-scene="chosen"] .chosen-hint {
+      left: 50%; transform: translateX(-50%); top: auto; bottom: 14%; opacity: 0;
+      transition: opacity 1.28s ease, transform 1.28s ease;
+    }
+
+    /* 让提示与主文案更靠近：主文案略高于提示 */
+    .scene[data-scene="chosen"] .chosenText { bottom: 17%; }
+    .scene[data-scene="chosen"] .chosen-hint { bottom: 12%; }
+
+    /* 在场景激活且竹竿动画结束后（延迟与 .art 的 artIn 时长匹配）再显示 */
+    .scene[data-scene="chosen"].active .chosenText,
+    .scene[data-scene="chosen"].active .chosen-hint {
+      opacity: 1; transform: translateX(-50%);
+    }
+
+    /* 已通过 .scene[data-scene="chosen"] 规则统一定位与过渡，移除单独 top 定位以避免冲突 */
+
+    /* 1-2 点击继续热区：覆盖选中竹竿和文字附近，方便进入锯切画面。 */
+    .chosenHit { left: 13%; top: 19%; width: 75%; height: 50%; }
+
+    /*
+      1-3 锯切竹竿：
+      - 对应素材：制作1-3竹竿.png；
+      - width/left/top/rotate 来自 .app 里的 --saw-bamboo-* 变量；
+      - 虚线 .cutLine、木屑 .dust、锯切热区 .sawZone 都是根据这根竹竿摆的。
+    */
+    .sawBamboo {
+      width: var(--saw-bamboo-width);
+      left: var(--saw-bamboo-left);
+      top: var(--saw-bamboo-top);
+      transform: rotate(var(--saw-bamboo-rotate));
+      z-index: 16;
+    }
+    .sawText { left: 52%; bottom: 17%; }
+    /* 第一关锯切虚线：用 SVG 曲线做出高亮和流动感。 */
+    .cutLine { position: absolute; z-index: 25; left: 49.1%; top: 31.6%; width: 7%; height: 17%; pointer-events: none; overflow: visible; }
+    .cutLine path { fill: none; stroke-linecap: round; stroke-dasharray: 9 13; animation: cutDash 1.25s linear infinite, cutShimmer 2.1s ease-in-out infinite; }
+    .cutLine .cutGlow { stroke: rgba(245,221,151,.38); stroke-width: 15; stroke-dasharray: 8 14; filter: blur(3px); }
+    .cutLine .cutMain { stroke: url(#cutGradient); stroke-width: 7; filter: drop-shadow(0 0 8px rgba(255,255,255,.8)) drop-shadow(0 0 12px rgba(217,186,114,.45)); }
+    .roundCue {
+      width: clamp(54px,4.7vw,90px); height: clamp(54px,4.7vw,90px); border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.76);
+      background: radial-gradient(circle at 38% 34%, rgba(255,255,255,.96), rgba(214,214,214,.9) 60%, rgba(185,185,185,.82));
+      box-shadow: 0 0 24px rgba(255,255,255,.42), 0 0 38px rgba(217,186,114,.18);
+    }
+    .roundCue::after {
+      content: ""; position: absolute; inset: -12px; border-radius: inherit;
+      border: 1px solid rgba(217,186,114,.28); animation: cuePulse 1.45s ease-in-out infinite;
+    }
+    /* 1-3 木锯素材：初始放在右侧，点击圆形按钮或木锯后，JS 会让它跟随鼠标。 */
+    .sawImg { position: absolute; z-index: 35; width: 37%; right: 7%; top: 30%; transform: rotate(21deg); pointer-events: none; transition: opacity .25s, filter .25s; }
+
+    /* 1-3 圆形提示按钮：只是提示用户“这里可以拿起木锯”，真实交互由 JS 绑定。 */
+    .sawToolHit { right: 12%; top: 58%; }
+    .tool-ready .sawToolHit, .tool-ready .knifeToolHit { opacity: 0; pointer-events: none; }
+    .scene:not(.tool-ready) .sawImg { filter: drop-shadow(0 0 18px rgba(217,186,114,.25)); pointer-events: auto; cursor: pointer; }
+    .sawing .sawImg { animation: saw .11s linear infinite; }
+    /* 1-3 锯切热区：拿起木锯后才出现；必须在这个区域按住并左右拖。 */
+    .sawZone { left: 45.5%; top: 28%; width: 15%; height: 23%; cursor: none; display: none; }
+    .tool-ready .sawZone { display: block; }
+    .dust { position: absolute; left: 52%; top: 41.5%; z-index: 24; width: 2px; height: 2px; pointer-events: none; overflow: visible; }
+    /* 木屑粒子由 JS 动态生成，每片木屑独立下落和旋转。 */
+    .chip {
+      position: absolute; width: var(--s); height: calc(var(--s) * .42); border-radius: 60% 35% 55% 40%;
+      background: linear-gradient(90deg, #f0d08a, #9b6932);
+      box-shadow: 0 0 4px rgba(231,190,113,.45); transform-origin: center; animation: chipFall var(--d) ease-out forwards;
+    }
+    /* 古风细进度条：用于锯切进度。left/top/width 可以移动和缩放整条进度。 */
+    .bar {
+      position: absolute; z-index: 35; left: 41%; top: 60.5%; width: 18%; height: 7px; padding: 1px;
+      border: 1px solid rgba(225,197,133,.68); border-radius: 99px;
+      background: linear-gradient(90deg, rgba(50,35,21,.72), rgba(24,17,12,.52));
+      box-shadow: inset 0 0 5px rgba(0,0,0,.74), 0 0 13px rgba(217,186,114,.18);
+    }
+    .bar::before,.bar::after { content:""; position:absolute; top:50%; width:34px; height:1px; background:rgba(217,186,114,.45); }
+    .bar::before { right:100%; } .bar::after { left:100%; }
+    .bar span { display: block; width: 0%; height: 100%; border-radius: 99px; background: linear-gradient(90deg,#8f6330,#d9ba72,#fff1b0); box-shadow: 0 0 12px rgba(217,186,114,.55); }
+    .sawHint { left: 50%; top: 64%; transform: translateX(-50%); }
+    /* 1-4 裁切完成竹管：这里不再放竹堆背景，只展示完成后的竹管。 */
+    .cutBamboo { width: 62%; left: 19%; top: 44%; transform: translateY(-50%); z-index: 16; }
+    .doneText { top: 64%; }
+    .doneHint { left: 50%; top: 70%; transform: translateX(-50%); }
+    /* fullHit (previously full-screen clickable area) is deprecated; hide to avoid full-page clicks */
+    .fullHit { display: none; }
+    /* ======================== 第二关：紫竹烤料 ======================== */
+
+    /* 第二关烤料：竹管加热时左右抖动，成功后向观众方向放大飞出。 */
+    .bakeText { top: 27%; }
+
+    /* 2-1 烤料竹管：width 控制竹管大小；left/top 控制悬停位置。 */
+    .bamboo2 { width: 62%; left: 19%; top: 40%; z-index: 18; transform-origin: 50% 50%; }
+
+    /* 2-1 火盆：bottom 为负数表示向屏幕下方露出一部分。 */
+    .brazier { width: 47%; left: 26.5%; bottom: -27%; z-index: 12; }
+
+    /* 2-1 受热红光和火焰光晕：主要负责氛围，不影响交互。 */
+    .heatGlow { position: absolute; z-index: 19; left: 43%; top: 41.5%; width: 15%; height: 5%; opacity: 0;
+      border-radius: 99px; background: radial-gradient(circle, rgba(255,87,47,.86), transparent 72%); filter: blur(9px); }
+    .flame { position: absolute; z-index: 13; left: 34%; bottom: 5.5%; width: 32%; height: 26%; opacity: 0;
+      border-radius: 50%; background: radial-gradient(circle, rgba(255,83,36,.74), transparent 38%); filter: blur(14px); }
+    .hot { filter: drop-shadow(0 0 34px rgba(255,112,43,.86)) brightness(1.08); }
+    .flame.hot { opacity: .9; animation: pulse .42s ease-in-out infinite alternate; }
+    #bakeBamboo.heating { animation: bakeShake .2s ease-in-out infinite alternate !important; filter: drop-shadow(0 0 30px rgba(255,130,54,.72)); }
+    .ruined { filter: brightness(.36) grayscale(.6) sepia(.45) drop-shadow(0 0 18px #000); }
+    /* 过热过渡样式：轻微变色、轻微抖动并带火焰光晕，过渡自然 */
+    #bakeBamboo.overheated { filter: brightness(.78) sepia(.18) drop-shadow(0 0 28px rgba(255,120,40,.6)); transform-origin: 50% 50%; animation: overheatPulse .6s ease-in-out infinite; }
+    @keyframes overheatPulse{ 0%{ transform: translateY(0) rotate(0); } 50%{ transform: translateY(-1%) rotate(.2deg); } 100%{ transform: translateY(0) rotate(0); } }
+    /* 燃烧/糊化过渡：先产生抖动与火焰光晕，再冒烟上升，最后变成灰暗的 ruined 状态 */
+    #bakeBamboo.burning { animation: burnShake .12s ease-in-out infinite alternate; filter: brightness(.9) saturate(.9) drop-shadow(0 0 34px rgba(255,100,30,.6)); transition: filter .9s ease, transform .9s ease; position: relative; }
+    #bakeBamboo.burning::after{ content:""; position: absolute; left: 50%; top: 8%; width: 22%; height: 22%; transform: translateX(-50%); pointer-events: none; background: radial-gradient(circle at 50% 30%, rgba(255,200,150,.9), rgba(255,120,40,.45) 30%, rgba(0,0,0,0) 60%); opacity: 0; filter: blur(8px); animation: smokeRise 1.2s ease-out forwards; }
+    @keyframes smokeRise{ 0%{ opacity: 0; transform: translateX(-50%) translateY(0) scale(.8); } 20%{ opacity:.7; } 100%{ opacity:0; transform: translateX(-50%) translateY(-160%) scale(1.6); } }
+    @keyframes burnShake{ 0%{ transform: translateY(0) rotate(0); } 50%{ transform: translateY(-.8%) rotate(.3deg); } 100%{ transform: translateY(0) rotate(0); } }
+    /* ruined 与 burning 通过平滑过渡衔接 */
+    #bakeBamboo.ruined{ transition: filter .9s ease, opacity .9s ease; }
+
+    /* 单个烟雾粒子（用于 JS 动态生成） */
+    .smoke {
+      position: absolute; z-index: 40; left: 50%; top: 16%; width: 22px; height: 22px;
+      background: radial-gradient(circle at 50% 30%, rgba(240,240,240,.9), rgba(200,200,200,.5) 40%, rgba(0,0,0,0) 70%);
+      border-radius: 50%; transform: translateX(-50%) translateY(0) scale(.8); opacity: 0; filter: blur(6px);
+      animation: smokeFloat 1.4s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes smokeFloat{ 0%{ opacity: .0; transform: translateX(-50%) translateY(0) scale(.8); } 15%{ opacity:.6; } 100%{ opacity:0; transform: translateX(-50%) translateY(-240%) scale(1.8); } }
+    /* 2-1 长按加热热区：透明按钮，覆盖竹管附近。 */
+    .hold { left: 18%; top: 33%; width: 64%; height: 24%; }
+    /* 将烤料页面的提示放在正文下方，靠近正文 */
+    .bakeHint { left: 50%; top: 33%; transform: translateX(-50%); }
+
+    /* 2-1 右侧竖向进度条：perfect 是绿色完美区间，heatFill 是当前加热值。 */
+    .meter {
+      position: absolute; z-index: 35; right: 11.8%; top: 32.2%; width: 24px; height: 286px;
+      border: 1px solid rgba(229,198,132,.78); border-radius: 99px;
+      background: linear-gradient(to bottom, rgba(64,43,25,.5), rgba(12,9,7,.62));
+      box-shadow: inset 0 0 10px rgba(0,0,0,.78), 0 0 18px rgba(217,186,114,.18);
+      overflow: visible;
+    }
+    .meter::before,.meter::after {
+      content:""; position:absolute; left:50%; transform:translateX(-50%); width:46px; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(229,198,132,.78), transparent);
+    }
+    .meter::before { top:-9px; } .meter::after { bottom:-9px; }
+    .meterLabel { position: absolute; left: -92px; top: 54px; width: 74px; color: rgba(229,211,181,.58); font-size: 19px; line-height:1.25; text-align: right; letter-spacing:1px; }
+    .perfect { position: absolute; left: 3px; bottom: 71%; width: calc(100% - 6px); height: 9%; border-radius: 99px; background: rgba(93,207,118,.84); box-shadow: 0 0 16px rgba(93,207,118,.85); }
+    .heatFill { position: absolute; left: 3px; bottom: 3px; width: calc(100% - 6px); height: 0%; border-radius: 99px; background: linear-gradient(to top,#b73f2c,#d99a45,#f6d88d); box-shadow: 0 0 11px rgba(217,153,69,.42); }
+    .bake-exit .bamboo2 { animation: bambooFlyOut .92s cubic-bezier(.18,.82,.22,1) forwards; }
+    .bake-exit .brazier { animation: brazierSink .92s cubic-bezier(.42,0,.58,1) forwards; }
+    .bake-exit .flame,.bake-exit .heatGlow,.bake-exit .meter,.bake-exit .bakeHint { animation: fadeAway .45s ease forwards; }
+    /* 2-2 烤料完成竹管：进入这一幕时会短暂左右轻抖。 */
+    .baked { width: 62%; left: 19%; top: 39%; z-index: 18; }
+    .scene[data-scene="bakeDone"].active .baked { animation: bakedShake .22s ease-in-out 7 alternate !important; }
+
+    /* ======================== 第三关：剔铜刻簧 ======================== */
+
+    .carveText { top: 25%; }
+
+    /* 3-1/3-2 底部竹管背景：配合 ::after 黑色渐变遮罩，让簧片更突出。 */
+    .reedBed { width: 72%; left: 15%; bottom: -45%; z-index: 10; }
+
+    /* 3-1 左侧两片已刻好的簧片，仅作背景参照。 */
+    .plate { width: 12.5%; top: 40%; z-index: 16; }
+    .p1 { left: 12%; transform: rotate(7deg); } .p2 { left: 23%; transform: rotate(8deg); }
+
+    /*
+      3-1 中央未开口簧片工作区：
+      - .work 控制整张簧片 PNG 和 U 型虚线一起移动、缩放、旋转；
+      - 想让 U 型虚线和簧片更贴合，优先调 .work 的 left/top/width/height/rotate；
+      - SVG 的 viewBox 和 path 是 U 型路径本身，通常不必先改。
+    */
+    .work { position: absolute; z-index: 25; left: 40%; top: 31.1%; width: 19.4%; height: 52%; transform: rotate(-4deg); }
+    .blank, .guide, .carveHit { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .blank { object-fit: contain; }
+    .guide { z-index: 3; overflow: visible; pointer-events: none; transform: rotate(17deg); transform-origin: 50% 50%; }
+    .guide path { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 12; }
+    #uGuide { stroke: #fff; stroke-dasharray: 13 17; filter: drop-shadow(0 0 9px #fff); }
+    #uGuide.bad { stroke: #d74336; filter: drop-shadow(0 0 10px #d74336); }
+    #uProgress { stroke: #ffdc71; filter: drop-shadow(0 0 14px #ffdc71); }
+    .carveHit { cursor: none; display: none; }
+    .tool-ready .carveHit { display: block; }
+    /* 3-1 刻刀素材：初始在右下，点击后由 JS 改成跟随鼠标。 */
+    .knife { position: absolute; z-index: 35; width: 26%; right: 3%; top: 55%; transform: rotate(34deg); pointer-events: none; }
+    .scene:not(.tool-ready) .knife { pointer-events: auto; cursor: pointer; }
+    .knifeToolHit { right: 7%; top: 72%; }
+
+    /* 3-1 圆形光标：持续显示鼠标所在位置，帮助用户沿 U 型虚线描刻。 */
+    .traceCursor {
+      position: absolute; z-index: 45; left: 48.5%; top: 41%; width: clamp(42px,3.4vw,64px); height: clamp(42px,3.4vw,64px);
+      border-radius: 50%; border: 2px solid rgba(255,255,255,.82);
+      background: radial-gradient(circle, rgba(255,255,255,.18), rgba(255,255,255,.08) 50%, transparent 70%);
+      box-shadow: 0 0 18px rgba(255,255,255,.42), 0 0 24px rgba(217,186,114,.28);
+      pointer-events: none; transform: translate(-50%,-50%); transition: left .08s linear, top .08s linear, opacity .2s;
+    }
+    .tracing .knife { animation: knife .16s linear infinite; }
+    .carveHint { right: 5%; top: 69%; }
+    .lift { animation: lift .78s ease both; }
+    .scene[data-scene="carve"]::after, .scene[data-scene="carveDone"]::after {
+      content: ""; position: absolute; z-index: 15; left: 18%; right: 0; bottom: 0; height: 45%;
+      background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,.38) 46%, rgba(0,0,0,0));
+      pointer-events: none;
+    }
+    /* 3-2 完成后的簧片组合图。 */
+    .finished { width: 34%; left: 31%; top: 37%; z-index: 18; }
+
+    /* ======================== 第四关：点砂定音 ======================== */
+
+    .tuneText { top: 25.5%; left: 54%; }
+
+    /* 4-1/4-2/4-3 左侧笙局部、朱砂碗、毛笔的位置。 */
+    .sheng { width: 41%; left: -3%; top: -10%; z-index: 18; }
+    .bowl { width: 24%; right: 9%; bottom: 15%; z-index: 16; }
+    .brush { width: 16%; left: 65%; top: 27%; transform: rotate(18deg); z-index: 20; transform-origin: 50% 92%; }
+    .brush.tap { animation: brushTap .36s ease-in-out !important; }
+    /* 4-2 音准调音器：needle 红线由 JS 根据 pitch 更新，target 是中央绿线。 */
+    .tuner { position: absolute; z-index: 32; left: 44%; top: 36%; width: 38%; height: 86px;
+      border-top: 1px solid rgba(217,186,114,.42); border-bottom: 1px solid rgba(217,186,114,.22);
+      background: linear-gradient(90deg, rgba(121,157,255,.08), rgba(88,213,121,.16), rgba(239,76,63,.1)); }
+    .tunerTitle { position: absolute; left: 50%; top: -34px; transform: translateX(-50%); color: #a98247; font-size: 22px; letter-spacing: 4px; }
+    .target { position: absolute; left: 50%; top: -10px; width: 4px; height: 106px; transform: translateX(-50%); background: #58d579; box-shadow: 0 0 18px #58d579; }
+    .band { position: absolute; left: 46.4%; top: 0; width: 7.2%; height: 100%; background: rgba(88,213,121,.16); }
+    .needle { position: absolute; left: 82%; top: -4px; width: 4px; height: 94px; transform: translateX(-50%); background: #d74336; box-shadow: 0 0 16px #d74336; }
+    .reedTip { left: 22.8%; top: 67.2%; width: 9%; height: 15%; border-radius: 50%; }
+    /* 4-2 红色圆形提示按钮：点击加朱砂，长按并左右滑动刮朱砂。 */
+    .paintDot { left: 77%; top: 65%; z-index: 36; }
+    .paintDot::before { content:""; position:absolute; inset:22%; border-radius:50%; background:#c93629; box-shadow:0 0 18px rgba(201,54,41,.75); }
+    .wax { position: absolute; left: 41%; top: -17%; width: 15%; height: 26%; border-radius: 50%; background: #cc3125; box-shadow: 0 0 18px #cc3125; }
+    #waxDrops span { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: #cf352b; box-shadow: 0 0 10px #cf352b; }
+    .tuneHint { left: 54%; bottom: 7.2%; transform: translateX(-50%); }
+    /* 4-3 定音完成局部图。 */
+    .finalClose { width: 43%; left: -3%; top: -4%; transform: rotate(-28deg); }
+    .tuneDoneText { left: 70%; top: 64%; }
+
+    /* ======================== 最终展示页 ======================== */
+
+    /* 4-4 右侧人物吹奏 GIF：想放大人物就调 width，想左右移动就调 right。 */
+    .finalInstrument { width: 40%; right: 7%; bottom: -10%; z-index: 18; }
+
+    /* 4-4 左侧成品笙展示图：想缩小成品笙就调 width。 */
+    .finalPlayer { width: 21%; left: 16%; bottom: 4%; z-index: 17; }
+    .finalText { left: 50%; top: 50%; transform: translate(-50%,-50%); text-align: center; }
+    /* 最终展示页的说明提示：紧贴诗句正下方，宽度较窄以便于阅读 */
+    .scene[data-scene="final"] .finalHint {
+      left: 50%; top: calc(50% + 2.6rem); transform: translateX(-50%);
+      width: min(520px, 62%); max-width: 86%;
+      text-align: center; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.9);
+      padding: 6px 12px; border-radius: 8px; background: rgba(0,0,0,0.12);
+      opacity: 0; transition: opacity .9s ease .28s, transform .6s ease;
+    }
+    .scene[data-scene="final"].active .finalHint { opacity: 1; }
+    /* .restart removed */
+    .particles { z-index: 60; pointer-events: none; overflow: hidden; }
+    .gold { position: absolute; width: 8px; height: 8px; background: #f8d777; box-shadow: 0 0 12px #f8d777; animation: gold 1.25s ease-out forwards; }
+    @keyframes saw { 50% { transform: translate(-22px,8px) rotate(18deg); } }
+    @keyframes cutDash { to { stroke-dashoffset: -44; } }
+    @keyframes cutShimmer { 0%,100% { opacity: .78; } 50% { opacity: 1; } }
+    @keyframes chipFall { to { opacity: 0; transform: translate(var(--x), var(--y)) rotate(var(--r)); } }
+    @keyframes bakeShake {
+      from { transform: translateX(-4.2%) translateY(-.5%) rotate(-1.15deg); }
+      to { transform: translateX(4.2%) translateY(.5%) rotate(1.15deg); }
+    }
+    @keyframes bakedShake {
+      from { transform: translateX(-1.8%) rotate(-.35deg); }
+      to { transform: translateX(1.8%) rotate(.35deg); }
+    }
+    @keyframes bambooFlyOut { 0% { transform: translateX(0) scale(1); opacity:1; } 45% { transform: translateX(1%) scale(1.18); opacity:.92; } 100% { transform: translateX(0) scale(2.35); opacity:0; filter: blur(5px) drop-shadow(0 0 42px rgba(246,211,141,.65)); } }
+    @keyframes brazierSink { to { transform: translateY(38%); opacity:0; filter: blur(2px); } }
+    @keyframes fadeAway { to { opacity:0; } }
+    @keyframes pulse { to { transform: scale(1.06); } }
+    @keyframes knife { 50% { transform: translate(-8px,5px) rotate(32deg); } }
+    @keyframes lift { 50% { transform: translateY(-2.5%) rotateX(18deg); filter: drop-shadow(0 0 44px #ffdf76) brightness(1.35); } 100% { transform: translateY(-1.5%) rotateX(10deg); } }
+    @keyframes gold { to { opacity: 0; transform: translate(var(--x), var(--y)) scale(.35) rotate(220deg); } }
+    @keyframes cuePulse { 50% { transform: scale(1.12); opacity: .35; } 100% { transform: scale(1.28); opacity: 0; } }
+    @keyframes brushTap {
+      0%,100% { transform: rotate(18deg); }
+      30% { transform: translate(-11px,10px) rotate(11deg) scale(1.035); }
+      62% { transform: translate(6px,-4px) rotate(23deg) scale(1.015); }
+    }
+    @keyframes artIn { from { transform: translateX(var(--enterX,0)) translateY(var(--enterY,18px)) scale(var(--enterScale,1.025)); opacity:.72; } }
+
+    /* 结果卡片模态样式 */
+    .completion-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 140; }
+    .completion-modal.is-visible { display: flex; }
+    .completion-modal .completion-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.48); }
+    /* 卡片：窄一些，使用用户指定米色与 arabesque 底纹（注意：建议将图案文件下载并自托管以供生产环境使用） */
+    .completion-card {
+      position: relative; z-index: 141;
+      width: min(560px,78%);
+      max-width: 90%;
+      max-height: 78vh;
+      background-color: #eee7cb;
+      background-image: url("笙制作assets/2.1卡片背景.png"),
+                        radial-gradient(circle at 20% 10%, rgba(0,0,0,0.03), transparent 8%),
+                        radial-gradient(circle at 80% 80%, rgba(0,0,0,0.02), transparent 12%);
+      background-repeat: repeat, no-repeat, no-repeat;
+      background-blend-mode: normal, multiply, overlay;
+      color: #361E19; border-radius: 18px; padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+      display: flex; flex-direction: column; align-items: center; text-align: center; font-family: inherit; overflow: hidden;
+    }
+    .completion-card h2 { margin: 12px 0 6px; font-size: 20px; color: #361E19; }
+    /* 动画容器微调 */
+    .completion-card .completion-animation { width: 100%; border-radius: 10px; overflow: hidden; }
+    /* 按钮区域：并列、间距一致 */
+    .completion-card .completion-actions { display: flex; gap: 14px; width: 100%; margin-top: 14px; }
+    .completion-card .completion-button {
+      flex: 1 1 auto; min-width: 120px; padding: 12px 18px; border-radius: 22px;
+      background: #000000; color: #361E19; border: none; box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+      cursor: pointer; font-weight: 600;
+    }
+    .completion-card .completion-button.secondary { background: #000000; }
+    /* 覆写全局 button 的绝对定位，确保模态内部按钮按正常文档流排列 */
+    .completion-card button { position: relative; z-index: 142; }
+    .completion-animation img { width: 100%; height: auto; max-height: 56vh; display: block; object-fit: contain; }
+    /* 完成页弹出动效：遮罩淡入、卡片弹入、GIF 上滑入场 + 伪元素简单碎屑动效 */
+    @keyframes completionBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes completionPop { 0% { opacity: 0; transform: translateY(18px) scale(.96); } 60% { opacity: 1; transform: translateY(-6px) scale(1.02); } 100% { transform: translateY(0) scale(1); } }
+    @keyframes imgSlideIn { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes confettiBurst { 0% { opacity: 1; transform: translateY(0) scale(1) rotate(0); } 100% { opacity: 0; transform: translateY(-140px) scale(.6) rotate(320deg); } }
+
+    .completion-modal.is-visible .completion-backdrop { animation: completionBackdropIn .36s ease-out both; }
+    .completion-modal.is-visible .completion-card { animation: completionPop .56s cubic-bezier(.2,.9,.3,1) both; }
+    .completion-modal.is-visible .completion-card .completion-animation img { animation: imgSlideIn .6s cubic-bezier(.2,.9,.3,1) both; }
+
+    /* 伪元素做简单的水墨/纸屑庆祝效果（纯 CSS，轻量） */
+    .completion-card::before, .completion-card::after {
+      content: ""; position: absolute; top: 12%; left: 50%; width: 8px; height: 8px; border-radius: 50%; opacity: 0; pointer-events: none; transform: translateX(-50%);
+    }
+    .completion-card::before { background: #f6d365; box-shadow: 28px -18px #e6b56a, -26px -30px #f0d88a, 12px -46px #e3b981; }
+    .completion-card::after { background: #ffeab8; box-shadow: -22px -12px #d8bf80, 18px -34px #f1dd9e, -12px -46px #e6c97a; }
+    .completion-modal.is-visible .completion-card::before { animation: confettiBurst .92s cubic-bezier(.2,.8,.3,1) both; }
+    .completion-modal.is-visible .completion-card::after { animation: confettiBurst .98s cubic-bezier(.2,.8,.3,1) .06s both; }
+    .completion-card h2 { margin: 12px 0 6px; font-size: 20px; color: #fff; }
+    .completion-actions { margin-top: 12px; display: flex; gap: 12px; width: 100%; }
+    .completion-button { padding: 10px 18px; border-radius: 8px; background: #d9b26a; color: #111; border: 0; cursor: pointer; font-weight: 600; flex: 1 1 48%; min-width: 120px; }
+    .completion-button.secondary { background: rgba(255,255,255,0.06); color: #fff; border: 1px solid rgba(255,255,255,0.06); }
+    /* Small screens: stack buttons vertically and make GIF smaller if needed */
+    @media (max-width: 480px){
+      .completion-card { width: calc(100% - 36px); padding: 14px; }
+      .completion-animation img { max-height: 42vh; }
+      .completion-actions { flex-direction: column; }
+      .completion-button { width: 100%; min-width: 0; }
+    }

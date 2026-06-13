@@ -1,0 +1,159 @@
+﻿
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>笙制作工艺互动</title>
+  <link rel="stylesheet" href="generalprocess.css">
+  <link rel="stylesheet" href="shengstyle.css">
+  
+</head>
+<body>
+  <main class="app" id="app">
+    <div class="bg"></div><div class="shade"></div><div class="fade"></div><div class="particles" id="particles"></div>
+    <header class="top">
+      <div class="title" id="stepTitle" style="display:none"> </div>
+      <div class="nav-dots" aria-hidden="true">
+        <div class="dot-wrapper">
+          <span class="dot active"></span>
+          <span class="dot-label">择竹</span>
+        </div>
+        <div class="dot-wrapper">
+          <span class="dot"></span>
+          <span class="dot-label">烤料</span>
+        </div>
+        <div class="dot-wrapper">
+          <span class="dot"></span>
+          <span class="dot-label">刻簧</span>
+        </div>
+        <div class="dot-wrapper">
+          <span class="dot"></span>
+          <span class="dot-label">定音</span>
+        </div>
+      </div>
+    </header>
+    <nav class="cornerNav" aria-label="场景跳转">
+      <button class="navBtn" id="prevScene" type="button" aria-label="回到上一步">‹</button>
+      <button class="navBtn" id="nextScene" type="button" aria-label="直接下一步">›</button>
+    </nav>
+
+    <!-- 1-1 择竹：竹堆 + 点击热区。图片大小看 CSS .stack，点击区域看 .pickHit。 -->
+    <section class="scene active" data-scene="pick" data-step="1" data-title="择竹截管">
+      <p class="copy pickText">在众多原材中挑选质地最佳的紫竹</p>
+      <img class="art stack" src="笙制作assets/制作1-1竹堆.png">
+      <button class="pickHit" id="pickHit"></button><p class="hint pickHint">点击竹堆</p>
+    </section>
+
+    <!-- 1-2 选中紫竹：主竹竿看 CSS .chosen；具体参数集中在 .app 的 --chosen-bamboo-*。 -->
+    <section class="scene" data-scene="chosen" data-step="1" data-title="择竹截管">
+      <p class="copy chosenText">质地紧密、节距匀称，正适合制笙</p>
+      <img class="art stack dim" src="笙制作assets/制作1-1竹堆.png">
+      <img class="art chosen halo" src="笙制作assets/制作1-2竹竿.png">
+      <button class="hint chosen-hint" id="chosenHit" data-go="saw">点击继续</button>
+    </section>
+
+    <!-- 1-3 锯切：竹竿看 .sawBamboo，虚线看 .cutLine，木锯看 .sawImg，锯切热区看 .sawZone。 -->
+    <section class="scene" data-scene="saw" data-step="1" data-title="择竹截管" id="sawScene">
+      <p class="copy sawText">截取出发声所需的确切长度</p>
+      <img class="art sawBamboo halo" src="笙制作assets/制作1-3竹竿.png">
+      <svg class="cutLine" viewBox="0 0 100 160" aria-hidden="true">
+        <defs>
+          <linearGradient id="cutGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset=".45" stop-color="#f3d78a"/>
+            <stop offset="1" stop-color="#c98f3f"/>
+          </linearGradient>
+        </defs>
+        <path class="cutGlow" d="M17 14 C38 45 46 72 54 96 C61 119 72 139 88 150"/>
+        <path class="cutMain" d="M17 14 C38 45 46 72 54 96 C61 119 72 139 88 150"/>
+      </svg>
+      <div class="dust" id="dust"></div><img class="sawImg" id="sawImg" src="笙制作assets/制作1-3木锯.png">
+      <button class="roundCue sawToolHit" id="sawToolHit" aria-label="拿起木锯"></button>
+      <button class="sawZone" id="sawZone"></button><div class="bar"><span id="sawFill"></span></div>
+      <p class="hint sawHint" id="sawHint">点击圆形按钮拿起木锯</p>
+    </section>
+
+    <!-- 1-4 裁切完成：只展示裁好的竹管，不再出现竹堆背景。 -->
+    <section class="scene" data-scene="cutDone" data-step="1" data-title="择竹截管">
+      <img class="art cutBamboo halo" src="笙制作assets/制作1-4竹竿.png">
+      <p class="copy doneText">裁切完成！</p><button class="hint doneHint" data-go="bake">点击继续</button>
+    </section>
+
+    <!-- 2-1 烤料：竹管看 .bamboo2，火盆看 .brazier，右侧进度条看 .meter。 -->
+    <section class="scene dark" data-scene="bake" data-step="2" data-title="紫竹烤料">
+      <p class="copy bakeText">高温去除鲜竹内部的水分，将天然弯曲矫正笔直</p>
+      <img class="art bamboo2 halo" id="bakeBamboo" src="笙制作assets/制作2-1竹竿.png">
+      <div class="heatGlow" id="heatGlow"></div><img class="art brazier" id="brazier" src="笙制作assets/制作2-1火炉.png"><div class="flame" id="flame"></div>
+      <div class="meter"><span class="meterLabel">脱水</span><span class="perfect"></span><span class="heatFill" id="heatFill"></span></div>
+      <button class="hold" id="hold"></button><p class="hint bakeHint" id="bakeHint">按住竹管加热，进入绿色区间时松开</p>
+    </section>
+
+    <!-- 2-2 烤料完成：完成竹管看 .baked，进入时会播放短抖动动画。 -->
+    <section class="scene dark" data-scene="bakeDone" data-step="2" data-title="紫竹烤料">
+      <p class="copy" style="top:29%;">烤料完成！</p><img class="art baked halo" src="笙制作assets/制作2-2烤干.png">
+      <img class="art brazier" src="笙制作assets/制作2-2火炉.png"><button class="hint" style="left:50%;top:35%;transform:translateX(-50%);" data-go="carve">点击继续</button>
+    </section>
+
+    <!-- 3-1 刻簧：工作簧片和 U 型虚线统一放在 .work 内，方便整体对齐。 -->
+    <section class="scene dark" data-scene="carve" data-step="3" data-title="剔铜刻簧" id="carveScene">
+      <p class="copy carveText">在极薄的响铜片上雕刻簧舌，这是笙发声的核心</p>
+      <img class="art reedBed" src="笙制作assets/制作3-1竹堆.png">
+      <img class="art plate p1" src="笙制作assets/制作3-1簧片.png"><img class="art plate p2" src="笙制作assets/制作3-1簧片.png">
+      <div class="work"><img class="blank halo" id="blank" src="笙制作assets/制作3-1未开口簧片.png">
+        <svg class="guide" id="guideSvg" viewBox="0 0 500 820"><path id="uGuide" d="M206 166 L206 604 Q206 690 250 690 Q294 690 294 604 L294 166"/><path id="uProgress" d="M206 166 L206 604 Q206 690 250 690 Q294 690 294 604 L294 166"/></svg>
+        <button class="carveHit" id="carveHit"></button></div>
+      <span class="traceCursor" id="traceCursor" aria-hidden="true"></span>
+      <img class="knife" id="knife" src="笙制作assets/制作3-1刻刀.png"><button class="roundCue knifeToolHit" id="knifeToolHit" aria-label="拿起刻刀"></button><p class="hint carveHint" id="carveHint">点击圆形按钮拿起刻刀</p>
+    </section>
+
+    <!-- 3-2 刻簧完成：竹堆背景和 3-1 一致，并叠加同样的黑色渐变遮罩。 -->
+    <section class="scene dark" data-scene="carveDone" data-step="3" data-title="剔铜刻簧">
+      <p class="copy" style="top:24%;">簧舌微雕完成</p>
+      <img class="art reedBed" src="笙制作assets/制作3-1竹堆.png">
+      <img class="art finished halo" src="笙制作assets/制作3-2簧片.png">
+      <button class="hint" style="left:50%;top:30%;transform:translateX(-50%);" data-go="tune">点击继续</button>
+    </section>
+
+    <!-- 4-1/4-2 点砂定音：左侧笙、右侧朱砂碗和毛笔；点击红圆点加砂，长按滑动减砂。 -->
+    <section class="scene dark" data-scene="tune" data-step="4" data-title="点砂定音">
+      <p class="copy tuneText">依靠朱砂物理配重进行调音，化刺耳为天籁</p>
+      <img class="art sheng halo" src="笙制作assets/制作4-3朱砂.png"><img class="art bowl halo" src="笙制作assets/制作4-2颜料.png"><img class="art brush" src="笙制作assets/制作4-2毛笔.png">
+      <div class="tuner"><span class="tunerTitle">音准调音器</span><span class="band"></span><span class="target"></span><span class="needle" id="needle"></span></div>
+      <button class="reedTip" id="reedTip"><span class="wax"></span><span id="waxDrops"></span></button><button class="roundCue paintDot" id="paintDot" aria-label="点击点砂，长按滑动刮砂"></button><p class="hint tuneHint" id="tuneHint">点击红色圆形点砂；长按左键左右滑动刮砂升音</p>
+    </section>
+
+    <!-- 4-3 定音完成：点击任意处进入最终展示页。 -->
+    <section class="scene dark" data-scene="tuneDone" data-step="4" data-title="点砂定音">
+      <img class="art sheng finalClose halo" src="笙制作assets/制作4-3朱砂.png"><p class="copy tuneDoneText">点砂定音完成！</p><button class="hint" style="left:70%;top:69%;transform:translateX(-50%);" data-go="final">点击继续</button>
+    </section>
+
+    <!-- 4-4 最终展示：左侧成品笙为静态图，右侧人物吹奏为透明底 GIF。 -->
+    <section class="scene dark" data-scene="final" data-step="4" data-title="点砂定音">
+      <img class="art finalPlayer" src="笙制作assets/制作4-4展示2.png"><img class="art finalInstrument halo" src="笙制作assets/笙吹奏展示.gif">
+      <p class="copy finalText">“凤吹笙如隔彩霞，不知墙外是谁家。”</p>
+      <p class="hint finalHint">这句诗出自唐代郎士元的《听邻家吹笙》。<br>以“凤吹笙”起笔，将笙声比作凤凰鸣奏，呈现出清丽高远的仙乐感；“隔彩霞”写声音仿佛从云霞深处传来，朦胧而悠远；“不知墙外是谁家”由声寻人、只闻其声不见其人，突出笙音的空灵与神秘。</p>
+    </section>
+  </main>
+  </main>
+
+  <!-- 结果卡片模态：进入最终页 1s 后显示 -->
+  <div class="completion-modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle" aria-hidden="true">
+    <div class="completion-backdrop"></div>
+    <div class="completion-card" role="document">
+      <div class="completion-animation" aria-hidden="true">
+        <img src="笙制作assets/笙吹奏展示.gif" alt="笙吹奏展示">
+      </div>
+      <h2 id="resultTitle">笙制作流程体验完成</h2>
+      <div class="completion-actions">
+        <button id="playAgainBtn" class="completion-button" type="button">重新体验</button>
+        <button id="closeModalBtn" class="completion-button secondary" type="button">继续探索</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="shengscript.js"></script>
+</body>
+</html>
+
+ 
