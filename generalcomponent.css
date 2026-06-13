@@ -1,0 +1,204 @@
+@charset "UTF-8";
+
+/*
+  中文脚注（文字层级说明）
+  1. --font-display: 页面显著标题/装饰性文字优先使用（如大标题、章名），首选项目内的方正隶书 `FZLiShu`。
+  2. --font-body: 正文、副标题与说明性文字默认使用，在此项目中已设为 `FZLiShu` 的后备体，以确保所有中文文本均来自项目字体。
+  3. --type-h1 .. --type-h4: 定义了从大到小的文字层级（h1 最大 -> h4 最小），请直接编辑这些变量来调整全站大小。
+  4. 如需更改某个层级的行高或字距，请在对应选择器（如 h1, h2, h3, h4）中修改 `line-height` / `letter-spacing`。
+
+  修改指引：
+  - 更改标题大小：修改 `--type-h1` / `--type-h2` 等变量。
+  - 更改正文字体：修改 `--font-body` 的优先顺序或文件路径。
+  - 本页的部件介绍（`.part-info`）默认隐藏，仅在悬停对应零件时显示（通过脚本控制类名 `.visible`）。
+*/
+/* 默认隐藏部件介绍，仅当悬停零件时通过脚本添加 `.visible` 显示 */
+.part-info {
+  /* 部件信息面板固定在屏幕左下，避免被结构图遮挡 */
+  position: fixed;
+  left: 6%;
+  bottom: 6%;
+  max-width: 360px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .22s ease, transform .22s ease, visibility .22s;
+  pointer-events: none;
+  z-index: 9999; /* 保证位于结构图之上 */
+}
+
+.part-info.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+@font-face {
+  font-family: FZLiShu;
+  src: url("fonts/方正隶书简体.TTF") format("truetype");
+  font-display: swap;
+}
+
+:root {
+  --color-ink: #070706;
+  --color-surface: #111412;
+  --color-gold: #c9a96e;
+  --color-gold-soft: #efd67d;
+  --color-paper: #eee7cb;
+  --color-paper-dim: rgba(238, 231, 203, .72);
+  --color-red: #9d2d2e;
+  --color-brown: #361e19;
+  --color-bamboo: #657e62;
+  --color-cyan: #9cc5c1;
+  --color-shadow: rgba(0, 0, 0, .64);
+
+  --type-h1: 32px;
+  --type-h2: 26px;
+  --type-h3: 22px;
+  --type-h4: 18px;
+
+  --font-display: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif;
+  /* Use the local font for body as well so all text comes from project fonts */
+  --font-body: FZLiShu, "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-display);
+}
+
+button {
+  font: inherit;
+}
+
+h1,
+.h1,
+h2,
+.h2,
+h3,
+.h3,
+h4,
+.h4,
+p {
+  margin: 0;
+}
+
+h1,
+.h1 {
+  color: var(--color-paper);
+  font-size: var(--type-h1);
+  font-weight: 400;
+  letter-spacing: 4px;
+  line-height: 1.14;
+  text-shadow: 0 4px 14px #000;
+}
+
+h2,
+.h2 {
+  color: var(--color-paper);
+  font-size: var(--type-h2);
+  font-weight: 400;
+  letter-spacing: 4px;
+  line-height: 1.18;
+  text-shadow: 0 4px 14px #000;
+}
+
+h3,
+.h3 {
+  color: var(--color-gold-soft);
+  font-size: var(--type-h3);
+  font-weight: 400;
+  letter-spacing: 3px;
+  line-height: 1.18;
+}
+
+h4,
+.h4 {
+  color: var(--color-gold);
+  font-size: var(--type-h4);
+  font-weight: 400;
+  letter-spacing: 5px;
+  line-height: 1.3;
+}
+
+/* 正文及小字号段落样式（原 h5/h6 合并） */
+p,
+.small {
+  color: var(--color-paper-dim);
+  font-family: var(--font-body);
+  font-size: var(--type-h4);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: .6px;
+}
+
+.panel-head {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  min-height: 96px;
+}
+
+.kicker {
+  margin-bottom: 6px;
+}
+/* 调整说明：
+   若要修改“Observing Phenomena”（`.kicker`）与主标题（`h1`）之间的垂直距离，
+   修改上方的 `margin-bottom` 数值即可。例如：
+     `.kicker { margin-bottom: 4px; }` // 更紧凑
+     `.kicker { margin-bottom: 16px; }` // 更宽松
+*/
+
+.button-pill {
+  position: relative;
+  z-index: 25;
+  flex: 0 0 auto;
+  border: 1px solid rgba(239, 214, 125, .52);
+  border-radius: 999px;
+  padding: 9px 18px 8px;
+  color: rgba(255, 246, 219, .95);
+  background: radial-gradient(circle at 30% 20%, rgba(255, 241, 196, .24), rgba(54, 30, 25, .46));
+  box-shadow: 0 0 18px rgba(201, 169, 110, .18), inset 0 0 14px rgba(255, 244, 201, .08);
+  cursor: pointer;
+  transition: transform .22s ease, filter .22s ease;
+}
+
+.button-pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.14);
+}
+
+.cornerNav { position: fixed; z-index: 120; top: 5.8%; right: 5%; display: flex; gap: 16px; }
+.navBtn {
+  position: relative; width: clamp(38px,3vw,58px); height: clamp(38px,3vw,58px);
+  border-radius: 50%; border: 1px solid rgba(229,198,132,.7);
+  background: radial-gradient(circle at 35% 30%, rgba(255,241,196,.9), rgba(180,130,62,.5) 58%, rgba(22,17,13,.38));
+  color: rgba(255,246,219,.95); font-size: clamp(22px,1.7vw,34px); line-height: 1;
+  box-shadow: 0 0 18px rgba(217,186,114,.24), inset 0 0 10px rgba(255,244,201,.15);
+  cursor: pointer; transition: transform .22s ease, opacity .22s ease, filter .22s ease;
+}
+.navBtn:hover { transform: scale(1.08); filter: brightness(1.12); }
+.navBtn.disabled { opacity: .34; pointer-events: none; }
+
+/* 结构图层级：确保 01 在 02 之上，02 在 03 之上 */
+.structure-piece { position: relative; }
+.structure-piece.piece-miao { z-index: 40; }
+.structure-piece.piece-kong { z-index: 30; }
+.structure-piece.piece-dou { z-index: 20; }
+.structure-piece.piece-zui { z-index: 10; }
+
+/* 部件介绍面板：提高层级并允许字号覆盖 */
+.part-info h3 { font-size: var(--type-h3); line-height: 1.18; }
+.part-info .part-body { font-size: var(--type-h4); line-height: 1.6; }

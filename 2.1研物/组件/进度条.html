@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进度条组件</title>
+    <link rel="stylesheet" href="componentstyle.css">
+    <!-- 在脚本中替换原来的 setNavStage 函数
+    const progressNav = new ProgressNav('progress-nav', ['择竹', '汗青', '开孔', '试音']);
+    然后用 progressNav.setStage(1) 代替原来的 setNavStage(1) -->
+</head>
+<body>
+<div class="nav-dots" id="progress-nav">
+    <!-- 动态生成，或使用插槽 -->
+</div>
+
+<script>
+    /**
+     * 进度条组件 - ProgressNav
+     * 用于显示多步骤进度指示器
+     *
+     * 用法：
+     * const nav = new ProgressNav('progress-nav', ['步骤1', '步骤2', '步骤3', '步骤4']);
+     * nav.setStage(2); // 设置当前步骤
+     */
+    class ProgressNav {
+        constructor(containerId, stages = []) {
+            this.container = document.getElementById(containerId);
+            this.stages = stages;
+            this.currentStage = 0;
+            if (this.stages.length > 0) {
+                this.render();
+            }
+        }
+
+        render() {
+            this.container.innerHTML = '';
+            this.stages.forEach((label, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'dot-wrapper';
+                if (index === 0) wrapper.classList.add('active');
+
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (index === 0) dot.classList.add('active');
+
+                const dotLabel = document.createElement('div');
+                dotLabel.className = 'dot-label';
+                dotLabel.textContent = label;
+
+                wrapper.appendChild(dot);
+                wrapper.appendChild(dotLabel);
+                this.container.appendChild(wrapper);
+            });
+            this.dotWrappers = this.container.querySelectorAll('.dot-wrapper');
+        }
+
+        setStage(index) {
+            if (index < 0 || index >= this.stages.length) return;
+            this.currentStage = index;
+
+            this.dotWrappers.forEach((wrapper, i) => {
+                wrapper.classList.remove('active', 'completed');
+                const dot = wrapper.querySelector('.dot');
+                dot.classList.remove('active', 'completed');
+
+                if (i < index) {
+                    wrapper.classList.add('completed');
+                    dot.classList.add('completed');
+                } else if (i === index) {
+                    wrapper.classList.add('active');
+                    dot.classList.add('active');
+                }
+            });
+        }
+
+        getCurrentStage() {
+            return this.currentStage;
+        }
+
+        getStages() {
+            return this.stages;
+        }
+    }
+
+    // 导出用于模块化使用
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = ProgressNav;
+    }
+    window.ProgressNav = ProgressNav;
+</script>
+</body>
+</html>
