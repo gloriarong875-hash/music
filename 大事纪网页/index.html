@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>笙 · 大事纪｜金声玉振</title>
+  <link rel="stylesheet" href="generalcomponent.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="金声玉振首页">
+      <span class="brand-mark">金</span>
+      <span>金声玉振</span>
+      <small>十大传统乐器</small>
+    </a>
+    <nav class="main-nav" aria-label="主导航">
+      <a href="#">研物</a>
+      <a href="#">观察</a>
+      <a class="active" href="#" aria-current="page">编年</a>
+    </nav>
+    <span class="header-note">SHENG ARCHIVE · 纪 01</span>
+  </header>
+
+  <main class="page-shell">
+    <section class="page-intro">
+      <div class="title-block">
+        <p class="eyebrow">CHRONICLE OF SHENG</p>
+        <div class="title-line">
+          <h1>笙 · 大事纪</h1>
+          <span class="red-seal" aria-hidden="true">纪</span>
+        </div>
+        <p class="subtitle">突破 · 转折 · 社会文化</p>
+      </div>
+      <nav class="sub-nav" aria-label="笙的内容导航">
+        <a href="#">声</a>
+        <a href="#">形</a>
+        <a class="active" href="#" aria-current="page"><span>纪</span></a>
+      </nav>
+      <p class="intro-copy">循史料与器物之迹，观一簧之声如何穿越礼乐、宫廷与市井。</p>
+    </section>
+
+    <section class="chronicle-layout">
+      <aside class="era-rail" aria-label="朝代时间轴">
+        <div class="rail-title"><span>竹简年轴</span><small>四时之序</small></div>
+        <nav class="era-nav">
+          <button class="era-node active" type="button" data-era="pre-qin">
+            <span class="node-seal">先<br>秦<br>汉</span><small>源起 · 礼乐</small>
+          </button>
+          <button class="era-node" type="button" data-era="tang">
+            <span class="node-seal">唐</span><small>盛世 · 东传</small>
+          </button>
+          <button class="era-node" type="button" data-era="song">
+            <span class="node-seal">宋</span><small>分流 · 转折</small>
+          </button>
+          <button class="era-node" type="button" data-era="ming-qing">
+            <span class="node-seal">明<br>清</span><small>民间 · 远播</small>
+          </button>
+        </nav>
+        <p class="rail-caption">上下滚动卷宗<br>或点击朝代印记</p>
+      </aside>
+
+      <div class="archive-scroll" id="archiveScroll" tabindex="0">
+        <div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+        <div id="timelineContent"></div>
+        <footer class="archive-footer">
+          <span>卷末</span>
+          <p>笙以自由簧发声，从华夏礼乐走向世界乐器史。</p>
+        </footer>
+      </div>
+
+      <aside class="artifact-panel">
+        <div class="artifact-heading">
+          <div><p class="eyebrow">IMAGE INDEX</p><h2>器物影格</h2></div>
+          <span id="artifactCount">01 / 04</span>
+        </div>
+        <div class="artifact-stage" id="artifactStage" aria-live="polite"></div>
+        <div class="artifact-index" id="artifactIndex"></div>
+        <p class="artifact-footnote">图像仅作史料索引，随当前朝代切换。</p>
+      </aside>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
