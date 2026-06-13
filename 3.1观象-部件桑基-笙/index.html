@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>笙结构与物源桑基图</title>
+  <!--
+    中文脚注（页面说明）
+    - 此页面由左右两栏组成：左侧结构展示（`.left-pane`），右侧为桑基图（`.right-pane`）。
+    - 若要调整“Observing Phenomena”与主标题的间距，编辑 `generalcomponent.css` 中 `.kicker { margin-bottom: ... }`。
+    - 部件介绍面板（`.part-info`）固定在视口左下，可在 `generalcomponent.css` 修改 `left`/`bottom`。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="shengstyle.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="layout" aria-label="笙结构与桑基图展示">
+      <div class="left-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Observing Phenomena</h4>
+            <h1>观象·结构</h1>
+          </div>
+        </header>
+
+        <nav class="cornerNav" aria-label="场景跳转">
+          <button class="navBtn" id="prevScene" type="button" aria-label="回到上一步">‹</button>
+          <button class="navBtn" id="nextScene" type="button" aria-label="直接下一步">›</button>
+        </nav>
+
+        <div class="stage">
+          <div class="core" aria-label="笙平面图到结构爆炸展示">
+            <div class="orbit-shell" aria-hidden="false">
+              <div class="orbit-rings"></div>
+              <div class="orbit-system">
+                <div class="orbit-node" data-part="笙苗" style="--angle:-92deg;--angle-back:92deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笙部件assets/零件1-笙苗.png" alt="笙苗" />
+                    <span class="orbit-label">笙苗</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="笙孔" style="--angle:-28deg;--angle-back:28deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笙部件assets/结构图2-笙孔.png" alt="笙孔" />
+                    <span class="orbit-label">笙孔</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="笙嘴" style="--angle:34deg;--angle-back:-34deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笙部件assets/零件5-笙嘴.png" alt="笙嘴" />
+                    <span class="orbit-label">笙嘴</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="朱砂" style="--angle:96deg;--angle-back:-96deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笙部件assets/零件4-朱砂.png" alt="朱砂" />
+                    <span class="orbit-label">朱砂</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="簧舌" style="--angle:158deg;--angle-back:-158deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笙部件assets/零件3-簧舌.png" alt="簧舌" />
+                    <span class="orbit-label">簧舌</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="笙斗" style="--angle:220deg;--angle-back:-220deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笙部件assets/零件2-笙斗.png" alt="笙斗" />
+                    <span class="orbit-label">笙斗</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <img class="plane-view" src="笙部件assets/笙平面图1.png" alt="笙平面图" />
+            <img class="structure-piece piece-miao" data-part="笙苗" src="笙部件assets/结构图1-笙苗.png" alt="结构图1 笙苗" />
+            <img class="structure-piece piece-kong" data-part="笙孔" src="笙部件assets/结构图2-笙孔.png" alt="结构图2 笙孔" />
+            <img class="structure-piece piece-dou" data-part="笙斗" src="笙部件assets/结构图3-笙斗.png" alt="结构图3 笙斗" />
+            <img class="structure-piece piece-zui" data-part="笙嘴" src="笙部件assets/结构图4-笙嘴.png" alt="结构图4 笙嘴" />
+
+            <div class="stack-index" aria-hidden="true">
+              <span>01</span>
+              <span>02</span>
+              <span>03</span>
+              <span>04</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-pane">
+        <header class="panel-head">
+            <div>
+                <h4 class="kicker">Data Visualization</h4>
+                <h1>观象·物源</h1>
+            </div>
+        </header>
+        <div class="chart-wrap">
+            <div id="sankey-chart" role="img" aria-label="笙部件到工艺、产地、材质与八音的桑基图"></div>
+        </div>
+    </div>
+      </div>
+    </section>
+      <!-- 部件介绍面板：固定在屏幕左下，避免被结构图遮挡。通过 JS 在悬停时显示/隐藏。 -->
+      <aside class="part-info" aria-live="polite">
+        <h3 id="partTitle">笙苗</h3>
+        <p id="partBody" class="part-body">笙苗由长短不同的竹管构成，是空气柱共鸣与定音的主体。管身排列如凤翼展开，承接了笙“簧管合鸣”的基本形态。</p>
+      </aside>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="general.js"></script>
+  <script src="shengscript.js"></script>
+</body>
+</html>
