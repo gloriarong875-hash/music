@@ -1,0 +1,772 @@
+{
+  "version": "2.13",
+  "children": [
+    {
+      "type": "frame",
+      "id": "xpWaa",
+      "x": 0,
+      "y": 0,
+      "name": "笙的历史演变",
+      "clip": true,
+      "width": 1440,
+      "height": 960,
+      "fill": "$color-ink",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "L6nVZH",
+          "name": "Panel Head",
+          "width": "fill_container",
+          "gap": 18,
+          "padding": [
+            48,
+            64,
+            0,
+            64
+          ],
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "FKfQl",
+              "name": "Title Group",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "a7s8H",
+                  "name": "Kicker",
+                  "fill": "$color-gold",
+                  "content": "观象",
+                  "lineHeight": 1.3,
+                  "fontFamily": "Noto Serif SC",
+                  "fontSize": "$type-h4",
+                  "fontWeight": "normal",
+                  "letterSpacing": 5
+                },
+                {
+                  "type": "text",
+                  "id": "uEyLP",
+                  "name": "Main Title",
+                  "fill": "$color-paper",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#000000",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 14
+                  },
+                  "content": "笙的历史演变",
+                  "lineHeight": 1.14,
+                  "fontFamily": "Noto Serif SC",
+                  "fontSize": "$type-h1",
+                  "fontWeight": "normal",
+                  "letterSpacing": 4
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "N9KMpB",
+              "name": "Button Pill",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#fff1c43d",
+                    "position": 0
+                  },
+                  {
+                    "color": "#361e1975",
+                    "position": 1
+                  }
+                ],
+                "center": {
+                  "x": 0.3,
+                  "y": 0.2
+                }
+              },
+              "cornerRadius": 999,
+              "stroke": "#efd67d85",
+              "strokeWidth": 1,
+              "padding": [
+                9,
+                18,
+                8,
+                18
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "WbsnN",
+                  "name": "Pill Label",
+                  "fill": "#fff6dbf2",
+                  "content": "部件探索",
+                  "fontFamily": "Noto Serif SC",
+                  "fontSize": "$type-h4",
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "O243c",
+          "layoutPosition": "absolute",
+          "x": 1369,
+          "y": 56,
+          "name": "Corner Nav",
+          "gap": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "EfsKy",
+              "name": "Prev Button",
+              "width": 48,
+              "height": 48,
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#fff1c4e6",
+                    "position": 0
+                  },
+                  {
+                    "color": "#b4823e80",
+                    "position": 0.58
+                  },
+                  {
+                    "color": "#16110d61",
+                    "position": 1
+                  }
+                ],
+                "center": {
+                  "x": 0.35,
+                  "y": 0.3
+                }
+              },
+              "cornerRadius": 999,
+              "stroke": "#e5c684b3",
+              "strokeWidth": 1,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "kQBRA",
+                  "name": "Prev Button Icon",
+                  "fill": "#fff6dbf2",
+                  "content": "←",
+                  "lineHeight": 1,
+                  "fontFamily": "Noto Serif SC",
+                  "fontSize": 24,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qpvfv",
+              "name": "Next Button",
+              "width": 48,
+              "height": 48,
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#fff1c4e6",
+                    "position": 0
+                  },
+                  {
+                    "color": "#b4823e80",
+                    "position": 0.58
+                  },
+                  {
+                    "color": "#16110d61",
+                    "position": 1
+                  }
+                ],
+                "center": {
+                  "x": 0.35,
+                  "y": 0.3
+                }
+              },
+              "cornerRadius": 999,
+              "stroke": "#e5c684b3",
+              "strokeWidth": 1,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "W6lcX",
+                  "name": "Next Button Icon",
+                  "fill": "#fff6dbf2",
+                  "content": "→",
+                  "lineHeight": 1,
+                  "fontFamily": "Noto Serif SC",
+                  "fontSize": 24,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c0y4J",
+          "name": "Main Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 48,
+          "padding": [
+            0,
+            64
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "EReak",
+              "name": "Section Header",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "AE6bu",
+                  "name": "Header Line",
+                  "fill": "$color-gold",
+                  "width": 40,
+                  "height": 1
+                },
+                {
+                  "type": "text",
+                  "id": "W07B4",
+                  "name": "Section Title",
+                  "fill": "$color-paper",
+                  "content": "演变历程",
+                  "lineHeight": 1.18,
+                  "fontFamily": "Noto Serif SC",
+                  "fontSize": "$type-h2",
+                  "fontWeight": "normal",
+                  "letterSpacing": 4
+                },
+                {
+                  "type": "rectangle",
+                  "id": "FpbZz",
+                  "name": "Header Line End",
+                  "fill": "#c9a96e2e",
+                  "width": "fill_container",
+                  "height": 1
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "U3cTD",
+              "name": "Timeline Row",
+              "width": "fill_container",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "$color-gold",
+                "offset": {
+                  "x": 0,
+                  "y": -5
+                }
+              },
+              "padding": [
+                8,
+                0
+              ],
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "FQidc",
+                  "name": "Period 商周",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "z3ya1l",
+                      "name": "Dot 商周",
+                      "fill": "$color-gold-soft",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "text",
+                      "id": "m3ZoHq",
+                      "name": "Name 商周",
+                      "fill": "$color-gold-soft",
+                      "content": "商周",
+                      "lineHeight": 1.18,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": "$type-h3",
+                      "fontWeight": "normal",
+                      "letterSpacing": 3
+                    },
+                    {
+                      "type": "text",
+                      "id": "SGP9z",
+                      "name": "Year 商周",
+                      "fill": "$color-paper-dim",
+                      "content": "前1600-256",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": 12,
+                      "fontWeight": "normal",
+                      "letterSpacing": 0.6
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "fOVHb",
+                  "name": "Period 春秋战国",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "gemGm",
+                      "name": "Dot 春秋战国",
+                      "fill": "$color-gold",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "text",
+                      "id": "G4Ahwf",
+                      "name": "Name 春秋战国",
+                      "fill": "$color-gold-soft",
+                      "content": "春秋战国",
+                      "lineHeight": 1.18,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": "$type-h3",
+                      "fontWeight": "normal",
+                      "letterSpacing": 3
+                    },
+                    {
+                      "type": "text",
+                      "id": "OM5et",
+                      "name": "Year 春秋战国",
+                      "fill": "$color-paper-dim",
+                      "content": "前770-221",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": 12,
+                      "fontWeight": "normal",
+                      "letterSpacing": 0.6
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "AMsBg",
+                  "name": "Period 秦汉",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "wfjSG",
+                      "name": "Dot 秦汉",
+                      "fill": "$color-gold",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "text",
+                      "id": "q5yLym",
+                      "name": "Name 秦汉",
+                      "fill": "$color-gold-soft",
+                      "content": "秦汉",
+                      "lineHeight": 1.18,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": "$type-h3",
+                      "fontWeight": "normal",
+                      "letterSpacing": 3
+                    },
+                    {
+                      "type": "text",
+                      "id": "s8IF5y",
+                      "name": "Year 秦汉",
+                      "fill": "$color-paper-dim",
+                      "content": "前221-220",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": 12,
+                      "fontWeight": "normal",
+                      "letterSpacing": 0.6
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HLsfk",
+                  "name": "Period 隋唐",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "n2wtiY",
+                      "name": "Dot 隋唐",
+                      "fill": "$color-gold",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "text",
+                      "id": "PIEnz",
+                      "name": "Name 隋唐",
+                      "fill": "$color-gold-soft",
+                      "content": "隋唐",
+                      "lineHeight": 1.18,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": "$type-h3",
+                      "fontWeight": "normal",
+                      "letterSpacing": 3
+                    },
+                    {
+                      "type": "text",
+                      "id": "g5HOb",
+                      "name": "Year 隋唐",
+                      "fill": "$color-paper-dim",
+                      "content": "581-907",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": 12,
+                      "fontWeight": "normal",
+                      "letterSpacing": 0.6
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Pn4ab",
+                  "name": "Period 宋元",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "PCx9o",
+                      "name": "Dot 宋元",
+                      "fill": "$color-gold",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "text",
+                      "id": "gGqXY",
+                      "name": "Name 宋元",
+                      "fill": "$color-gold-soft",
+                      "content": "宋元",
+                      "lineHeight": 1.18,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": "$type-h3",
+                      "fontWeight": "normal",
+                      "letterSpacing": 3
+                    },
+                    {
+                      "type": "text",
+                      "id": "qkIQB",
+                      "name": "Year 宋元",
+                      "fill": "$color-paper-dim",
+                      "content": "960-1368",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": 12,
+                      "fontWeight": "normal",
+                      "letterSpacing": 0.6
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xNGcc",
+                  "name": "Period 明清",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "J8OQEt",
+                      "name": "Dot 明清",
+                      "fill": "$color-gold",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "text",
+                      "id": "guvS7",
+                      "name": "Name 明清",
+                      "fill": "$color-gold-soft",
+                      "content": "明清",
+                      "lineHeight": 1.18,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": "$type-h3",
+                      "fontWeight": "normal",
+                      "letterSpacing": 3
+                    },
+                    {
+                      "type": "text",
+                      "id": "IDEKl",
+                      "name": "Year 明清",
+                      "fill": "$color-paper-dim",
+                      "content": "1368-1912",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": 12,
+                      "fontWeight": "normal",
+                      "letterSpacing": 0.6
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "fVb5B",
+                  "name": "Period 现代",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "m4OV1U",
+                      "name": "Dot 现代",
+                      "fill": "$color-gold",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "text",
+                      "id": "ZzaOa",
+                      "name": "Name 现代",
+                      "fill": "$color-gold-soft",
+                      "content": "现代",
+                      "lineHeight": 1.18,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": "$type-h3",
+                      "fontWeight": "normal",
+                      "letterSpacing": 3
+                    },
+                    {
+                      "type": "text",
+                      "id": "G6sBS",
+                      "name": "Year 现代",
+                      "fill": "$color-paper-dim",
+                      "content": "1912至今",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": 12,
+                      "fontWeight": "normal",
+                      "letterSpacing": 0.6
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Ws95T",
+              "name": "Description Area",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "GfiDr",
+                  "name": "Evolution Description",
+                  "fill": "$color-paper-dim",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "笙是中国最古老的吹奏乐器之一，也是世界上最早使用自由簧的乐器。从商周甲骨文中的\"和\"字，到春秋战国的竽笙并称，再到隋唐燕乐之首，笙的演变贯穿了中华音乐文明三千年。其独特的簧管耦合发声原理，启发了口琴、风琴等西方乐器的诞生。",
+                  "lineHeight": 1.6,
+                  "fontFamily": "Noto Serif SC",
+                  "fontSize": "$type-h4",
+                  "fontWeight": "normal",
+                  "letterSpacing": 0.6
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "okeQA",
+              "name": "Structure Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "eXgYv",
+                  "name": "Structure Title Row",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "K4Ekv",
+                      "name": "Struct Decor",
+                      "fill": "$color-gold",
+                      "width": 24,
+                      "height": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "OIL74",
+                      "name": "Structure Label",
+                      "fill": "$color-gold-soft",
+                      "content": "四层结构",
+                      "lineHeight": 1.18,
+                      "fontFamily": "Noto Serif SC",
+                      "fontSize": "$type-h3",
+                      "fontWeight": "normal",
+                      "letterSpacing": 3
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "wLwYG",
+                      "name": "Struct Decor End",
+                      "fill": "#c9a96e2e",
+                      "width": "fill_container",
+                      "height": 1
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "uruBH",
+                  "name": "Structure Pieces Row",
+                  "width": "fill_container",
+                  "height": "fit_content(0)",
+                  "gap": 24,
+                  "justifyContent": "center"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "color-bamboo": {
+      "type": "color",
+      "value": "#657e62"
+    },
+    "color-brown": {
+      "type": "color",
+      "value": "#361e19"
+    },
+    "color-cyan": {
+      "type": "color",
+      "value": "#9cc5c1"
+    },
+    "color-gold": {
+      "type": "color",
+      "value": "#c9a96e"
+    },
+    "color-gold-soft": {
+      "type": "color",
+      "value": "#efd67d"
+    },
+    "color-ink": {
+      "type": "color",
+      "value": "#070706"
+    },
+    "color-paper": {
+      "type": "color",
+      "value": "#eee7cb"
+    },
+    "color-paper-dim": {
+      "type": "color",
+      "value": "rgba(238,231,203,0.72)"
+    },
+    "color-red": {
+      "type": "color",
+      "value": "#9d2d2e"
+    },
+    "color-shadow": {
+      "type": "color",
+      "value": "rgba(0,0,0,0.64)"
+    },
+    "color-surface": {
+      "type": "color",
+      "value": "#111412"
+    },
+    "font-body": {
+      "type": "string",
+      "value": "FZLiShu"
+    },
+    "font-display": {
+      "type": "string",
+      "value": "FZLiShu"
+    },
+    "type-h1": {
+      "type": "number",
+      "value": 32
+    },
+    "type-h2": {
+      "type": "number",
+      "value": 26
+    },
+    "type-h3": {
+      "type": "number",
+      "value": 22
+    },
+    "type-h4": {
+      "type": "number",
+      "value": 18
+    }
+  }
+}
