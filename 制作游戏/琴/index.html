@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>琴韵千年——古琴制作</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="qinstyle.css">
 </head>
 <body>
 <div id="canvas">
@@ -49,7 +49,7 @@
 // ═══════════════════════════════════════════
 const F = [
   { // 0: 琴1-1 制胚开始
-    img:'图/制胚.png', ix:272,iy:161,iw:896,ih:578,
+    img:'琴部件assets/步骤1-制胚.png', ix:272,iy:161,iw:896,ih:578,
     txt:'', tx:848,ty:311, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     whiteOn:false, wx:928,wy:627,
@@ -57,7 +57,7 @@ const F = [
     extra:null
   },
   { // 1: 琴1-2 开槽
-    img:'图/制胚.png', ix:-766,iy:-515,iw:1866,ih:1204,
+    img:'琴部件assets/步骤1-制胚.png', ix:-766,iy:-515,iw:1866,ih:1204,
     txt:'开槽决定了古琴最终的音色', tx:848,ty:311, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     whiteOn:true, wx:928,wy:627,
@@ -65,7 +65,7 @@ const F = [
     extra:null
   },
   { // 2: 琴1-3 合琴
-    img:'图/制胚.png', ix:-770,iy:-489,iw:1866,ih:1204,
+    img:'琴部件assets/步骤1-制胚.png', ix:-770,iy:-489,iw:1866,ih:1204,
     txt:'琴面和琴底相合称为合琴', tx:848,ty:311, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     whiteOn:true, wx:928,wy:627,
@@ -73,7 +73,7 @@ const F = [
     extra:null
   },
   { // 3: 排箫2-1 裱布
-    img:'图/2髹漆.png', ix:257,iy:138,iw:894,ih:624,
+    img:'琴部件assets/步骤2-髹漆.png', ix:257,iy:138,iw:894,ih:624,
     txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     whiteOn:true, wx:928,wy:627,
@@ -81,7 +81,7 @@ const F = [
     extra:null
   },
   { // 4: 排箫2-2 髹漆一层
-    img:'图/2髹漆.png', ix:-112,iy:-311,iw:1411,ih:985,
+    img:'琴部件assets/步骤2-髹漆.png', ix:-112,iy:-311,iw:1411,ih:985,
     txt:'麻布裹琴，加上含鹿角粉末的漆料', tx:805,ty:674, tsize:32,tcolor:'#000000',
     overlay:{x:215,y:349,w:1084,h:125, fill:'#2d324069'},
     tilted:null,
@@ -90,7 +90,7 @@ const F = [
     extra:null
   },
   { // 5: 排箫2-3 琴体显现
-    img:'图/琴.png', ix:172,iy:325,iw:1127,ih:163,
+    img:'琴部件assets/结构图-琴整体.png', ix:172,iy:325,iw:1127,ih:163,
     txt:'麻布裹琴，加上含鹿角粉末的漆料', tx:826,ty:776, tsize:32,tcolor:'#000000',
     overlay:{x:215,y:349,w:1084,h:125, fill:'#2d324069'},
     tilted:{x:40,y:349,w:1166,h:513, rot:14.923, opacity:0.1},
@@ -99,7 +99,7 @@ const F = [
     extra:null
   },
   { // 6: 排箫2-4 打磨完成
-    img:'图/琴.png', ix:172,iy:325,iw:1127,ih:163,
+    img:'琴部件assets/结构图-琴整体.png', ix:172,iy:325,iw:1127,ih:163,
     txt:'混合多种矿石的不同漆料多次髹涂打磨，琴面如镜，音韵愈沉', tx:116,ty:654, tsize:32,tcolor:'#000000',
     overlay:{x:172,y:325,w:1119,h:163, fill:'#433634c4'},
     tilted:null,
@@ -108,7 +108,7 @@ const F = [
     extra:null
   },
   { // 7: 排箫3-1 选弦介绍
-    img:'图/选弦.png', ix:114,iy:172,iw:1089,ih:555,
+    img:'琴部件assets/步骤3-选弦.png', ix:114,iy:172,iw:1089,ih:555,
     txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     whiteOn:true, wx:928,wy:627,
@@ -116,7 +116,7 @@ const F = [
     extra:null
   },
   { // 8: 排箫3-2 选弦交互 [LOCK]
-    img:'图/选弦.png', ix:-620,iy:159,iw:3113,ih:1588,
+    img:'琴部件assets/步骤3-选弦.png', ix:-620,iy:159,iw:3113,ih:1588,
     txt:'弦音清亮', tx:96,ty:125, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     whiteOn:true, wx:928,wy:627,
@@ -128,12 +128,12 @@ const F = [
       {t:'nylon',content:'钢丝尼龙弦',x:489,y:243,fs:32,color:'#647e6d'}
     ],
     extra:[
-      {src:'图/选弦 3.png', x:-86,y:195, w:1218,h:610, op:0.5},
-      {src:'图/选弦 3.png', x:-181,y:232, w:1227,h:621, op:0.5}
+      {src:'琴部件assets/步骤3b-选弦备选.png', x:-86,y:195, w:1218,h:610, op:0.5},
+      {src:'琴部件assets/步骤3b-选弦备选.png', x:-181,y:232, w:1227,h:621, op:0.5}
     ]
   },
   { // 9: 排箫4-1 上弦
-    img:'图/调音上弦.png', ix:252,iy:132,iw:569,ih:636,
+    img:'琴部件assets/步骤4-调音上弦.png', ix:252,iy:132,iw:569,ih:636,
     txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     whiteOn:true, wx:928,wy:627,
@@ -141,7 +141,7 @@ const F = [
     extra:null
   },
   { // 10: 排箫4-2 调音完成
-    img:'图/调音上弦.png', ix:21,iy:-276,iw:1053,ih:1176,
+    img:'琴部件assets/步骤4-调音上弦.png', ix:21,iy:-276,iw:1053,ih:1176,
     txt:'调音上弦，七弦成韵', tx:0,ty:0, tsize:28,tcolor:'#3b4942',
     overlay:null, tilted:null,
     whiteOn:false, wx:928,wy:627,
