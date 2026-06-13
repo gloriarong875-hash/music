@@ -1,0 +1,193 @@
+﻿:root {
+  --gold: #c9a96e;
+  --gold-dim: #8a7a5a;
+  --brown: #5a4a3a;
+  --type-lg: clamp(24px,1.85vw,36px);
+  --type-sm: clamp(18px,1.34vw,27px);
+}
+
+/*
+  文字层级说明（Text Hierarchy）
+  --------------------------------
+  本节为工程内统一的文字层级定义与语义映射，便于各页面复用和快速调整。
+
+  语义级别（从上到下）：
+  - Title / Page Title (.title)
+    用途：页面或步骤的顶层短文本（例如顶部步骤标题、模态标题）。
+    建议：较小的显示字号，但有较大字距与高对比色。使用 --type-lg 的下限或显式数值。
+
+  - Headline / Primary copy (.copy)
+    用途：每个场景的主文案，通常为一句简短描述或具表现力的诗句。
+    建议：使用 `--type-lg`（clamp 以适配屏宽），单行显示（white-space: nowrap），高层级 z-index（默认 20）。
+
+  - Subcopy / Secondary text (.dot-label 等)
+    用途：导航标签、次要说明等。字号介于 headline 与 body 之间。
+    建议：使用固定中号（如 16px）或 `--type-sm` 的较大值，颜色偏低对比。
+
+  - Body / Hint (.hint)
+    用途：操作提示、交互提示与辅助说明（例如“点击继续”），在页面中作为操作提示出现。
+    建议：使用 `--type-sm`，颜色略亮（如 #d9c7a4），使用隶书或指定首选字体以增强古风感；z-index 更高（默认 30）以保证可见性。
+
+  - UI controls（按钮文字）
+    用途：模态、按钮文字等。通常使用与页面风格一致的字重与字号（completion-card 中采用 18px）。
+
+  层级（z-index）约定：
+  - particles / celebration: 60+
+  - top title / nav-dots: 50
+  - copy (场景主文案): 20
+  - hint (操作提示): 30
+  - nav buttons / corner nav: 80
+  - completion modal: 140+
+
+  可维护性建议：
+  - 所有主要字号使用变量 `--type-lg` / `--type-sm` 或在根节点定义额外变量，便于一处调整全站。
+  - 提示文字使用 `font-family` 指向隶书（FZLiShu / LiSu）以保证风格一致；若无隶书可回退到系统中文衬线或无衬线字体。
+  - 若移动端需要压缩字号或调整间距，应在 `@media` 中覆盖 `--type-*` 变量。
+
+*/
+
+/* 顶部居中步骤/导航点（可复用于其它乐器制作流程） */
+.nav-dots {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 32px;
+  z-index: 10;
+}
+
+.dot-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #444;
+  border: 2px solid #555;
+  transition: all 0.4s ease;
+}
+
+.dot.done {
+  background: var(--gold-dim);
+  border-color: var(--gold-dim);
+}
+
+.dot.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 18px rgba(201,169,110,0.45);
+}
+
+.dot-label {
+  font-family: inherit; /* use same font as page */
+  font-size: 16px; /* fixed size */
+  color: #7f7f7f;
+  letter-spacing: 2px;
+  transition: color 0.4s ease;
+  white-space: nowrap;
+}
+
+.dot.done + .dot-label,
+.dot.active + .dot-label {
+  color: var(--gold);
+}
+
+@media (max-width: 768px) {
+  .nav-dots { gap: 20px; }
+  .dot { width: 12px; height: 12px; }
+  /* dot-label will scale with --type-sm; if you want a different mobile size,
+     override --type-sm in a mobile-specific rule instead. */
+}
+
+/* 右上角全局导航按钮（上一幕 / 下一幕） */
+.cornerNav { position: absolute; z-index: 80; top: 5.8%; right: 5%; display: flex; gap: 16px; }
+.navBtn {
+  position: relative; width: clamp(38px,3vw,58px); height: clamp(38px,3vw,58px);
+  border-radius: 50%; border: 1px solid rgba(229,198,132,.7);
+  background: radial-gradient(circle at 35% 30%, rgba(255,241,196,.9), rgba(180,130,62,.5) 58%, rgba(22,17,13,.38));
+  color: rgba(255,246,219,.95); font-size: clamp(22px,1.7vw,34px); line-height: 1;
+  box-shadow: 0 0 18px rgba(217,186,114,.24), inset 0 0 10px rgba(255,244,201,.15);
+  cursor: pointer; transition: transform .22s ease, opacity .22s ease, filter .22s ease;
+}
+.navBtn:hover { transform: scale(1.08); filter: brightness(1.12); }
+.navBtn.disabled { opacity: .34; pointer-events: none; }
+
+/* 通用文字层级和配色 */
+.title { color: var(--gold); font-size: clamp(18px,1.25vw,24px); letter-spacing: 4px; margin-bottom: 14px; }
+
+/* 文字层级与字号（项目共用） */
+.copy {
+  z-index: 20;
+  font-size: var(--type-lg);
+  color: rgba(255,255,255,.92);
+  letter-spacing: 2px;
+  white-space: nowrap;
+  text-shadow: 0 3px 10px #000;
+}
+
+.hint {
+  z-index: 30;
+  font-size: var(--type-sm);
+  color: #d9c7a4; /* 更清晰的提示色 */
+  /* 使用隶书作为提示文字的首选字体（Windows: LiSu/隶书） */
+  font-family: "LiSu", "隶书", "Microsoft YaHei", "PingFang SC", serif;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px #000;
+  text-align: center;
+}
+
+/* hint 脉冲闪动动画，增强提示可见性（轻微，不刺眼） */
+.hint {
+  animation: hintPulse 1.8s ease-in-out infinite;
+  will-change: opacity, transform, text-shadow;
+}
+
+@keyframes hintPulse {
+  0% { opacity: 1; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+  45% { opacity: 0.72; text-shadow: 0 4px 12px rgba(0,0,0,0.55); }
+  60% { opacity: 0.86; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+  100% { opacity: 1; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+}
+
+/* Completion card typography and button styles (override to ensure consistency) */
+.completion-card {
+  /* use same 隶书 font family as page */
+  font-family: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif !important;
+  color: #361E19 !important;
+}
+.completion-card h2 {
+  font-size: 26px !important;
+  color: #361E19 !important;
+  margin: 10px 0 8px !important;
+}
+.completion-card p,
+.completion-card .completion-text {
+  color: #361E19 !important;
+}
+.completion-card .completion-actions { justify-content: center !important; }
+.completion-card .completion-button,
+.completion-card .completion-button.secondary,
+.completion-card .completion-actions .completion-button {
+  background: #D6C481 !important;
+  color: #361E19 !important;
+  font-size: 18px !important;
+  font-family: FZLiShu, "LiSu", "隶书", serif !important;
+  border-radius: 22px !important;
+  border: none !important;
+  /* ensure symmetry: equal widths, centered */
+  flex: 0 1 44% !important;
+  max-width: 220px !important;
+  min-width: 120px !important;
+  margin: 0 8px !important;
+}
+
+@media (max-width: 480px) {
+  .completion-card h2 { font-size: 16px !important; }
+  .completion-card .completion-button { font-size: 15px !important; }
+}
