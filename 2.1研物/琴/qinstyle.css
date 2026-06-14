@@ -1,7 +1,13 @@
+/* ========== 本地方正隶书字体 ========== */
+@font-face {
+  font-family: FZLiShu;
+  src: url("../../方正隶书_GBK.ttf") format("truetype");
+  font-display: swap;
+}
+
 :root {
     --bg: #88a993;
     --text: #3b4942;
-    --gold: #c9a96e;
     --gold-shadow: #ffc362a6;
     --step-done: #b7a481;
     --step-pending: #98867a;
@@ -9,6 +15,12 @@
     --white-shadow: #ffffff40;
     --steel: #766541;
     --silk: #647e6d;
+    /* 以下变量与 generalprocess.css 统一，确保页面间切换平滑 */
+    --gold: #c9a96e;
+    --gold-dim: #8a7a5a;
+    --brown: #5a4a3a;
+    --type-lg: clamp(24px,1.85vw,36px);
+    --type-sm: clamp(18px,1.34vw,27px);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -18,7 +30,8 @@ body, html {
     overflow:hidden;
     background:var(--bg);
     color:var(--text);
-    font-family:"Alibaba PuHuiTi 3.0","PingFang SC","Noto Serif SC","Microsoft YaHei",serif;
+    /* 统一使用隶书字体栈，与笙等页面保持一致 */
+    font-family: FZLiShu, "LiSu", "隶书", "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
     font-weight:100;
     user-select:none;
     -webkit-user-select:none;
@@ -91,7 +104,7 @@ body, html {
     position:absolute;
     will-change:opacity,transform;
     pointer-events:none;
-    font-family:"Alibaba PuHuiTi 3.0","PingFang SC","Noto Serif SC",serif;
+    font-family: FZLiShu, "LiSu", "隶书", "Noto Serif SC", "PingFang SC", serif;
     font-weight:100;
     letter-spacing:3px;
     transition:none;
@@ -126,7 +139,7 @@ body, html {
 
 .string-opt {
     position:absolute;
-    font-family:"Alibaba PuHuiTi 3.0","PingFang SC",serif;
+    font-family: FZLiShu, "LiSu", "隶书", "Noto Serif SC", "PingFang SC", serif;
     font-weight:100;
     cursor:pointer;
     letter-spacing:3px;
@@ -166,94 +179,66 @@ body, html {
     color:var(--silk);
 }
 
-/* ── Step indicator bar ── */
+/* ── Step indicator bar（与 generalprocess.css .nav-dots 视觉统一）── */
 #step-bar {
     position:fixed;
-    top:63px; left:50%;
+    top:36px; left:50%;
     transform:translateX(-50%);
     display:flex;
     align-items:center;
-    gap:111px;
-    z-index:100;
+    gap:80px;
+    z-index:50;
 }
 
 .step-item {
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:10px;
+    gap:8px;
     justify-content:flex-end;
     height:28px;
     cursor:pointer;
-    transition:all 0.5s ease;
+    transition:all 0.4s ease;
 }
 
 .step-dot {
     border-radius:50%;
-    transition:all 0.5s cubic-bezier(0.4,0,0.2,1);
+    transition:all 0.4s ease;
 }
 
 .step-dot.active {
-    width:28px; height:28px;
+    width:14px; height:14px;
     background:var(--gold);
-    box-shadow:0 0 21.875px var(--gold-shadow);
+    border:2px solid var(--gold);
+    box-shadow:0 0 18px rgba(201,169,110,0.45);
 }
 
 .step-dot.done {
-    width:18px; height:18px;
-    background:var(--step-done);
-    box-shadow:0 0 17.5px rgba(255,255,255,0.5);
+    width:14px; height:14px;
+    background:var(--gold-dim);
+    border:2px solid var(--gold-dim);
 }
 
 .step-dot.pending {
-    width:18px; height:18px;
-    background:var(--step-pending);
+    width:14px; height:14px;
+    background:#444;
+    border:2px solid #555;
 }
 
 .step-label {
-    font-size:20px;
-    letter-spacing:4px;
-    color:var(--gold);
-    text-shadow:0 0 21.875px var(--gold-shadow);
-    opacity:0;
-    transform:translateY(4px);
-    transition:all 0.5s ease;
+    font-family: inherit;
+    font-size:16px;
+    letter-spacing:2px;
+    color:#7f7f7f;
+    opacity:1;
+    transform:translateY(0);
+    transition:color 0.4s ease;
     white-space:nowrap;
 }
 
-.step-item.active-step .step-label { opacity:1; transform:translateY(0); }
-
-/* ── Top progress bar ── */
-#top-progress {
-    position:fixed;
-    top:0; left:0;
-    z-index:110;
-    width:0%; height:3px;
-    background:linear-gradient(90deg,rgba(201,169,110,0.4),var(--gold));
-    transition:width 0.15s linear;
-    box-shadow:0 0 8px var(--gold-shadow);
-    border-radius:0 2px 0 0;
-}
-
-/* ── Scroll hint ── */
-#scroll-hint {
-    position:fixed;
-    bottom:28px; left:50%;
-    transform:translateX(-50%);
-    z-index:99;
-    color:var(--step-pending);
-    font-size:13px;
-    letter-spacing:2px;
-    font-family:"Alibaba PuHuiTi 3.0","PingFang SC",serif;
-    font-weight:100;
-    opacity:0.7;
-    transition:all 0.5s ease;
-}
-#scroll-hint.pulse { animation:hintPulse 2s ease-in-out infinite; color:var(--gold); }
-@keyframes hintPulse {
-    0%,100% { opacity:0.5; }
-    50% { opacity:1; }
-}
+.step-item.active-step .step-label,
+.step-dot.active ~ .step-label,
+.step-dot.done ~ .step-label { color:var(--gold); }
 
 /* ── Completion overlay ── */
 #complete-overlay {
@@ -286,24 +271,28 @@ body, html {
 #complete-overlay .btns { display:flex; gap:30px; }
 .complete-btn {
     padding:10px 32px;
-    border:1px solid var(--gold);
-    background:transparent;
-    color:var(--gold);
-    font-family:inherit;
-    font-size:16px;
+    border:none;
+    background:#D6C481;
+    color:#361E19;
+    font-family:FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif;
+    font-size:18px;
     letter-spacing:4px;
     cursor:pointer;
-    border-radius:4px;
+    border-radius:22px;
     transition:all 0.4s ease;
 }
-.complete-btn:hover { background:var(--gold); color:var(--bg); box-shadow:0 0 24px rgba(201,169,110,0.35); }
+.complete-btn:hover {
+    background:var(--gold);
+    color:#361E19;
+    box-shadow:0 0 24px rgba(201,169,110,0.35);
+    transform:scale(1.05);
+}
 
 /* ── Responsive ── */
 @media (max-width:768px) {
-    #step-bar { gap:48px; top:36px; }
-    .step-label { font-size:14px; }
-    #step-bar .step-dot.active { width:22px; height:22px; }
-    #step-bar .step-dot.done, #step-bar .step-dot.pending { width:14px; height:14px; }
+    #step-bar { gap:48px; top:24px; }
+    .step-label { font-size:13px; }
+    .step-dot, .step-dot.active, .step-dot.done, .step-dot.pending { width:12px; height:12px; }
     .string-opt.steel { font-size:28px; }
     .string-opt.silk, .string-opt.nylon { font-size:22px; }
     #scroll-hint { bottom:16px; font-size:11px; }
