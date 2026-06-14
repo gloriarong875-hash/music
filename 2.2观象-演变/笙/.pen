@@ -1,0 +1,382 @@
+{
+  "version": "2.13",
+  "children": [
+    {
+      "type": "frame",
+      "id": "RGXcN",
+      "x": -720,
+      "y": -450,
+      "name": "3.2观象2",
+      "clip": true,
+      "width": 1440,
+      "height": 900,
+      "fill": "#000000ff",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "z5sjG",
+          "x": 0,
+          "y": 0,
+          "name": "Rectangle 133",
+          "fill": "#d9d9d9ff",
+          "width": 3375,
+          "height": 73
+        },
+        {
+          "type": "text",
+          "id": "dNkwv",
+          "x": 102,
+          "y": 14,
+          "name": "研物",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "研物",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "Jikx6",
+          "x": 282,
+          "y": 14,
+          "name": "观象",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "观象",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "I0bN8",
+          "x": 474,
+          "y": 14,
+          "name": "编年",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "编年",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "SW8Dn",
+          "x": 1098,
+          "y": 114,
+          "name": "抠图",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 355,
+          "content": "抠图",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "nWcC6",
+          "x": 299,
+          "y": 335,
+          "name": "唐",
+          "fill": "#ffffffff",
+          "content": "唐",
+          "textAlign": "center",
+          "fontFamily": "方正隶书",
+          "fontSize": 120,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "x9l5hM",
+          "x": 840,
+          "y": 133,
+          "name": "二胡人物 1",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "pic/1-%E7%94%9F%E6%88%90.png",
+            "mode": "fill"
+          },
+          "width": 516,
+          "height": 730
+        },
+        {
+          "type": "frame",
+          "id": "j0ZKK",
+          "x": 341,
+          "y": 540,
+          "name": "Ellipse 6",
+          "width": 62,
+          "height": 62,
+          "fill": {
+            "type": "color",
+            "color": "#ffffffff",
+            "enabled": false
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "cBpad",
+              "x": 0,
+              "y": 0,
+              "name": "Ellipse 6",
+              "sweepAngle": -360.00001001791264,
+              "fill": "#ffffffcc",
+              "width": 62,
+              "height": 62,
+              "stroke": "#ffffffcc",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#ffffff40",
+                "blur": 8.75,
+                "spread": 5
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "xDP6M",
+          "x": 404,
+          "y": 475,
+          "name": "进入繁盛",
+          "fill": "#ffffffff",
+          "content": "进入繁盛",
+          "fontFamily": "方正隶书",
+          "fontSize": 40,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "LGgQp",
+          "x": 102,
+          "y": 276.6767570598057,
+          "name": "二胡正面 2",
+          "rotation": 10.81738948947063,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../../%E6%97%B6%E6%9C%9F1-%E7%AC%99%E6%8F%92%E7%94%BB.png",
+            "mode": "stretch"
+          },
+          "width": 179.43765258789062,
+          "height": 530.1566772460938
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "YuUbK",
+      "x": -720,
+      "y": 551,
+      "name": "3.2观象2",
+      "clip": true,
+      "width": 1440,
+      "height": 900,
+      "fill": "#000000ff",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "TPgD7",
+          "x": 0,
+          "y": 0,
+          "name": "Rectangle 133",
+          "fill": "#d9d9d9ff",
+          "width": 3375,
+          "height": 73
+        },
+        {
+          "type": "text",
+          "id": "UaPnL",
+          "x": 102,
+          "y": 14,
+          "name": "研物",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "研物",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "iCIrs",
+          "x": 282,
+          "y": 14,
+          "name": "观象",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "观象",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "jjjw7",
+          "x": 474,
+          "y": 14,
+          "name": "编年",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "编年",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "uVqs6",
+          "x": 1098,
+          "y": 114,
+          "name": "抠图",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 355,
+          "content": "抠图",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "WY64Z",
+          "x": 313,
+          "y": 498,
+          "name": "笙得到发展，出现多种形制和演奏名家。目前，笙最早的实物是曾侯乙墓出土的14管笙，距今已有2400年历史。 唐代文献中有关于笙的记载，显示了当时笙艺术的繁荣。",
+          "fill": "#ffffffff",
+          "textGrowth": "fixed-width-height",
+          "width": 498,
+          "height": 107,
+          "content": "笙得到发展，出现多种形制和演奏名家。目前，笙最早的实物是曾侯乙墓出土的14管笙，距今已有2400年历史。\n唐代文献中有关于笙的记载，显示了当时笙艺术的繁荣。",
+          "fontFamily": "方正隶书",
+          "fontSize": 25,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "q0j5i0",
+          "x": 221,
+          "y": 452,
+          "name": "Ellipse 6",
+          "width": 62,
+          "height": 62,
+          "fill": {
+            "type": "color",
+            "color": "#ffffffff",
+            "enabled": false
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "S63pDc",
+              "x": 0,
+              "y": 0,
+              "name": "Ellipse 6",
+              "sweepAngle": -360.00001001791264,
+              "fill": "#ffffffcc",
+              "width": 62,
+              "height": 62,
+              "stroke": "#ffffffcc",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#ffffff40",
+                "blur": 8.75,
+                "spread": 5
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "HsXDO",
+          "x": 313,
+          "y": 241,
+          "name": "唐",
+          "fill": "#ffffffff",
+          "content": "唐",
+          "textAlign": "center",
+          "fontFamily": "方正隶书",
+          "fontSize": 120,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "wdCcr",
+          "x": 373,
+          "y": 372,
+          "name": "进入繁盛",
+          "fill": "#ffffffff",
+          "content": "进入繁盛",
+          "fontFamily": "方正隶书",
+          "fontSize": 40,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "WSabP",
+          "x": 940,
+          "y": 211,
+          "name": "二胡人物 1",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "pic/1-%E7%94%9F%E6%88%90.png",
+            "mode": "fill"
+          },
+          "width": 428,
+          "height": 606
+        },
+        {
+          "type": "rectangle",
+          "id": "MFvOB",
+          "x": 62,
+          "y": 421.3288820475143,
+          "name": "二胡正面 2",
+          "rotation": 22.2059198681631,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../../%E6%97%B6%E6%9C%9F1-%E7%AC%99%E6%8F%92%E7%94%BB.png",
+            "mode": "stretch"
+          },
+          "width": 112,
+          "height": 309
+        }
+      ]
+    }
+  ],
+  "fonts": [
+    {
+      "name": "方正隶书",
+      "url": "../../%E6%96%B9%E6%AD%A3%E9%9A%B6%E4%B9%A6_GBK.ttf"
+    }
+  ]
+}
