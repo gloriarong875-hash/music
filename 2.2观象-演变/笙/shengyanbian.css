@@ -163,9 +163,10 @@ h4, .h4 { color: var(--color-primary); }
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
+  padding-top: 20px;
 }
 
 /* ========== 时期信息排版 ========== */
@@ -240,18 +241,24 @@ h4, .h4 { color: var(--color-primary); }
 
 /* ========== 图像区 ========== */
 .image-card {
-  width: min(560px, 56vmin);
-  max-height: 540px;
+  width: min(540px, 54vmin);
+  max-height: 440px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* 图2 放大 1.5 倍 */
+[data-scene="tang"] .image-card {
+  width: min(780px, 62vw);
+  max-height: 640px;
+}
+
 /* 图1、图3 稍小 */
 [data-scene="shangzhou"] .image-card,
 [data-scene="ming"] .image-card {
-  width: min(420px, 44vmin);
-  max-height: 420px;
+  width: min(380px, 40vmin);
+  max-height: 360px;
 }
 
 .image-frame {
