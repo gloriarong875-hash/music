@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
 /*
-  笙历史演变界面 — 样式表（按 .pen 设计重构）
-  主题：黑色背景 + bg.png 背景图 + 白色圆形按钮悬浮tooltip
-  排版参考：.pen 设计文件 1440×900 布局
+  笙历史演变界面 — 样式表
+  主题：黑色背景 + bg.png 背景图 + 白色圆形按钮
+  标题/副标题依照 ../../generalcomponent.css H1/H2 规范
 */
 
 /* ========== 本地方正隶书字体 ========== */
@@ -13,7 +13,7 @@
   font-display: swap;
 }
 
-/* ========== 主题变量（暗色主题） ========== */
+/* ========== 主题变量（暗色主题，变量名与 generalcomponent.css 统一） ========== */
 :root {
   --color-ink: #000000;
   --color-surface: #0a0a0a;
@@ -25,8 +25,7 @@
   --color-red: #C06E69;
   --color-brown: #3a2a1a;
 
-  --type-h1: 32px;
-  --type-period: clamp(60px, 12vw, 120px);
+  --type-h1: 48px;
   --type-h2: 26px;
   --type-h3: 22px;
   --type-h4: 18px;
@@ -48,7 +47,8 @@ body {
   height: 100%;
   overflow: hidden;
   background-color: #000000;
-  background-image: url("pic/bg.png");
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(46, 46, 50, 0.5)),
+  url("pic/bg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -70,18 +70,12 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.5);
   pointer-events: none;
   z-index: 0;
 }
 
-/* ========== 顶部导航条（来自 .pen Rectangle 133） ========== */
-/*
-  说明：
-  - 此样式控制页面顶栏的位置和尺寸。
-  - 导航项类名为 .top-nav-item。
-  - 适用于所有场景的公共头部。
-*/
+/* ========== 顶部导航条 ========== */
 .top-nav {
   position: absolute;
   top: 0;
@@ -115,12 +109,6 @@ body {
 }
 
 /* ========== 场景容器 ========== */
-/*
-  说明：
-  - 每个场景对应 HTML 中的 .scene 节点。
-  - .scene.active 控制当前可见屏幕。
-  - 只显示一个场景，其他场景通过透明度隐藏。
-*/
 .scene {
   position: absolute;
   inset: 0;
@@ -138,29 +126,45 @@ body {
   z-index: 10;
 }
 
-/* ========== 大字时期字符（来自 .pen "唐" 120px） ========== */
-/*
-  说明：
-  - 该元素负责显示大字时期名称的视觉装饰（如“唐”字）。
-  - 若要修改位置、大小和文字内容，请调整 .period-char。
-*/
-.period-char {
+/* ========== 场景标题 H1（依照 generalcomponent.css .h1，位置按 .pen Frame1） ========== */
+.scene-title {
   position: absolute;
   z-index: 15;
   font-family: FZLiShu, "Noto Serif SC", serif;
-  font-size: var(--type-period);
-  font-weight: normal;
-  color: #ffffff;
+  color: var(--color-paper);
+  font-size: var(--type-h1);
+  font-weight: 400;
+  letter-spacing: 4px;
+  line-height: 1.14;
+  text-shadow: 0 4px 14px #000;
   text-align: center;
-  left: 21%;
-  top: 37%;
+  left: 26%;
+  top: 48%;
   transform: translate(-50%, -50%);
-  text-shadow: 0 4px 30px rgba(255, 255, 255, 0.15);
   transition: all 0.6s ease;
   pointer-events: none;
 }
 
-/* ========== 白色圆形按钮（来自 .pen Ellipse 6, 62×62） ========== */
+/* ========== 场景副标题 H2（依照 generalcomponent.css .h2，位置按 .pen Frame1） ========== */
+.scene-subtitle {
+  position: absolute;
+  z-index: 20;
+  font-family: FZLiShu, "Noto Serif SC", serif;
+  color: var(--color-paper);
+  font-size: var(--type-h2);
+  font-weight: 400;
+  letter-spacing: 4px;
+  line-height: 1.18;
+  text-shadow: 0 4px 14px #000;
+  text-align: center;
+  left: 32%;
+  top: 56%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: all 0.6s ease;
+}
+
+/* ========== 白色圆形按钮（固定位置，hover 仅发光缩放） ========== */
 .circle-btn {
   position: absolute;
   z-index: 25;
@@ -168,8 +172,7 @@ body {
   height: 62px;
   cursor: pointer;
   pointer-events: auto;
-  /* 默认定位：left~24%, top~60%（来自 .pen Frame 1） */
-  left: 24%;
+  left: 23.68%;
   top: 60%;
   transform: translate(-50%, -50%);
 }
@@ -198,70 +201,18 @@ body {
   transform: scale(0.93);
 }
 
-/* ========== 圆形按钮悬浮提示 tooltip ========== */
-.circle-tooltip {
-  position: fixed;
-  z-index: 50;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.circle-tooltip.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.circle-tooltip .tt-text {
-  color: #ffffff;
-  font-family: FZLiShu, "Noto Serif SC", serif;
-  font-size: clamp(14px, 1.4vw, 20px);
-  font-weight: 400;
-  line-height: 1.6;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
-  background: rgba(20, 20, 20, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 12px 24px;
-  border-radius: 8px;
-  max-width: 360px;
-  white-space: normal;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* ========== 圆形按钮旁引导文字（来自 .pen "进入繁盛" 40px） ========== */
-.enter-text {
-  position: absolute;
-  z-index: 20;
-  font-family: FZLiShu, "Noto Serif SC", serif;
-  font-size: clamp(22px, 3vw, 40px);
-  color: #ffffff;
-  left: 29%;
-  top: 58%;
-  pointer-events: none;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-  transition: all 0.6s ease;
-}
-
-
-/* ========== 右侧主体图片区（来自 .pen 二胡人物） ========== */
-/*
-  说明：
-  - 此区域用于显示右侧大图，HTML 中对应 .image-frame / .period-image。
-  - 修改图片尺寸或对齐请调整 .main-image-area 的 right/top/width。
-  - 如果使用替换图片，保持 URL 与资源路径一致即可。
-*/
+/* ========== 右侧演奏人物图区（位置按 .pen Frame1: x840 y133 w516 h730） ========== */
 .main-image-area {
   position: absolute;
   z-index: 10;
-  right: 5%;
-  top: 14%;
-  width: clamp(260px, 36vw, 516px);
+  right: 5.83%;
+  top: 14.78%;
+  width: clamp(260px, 35.83vw, 516px);
   max-height: 75vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: right 0.6s ease, top 0.6s ease, width 0.6s ease;
 }
 
 .main-image-area img,
@@ -274,21 +225,21 @@ body {
   transition: all 0.6s ease;
 }
 
-/* ========== 左侧装饰旋转图片（来自 .pen 二胡正面 2, ~10.8deg） ========== */
+/* ========== 左侧装饰旋转图片（位置按 .pen Frame1: x102 y276.68 w179.44） ========== */
 .decor-image {
   position: absolute;
   z-index: 5;
-  left: 7%;
-  top: 31%;
-  width: clamp(80px, 12vw, 179px);
-  opacity: 0.5;
+  left: 7.08%;
+  top: 30%;
+  width: clamp(10px, 12.46vw, 179px);
+  opacity: 1;
   transform: rotate(10.8deg);
   transition: all 0.6s ease;
   pointer-events: none;
 }
 
 .decor-image img {
-  width: 100%;
+  width: 80%;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4));
@@ -303,6 +254,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  transition: bottom 0.6s ease;
 }
 
 .badge-dot {
@@ -331,6 +283,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  transition: bottom 0.6s ease;
 }
 
 .ref-dot {
@@ -352,51 +305,94 @@ body {
 }
 
 /* ================================================================ */
-/* === HOVER STATE — 悬浮按钮后元素缩放移位，为文字让出空间 === */
-/* === 参考 .pen Frame 1 → Frame 2 过渡                       === */
+/* === 各时期图像独立尺寸 === */
 /* ================================================================ */
 
-/* 大字时期字符：上移 */
-.scene.hovered .period-char {
-  left: 22%;
-  top: 27%;
+/* 时期2 唐代 — 放大 */
+#scene-tang .main-image-area {
+  right: 10%;
+  top: 30%;
+  width: clamp(320px, 42vw, 620px);
+}
+#scene-tang .decor-image {
+  left: 5%;
+  top: 30%;
+  width: clamp(80px, 16vw, 230px);
+}
+#scene-tang.hovered .main-image-area {
+  right: 2%;
+  top: 40%;
+  width: clamp(200px, 30vw, 440px);
+}
+#scene-tang.hovered .decor-image {
+  left: 10%;
+  top: 53%;
+  width: clamp(60px, 10vw, 150px);
 }
 
-/* 白色圆形按钮：左移 + 上移 */
-.scene.hovered .circle-btn {
-  left: 15%;
+/* 时期3 明代 — 缩小 */
+#scene-ming .main-image-area {
+  right: 8%;
+  top: 18%;
+  width: clamp(200px, 28vw, 400px);
+}
+#scene-ming .decor-image {
+  left: 9%;
+  top: 34%;
+  width: clamp(40px, 9vw, 130px);
+}
+#scene-ming.hovered .main-image-area {
+  right: 5%;
+  top: 26%;
+  width: clamp(100px, 16vw, 260px);
+}
+#scene-ming.hovered .decor-image {
+  left: 6%;
   top: 50%;
+  width: clamp(30px, 5vw, 80px);
 }
 
-/* 引导文字：跟随按钮上移 */
-.scene.hovered .enter-text {
-  left: 26%;
-  top: 41%;
+/* ================================================================ */
+/* === HOVER STATE（.pen Frame 2 精确坐标） === */
+/* ================================================================ */
+
+/* 标题上移：.pen Frame2 x313 y241 */
+.scene.hovered .scene-title {
+  left: 30%;
+  top: 40%;
 }
 
-/* 主体演奏/乐器图：缩小 + 右移 + 下移（scale ~0.83） */
+/* 副标题上移：.pen Frame2 x373 y372 */
+.scene.hovered .scene-subtitle {
+  left: 32%;
+  top: 45%;
+}
+
+/* 按钮位置不变 */
+
+/* 主体演奏图进一步缩小+右移 */
 .scene.hovered .main-image-area {
-  right: 3.5%;
-  top: 23%;
-  width: clamp(200px, 30vw, 428px);
+  right: 6%;
+  top: 23.44%;
+  width: clamp(140px, 22vw, 340px);
 }
 
-/* 左侧装饰图：缩小 + 下移 + 旋转加大 */
+/* 左侧装饰图缩小+下移：.pen Frame2 x62 y421.33 w112 rot22.2° */
 .scene.hovered .decor-image {
-  left: 4.3%;
-  top: 47%;
-  width: clamp(50px, 8vw, 112px);
+  left: 4.31%;
+  top: 46.81%;
+  width: clamp(50px, 7.78vw, 112px);
   opacity: 0.35;
   transform: rotate(22.2deg);
 }
 
-/* 描述文字块：悬浮后显现 */
+/* 描述文字块悬浮显现：向右偏移 */
 .desc-block {
   position: absolute;
   z-index: 15;
   max-width: clamp(280px, 35vw, 500px);
-  left: 15%;
-  top: 55%;
+  left: 30%;
+  top: 55.33%;
   opacity: 0;
   transform: translateY(12px);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -417,7 +413,7 @@ body {
   margin-bottom: 8px;
 }
 
-/* 时期徽章：悬浮时上移少许 */
+/* 时期徽章：悬浮时上移 */
 .scene.hovered .period-badge {
   bottom: 48px;
 }
@@ -437,35 +433,35 @@ body {
   .top-nav-item {
     font-size: 18px;
   }
-  .period-char {
-    font-size: clamp(48px, 10vw, 80px);
+  .scene-title {
+    font-size: 28px;
     left: 18%;
     top: 35%;
+  }
+  .scene-subtitle {
+    font-size: 22px;
+    left: 26%;
+    top: 48%;
   }
   .circle-btn {
     width: 52px;
     height: 52px;
     left: 20%;
-    top: 58%;
+    top: 56%;
   }
   .circle-inner {
     width: 52px;
     height: 52px;
   }
-  .enter-text {
-    font-size: clamp(18px, 2.5vw, 30px);
-    left: 26%;
-    top: 56%;
-  }
   .main-image-area {
     width: clamp(200px, 42vw, 380px);
-    right: 4%;
-    top: 18%;
+    right: 5%;
+    top: 16%;
   }
   .desc-block {
     max-width: 50vw;
-    left: 12%;
-    top: 53%;
+    left: 18%;
+    top: 52%;
   }
   .period-badge {
     left: 32px;
@@ -487,41 +483,41 @@ body {
     font-size: 14px;
     letter-spacing: 1px;
   }
-  .period-char {
-    font-size: clamp(36px, 8vw, 56px);
-    left: 12%;
-    top: 28%;
+  .scene-title {
+    font-size: 24px;
+    left: 14%;
+    top: 30%;
+  }
+  .scene-subtitle {
+    font-size: 18px;
+    left: 22%;
+    top: 42%;
   }
   .circle-btn {
     width: 44px;
     height: 44px;
-    left: 18%;
-    top: 52%;
+    left: 16%;
+    top: 50%;
   }
   .circle-inner {
     width: 44px;
     height: 44px;
   }
-  .enter-text {
-    font-size: clamp(16px, 2vw, 22px);
-    left: 26%;
-    top: 50%;
-  }
   .main-image-area {
     width: 55vw;
-    right: 3%;
-    top: 28%;
+    right: 4%;
+    top: 26%;
     max-height: 50vh;
   }
   .decor-image {
     width: clamp(50px, 10vw, 90px);
-    left: 3%;
-    top: 35%;
+    left: 4%;
+    top: 33%;
     opacity: 0.3;
   }
   .desc-block {
     max-width: 70vw;
-    left: 8%;
+    left: 14%;
     top: 48%;
   }
   .desc-block p {
