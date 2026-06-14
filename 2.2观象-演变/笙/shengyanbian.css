@@ -3,28 +3,28 @@
 /*
   笙历史演变界面 — 样式表
   命名：shengyanbian.css
-  主题：深蓝底 + #A1B7D7 钢蓝主色
+  主题：墨绿底 + #7A9F84 竹青主色（参考 2.1研物-乐器制作-笙/shengstyle.css 绿色系）
   排版参考：generalcomponent.css + 3.1观象-部件桑基-笙/index.html
 */
 
 /* ========== 主题变量覆盖 ========== */
 :root {
-  --color-ink: #001a66;
-  --color-surface: rgba(161, 183, 215, .08);
-  --color-gold: #A1B7D7;
-  --color-gold-soft: #C5D5EB;
-  --color-paper: #E8EEF6;
-  --color-paper-dim: rgba(200, 215, 235, .78);
-  --color-red: #D48B8C;
-  --color-brown: #2A3F5F;
-  --color-bamboo: #8AA5C0;
+  --color-ink: #162318;
+  --color-surface: rgba(122, 159, 132, .12);
+  --color-gold: #8AAF93;
+  --color-gold-soft: #B5CEBB;
+  --color-paper: #EDF4EE;
+  --color-paper-dim: rgba(215, 235, 220, .85);
+  --color-red: #C06E69;
+  --color-brown: #354A38;
+  --color-bamboo: #7B9F82;
 
-  --color-primary: #A1B7D7;
-  --color-primary-soft: #C5D5EB;
-  --color-primary-light: #D9E4F2;
-  --color-primary-dim: rgba(161, 183, 215, .72);
-  --color-primary-faint: rgba(161, 183, 215, .28);
-  --color-primary-subtle: rgba(161, 183, 215, .10);
+  --color-primary: #8AAF93;
+  --color-primary-soft: #B5CEBB;
+  --color-primary-light: #CFE2D3;
+  --color-primary-dim: rgba(138, 175, 147, .75);
+  --color-primary-faint: rgba(138, 175, 147, .32);
+  --color-primary-subtle: rgba(138, 175, 147, .14);
 
   --type-h1: 32px;
   --type-period: 48px;
@@ -48,7 +48,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #00238c;
+  background-color: #1b291f;
   background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
   background-repeat: repeat;
   color: var(--color-paper);
@@ -90,9 +90,9 @@ body {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(circle at 28% 34%, rgba(161, 183, 215, .14), transparent 32%),
-    radial-gradient(circle at 76% 48%, rgba(138, 165, 192, .10), transparent 32%),
-    linear-gradient(to bottom, rgba(0, 0, 0, .05), rgba(0, 12, 46, .70));
+    radial-gradient(circle at 28% 34%, rgba(138, 175, 147, .18), transparent 32%),
+    radial-gradient(circle at 76% 48%, rgba(123, 159, 130, .14), transparent 32%),
+    linear-gradient(to bottom, rgba(0, 0, 0, .02), rgba(8, 30, 12, .55));
 }
 
 /* 装饰圆环 */
@@ -104,7 +104,7 @@ body {
   transform: translate(-50%, -50%);
   width: min(600px, 60vmin);
   height: min(600px, 60vmin);
-  border: 1px solid rgba(161, 183, 215, .08);
+  border: 1px solid rgba(122, 159, 132, .08);
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
@@ -138,41 +138,6 @@ h1, .h1 {
 
 h3, .h3 { color: var(--color-primary-soft); }
 h4, .h4 { color: var(--color-primary); }
-
-/* ========== 角落导航 ========== */
-.cornerNav {
-  position: fixed;
-  z-index: 120;
-  top: 5.8%;
-  right: 5%;
-  display: flex;
-  gap: 16px;
-}
-
-.navBtn {
-  position: relative;
-  width: clamp(38px, 3vw, 52px);
-  height: clamp(38px, 3vw, 52px);
-  border-radius: 50%;
-  border: 1px solid rgba(161, 183, 215, .65);
-  background: radial-gradient(circle at 35% 30%, rgba(217, 228, 242, .75), rgba(120, 150, 185, .45) 58%, rgba(10, 25, 50, .35));
-  color: rgba(232, 238, 246, .95);
-  font-size: clamp(22px, 1.7vw, 30px);
-  line-height: 1;
-  box-shadow: 0 0 18px rgba(161, 183, 215, .20), inset 0 0 10px rgba(217, 228, 242, .12);
-  cursor: pointer;
-  transition: transform .22s ease, filter .22s ease, opacity .22s ease;
-}
-
-.navBtn:hover {
-  transform: scale(1.08);
-  filter: brightness(1.12);
-}
-
-.navBtn.disabled {
-  opacity: .3;
-  pointer-events: none;
-}
 
 /* ========== 内容行（左右两栏） ========== */
 .content-row {
@@ -273,31 +238,52 @@ h4, .h4 { color: var(--color-primary); }
   margin: 0;
 }
 
-/* ========== 图像占位区 ========== */
+/* ========== 图像区 ========== */
 .image-card {
-  width: min(420px, 42vmin);
-  aspect-ratio: 1 / 1;
-  max-height: 400px;
+  width: min(560px, 56vmin);
+  max-height: 540px;
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 图1、图3 稍小 */
+[data-scene="shangzhou"] .image-card,
+[data-scene="ming"] .image-card {
+  width: min(420px, 44vmin);
+  max-height: 420px;
 }
 
 .image-frame {
   flex: 1;
-  background: rgba(0, 20, 70, .45);
-  border: 1px solid rgba(161, 183, 215, .35);
-  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
-  transition: border-color .3s ease, box-shadow .3s ease;
+  padding: 0;
 }
 
-.image-frame:hover {
-  border-color: rgba(161, 183, 215, .60);
-  box-shadow:
-    0 0 30px rgba(161, 183, 215, .08),
-    inset 0 0 30px rgba(161, 183, 215, .04);
+.period-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, .35));
+  animation: imageFloat 4.8s ease-in-out infinite;
+}
+
+/* 每张图浮动节奏略微不同 */
+[data-scene="tang"] .period-image {
+  animation-duration: 5.4s;
+  animation-delay: .6s;
+}
+
+[data-scene="ming"] .period-image {
+  animation-duration: 5.1s;
+  animation-delay: .3s;
+}
+
+@keyframes imageFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
 .image-inner {
@@ -403,7 +389,9 @@ h4, .h4 { color: var(--color-primary); }
     font-size: 36px;
   }
 
-  .image-card {
+  .image-card,
+  [data-scene="shangzhou"] .image-card,
+  [data-scene="ming"] .image-card {
     max-width: 280px;
     max-height: 280px;
   }
@@ -434,9 +422,4 @@ h4, .h4 { color: var(--color-primary); }
     bottom: 24px;
   }
 
-  .cornerNav {
-    top: 4%;
-    right: 4%;
-    gap: 10px;
-  }
 }

@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>观象·演变 — 笙的历史演变</title>
   <!--
-    笙历史演变界面 — 三时期展示
+    笙历史演变界面 — 三时期展示 / 滚轮上下翻页
     内容参考：中国十大乐器发展.xlsx · 笙工作表
-    风格与排版：参考 3.1观象-部件桑基-笙/index.html 布局
+    图片：pic/1-生成.png / pic/2-敦煌.png / pic/3-宫中图-笙.png
     命名统一：shengyanbian.{html,css,js}
   -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,13 +27,7 @@
         </div>
       </header>
 
-      <nav class="cornerNav" aria-label="场景跳转">
-        <button class="navBtn" id="prevScene1" type="button" aria-label="回到上一步">‹</button>
-        <button class="navBtn" id="nextScene1" type="button" aria-label="直接下一步">›</button>
-      </nav>
-
       <div class="content-row">
-        <!-- 左侧：时期信息 -->
         <div class="left-pane">
           <h4 class="period-kicker">商周时期</h4>
           <h1 class="period-name">雏形诞生</h1>
@@ -50,20 +44,15 @@
           </div>
         </div>
 
-        <!-- 右侧：图像占位区 -->
         <div class="right-pane">
           <div class="image-card">
             <div class="image-frame">
-              <div class="image-inner">
-                <span class="image-label">《三才图会·器用卷》</span>
-                <span class="image-divider">——</span>
-                <span class="image-desc">女娲与葫芦笙木刻插图</span>
-              </div>
+              <img class="period-image" src="pic/1-生成.png" alt="笙的生成起源" />
             </div>
           </div>
           <div class="ref-row">
             <span class="ref-dot"></span>
-            <span class="ref-text">明代 · 最早将女娲与笙簧画在一起的图像</span>
+            <span class="ref-text">《三才图会·器用卷》 — 最早将女娲与笙簧画在一起的图像</span>
           </div>
         </div>
       </div>
@@ -82,11 +71,6 @@
           <h1>观象·演变</h1>
         </div>
       </header>
-
-      <nav class="cornerNav" aria-label="场景跳转">
-        <button class="navBtn" id="prevScene2" type="button" aria-label="回到上一步">‹</button>
-        <button class="navBtn" id="nextScene2" type="button" aria-label="直接下一步">›</button>
-      </nav>
 
       <div class="content-row">
         <div class="left-pane">
@@ -108,16 +92,12 @@
         <div class="right-pane">
           <div class="image-card">
             <div class="image-frame">
-              <div class="image-inner">
-                <span class="image-label">曾侯乙墓出土文物</span>
-                <span class="image-divider">——</span>
-                <span class="image-desc">14管笙 · 战国时期</span>
-              </div>
+              <img class="period-image" src="pic/2-敦煌.png" alt="敦煌壁画中的笙" />
             </div>
           </div>
           <div class="ref-row">
             <span class="ref-dot"></span>
-            <span class="ref-text">战国 · 曾侯乙墓出土，现存最早的笙实物（距今2400余年）</span>
+            <span class="ref-text">敦煌壁画 — 唐代笙在燕乐中的演奏场景</span>
           </div>
         </div>
       </div>
@@ -136,11 +116,6 @@
           <h1>观象·演变</h1>
         </div>
       </header>
-
-      <nav class="cornerNav" aria-label="场景跳转">
-        <button class="navBtn" id="prevScene3" type="button" aria-label="回到上一步">‹</button>
-        <button class="navBtn" id="nextScene3" type="button" aria-label="直接下一步">›</button>
-      </nav>
 
       <div class="content-row">
         <div class="left-pane">
@@ -162,16 +137,12 @@
         <div class="right-pane">
           <div class="image-card">
             <div class="image-frame">
-              <div class="image-inner">
-                <span class="image-label">明代乐谱文献</span>
-                <span class="image-divider">——</span>
-                <span class="image-desc">笙曲与十三簧形制记载</span>
-              </div>
+              <img class="period-image" src="pic/3-宫中图-笙.png" alt="宫中图里的笙" />
             </div>
           </div>
           <div class="ref-row">
             <span class="ref-dot"></span>
-            <span class="ref-text">明代 · 文献记载十三簧笙，形制成熟、音域完备</span>
+            <span class="ref-text">明代宫廷绘画 — 十三簧笙形制成熟、音域完备</span>
           </div>
         </div>
       </div>
@@ -183,7 +154,6 @@
     </section>
   </main>
 
-  <script src="../general.js"></script>
   <script src="shengyanbian.js"></script>
 </body>
 </html>
