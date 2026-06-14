@@ -6,9 +6,8 @@
   <title>观象·演变 — 笙的历史演变</title>
   <!--
     笙历史演变界面 — 三时期展示 / 滚轮上下翻页
-    按 .pen 设计重构：暗色背景 + 顶部导航条 + 大字时期字符 + 白色圆形按钮悬浮提示
-    图片：pic/时期1-1乐器.png
-    命名统一：shengyanbian.{html,css,js}
+    标题/副标题依照 generalcomponent.css H1/H2 规范
+    右侧演奏人物图按时期顺序：pic/时期1-演奏.png / 时期2-敦煌.png / 时期3-吹笙仕女.gif
   -->
   <link rel="stylesheet" href="shengyanbian.css" />
 </head>
@@ -18,7 +17,6 @@
     <!-- ========== 场景 1：商周·雏形 ========== -->
     <section class="scene active" id="scene-shangzhou" data-scene="shangzhou" aria-label="商周时期·雏形诞生">
 
-      <!-- 顶部导航条 -->
       <nav class="top-nav" aria-label="页面导航">
         <span class="top-nav-item">研物</span>
         <span class="top-nav-item active">观象</span>
@@ -26,19 +24,13 @@
         <span class="top-nav-item">抠图</span>
       </nav>
 
-      <!-- 大字时期字符 -->
-      <div class="period-char">商</div>
+      <h1 class="scene-title">商</h1>
+      <h2 class="scene-subtitle">初现雏形</h2>
 
-      <!-- 白色圆形按钮 + 悬浮提示 -->
+      <!-- 白色圆形按钮（仅 hover 发光，不触发浮窗、不移动位置） -->
       <div class="circle-btn" id="circleBtn-shangzhou" aria-label="查看详情">
         <div class="circle-inner"></div>
       </div>
-      <div class="circle-tooltip" id="circleTooltip-shangzhou">
-        <div class="tt-text" id="circleTtText-shangzhou"></div>
-      </div>
-
-      <!-- 引导文字 -->
-      <div class="enter-text">初现雏形</div>
 
       <!-- 描述文字 -->
       <div class="desc-block">
@@ -46,9 +38,9 @@
         <p>商代已有笙的雏形，主要用于祭祀和礼乐场合。《诗经》《周礼》等文献中有关于笙的记载。西周时期笙发展为匏类乐器，形制和音律得到规范。</p>
       </div>
 
-      <!-- 主体图片 -->
+      <!-- 右侧演奏人物图 -->
       <div class="main-image-area">
-        <img src="pic/时期1-1乐器.png" alt="笙的生成起源" />
+        <img src="pic/时期1-演奏.png" alt="商周时期笙演奏" />
       </div>
 
       <!-- 装饰旋转图片 -->
@@ -62,11 +54,6 @@
         <span class="ref-text">《三才图会·器用卷》 — 最早将女娲与笙簧画在一起的图像</span>
       </div>
 
-      <!-- 时期徽章 -->
-      <div class="period-badge">
-        <span class="badge-dot"></span>
-        <span class="badge-text">第 一 时期 / 共 3 时期</span>
-      </div>
     </section>
 
     <!-- ========== 场景 2：唐代·多种形制 ========== -->
@@ -79,16 +66,12 @@
         <span class="top-nav-item">抠图</span>
       </nav>
 
-      <div class="period-char">唐</div>
+      <h1 class="scene-title">唐</h1>
+      <h2 class="scene-subtitle">进入繁盛</h2>
 
       <div class="circle-btn" id="circleBtn-tang" aria-label="查看详情">
         <div class="circle-inner"></div>
       </div>
-      <div class="circle-tooltip" id="circleTooltip-tang">
-        <div class="tt-text" id="circleTtText-tang"></div>
-      </div>
-
-      <div class="enter-text">进入繁盛</div>
 
       <div class="desc-block">
         <p>唐代笙得到空前发展，出现多种形制和演奏名家。燕乐中大量使用笙，笙在宫廷乐队和民间演奏中皆有广泛应用。</p>
@@ -96,11 +79,11 @@
       </div>
 
       <div class="main-image-area">
-        <img src="pic/时期1-1乐器.png" alt="笙演奏图" />
+        <img src="pic/时期2-敦煌.png" alt="唐代敦煌壁画笙演奏" />
       </div>
 
       <div class="decor-image">
-        <img src="../../时期1-笙插画.png" alt="" aria-hidden="true" />
+        <img src="pic/时期2-乐器.png" alt="" aria-hidden="true" />
       </div>
 
       <div class="ref-row">
@@ -108,10 +91,6 @@
         <span class="ref-text">敦煌壁画 — 唐代笙在燕乐中的演奏场景</span>
       </div>
 
-      <div class="period-badge">
-        <span class="badge-dot"></span>
-        <span class="badge-text">第 二 时期 / 共 3 时期</span>
-      </div>
     </section>
 
     <!-- ========== 场景 3：明代·十三簧 ========== -->
@@ -124,16 +103,12 @@
         <span class="top-nav-item">抠图</span>
       </nav>
 
-      <div class="period-char">明</div>
+      <h1 class="scene-title">明</h1>
+      <h2 class="scene-subtitle">十三簧成</h2>
 
       <div class="circle-btn" id="circleBtn-ming" aria-label="查看详情">
         <div class="circle-inner"></div>
       </div>
-      <div class="circle-tooltip" id="circleTooltip-ming">
-        <div class="tt-text" id="circleTtText-ming"></div>
-      </div>
-
-      <div class="enter-text">十三簧成</div>
 
       <div class="desc-block">
         <p>明代笙发展为十三簧，音域大幅扩展，表现力显著增强。十三簧的配置使笙能够演奏更加复杂的旋律与丰富的和声。</p>
@@ -141,11 +116,11 @@
       </div>
 
       <div class="main-image-area">
-        <img src="pic/时期1-1乐器.png" alt="笙演奏图" />
+        <img src="pic/时期3-吹笙仕女.gif" alt="明代吹笙仕女" />
       </div>
 
       <div class="decor-image">
-        <img src="../../时期1-笙插画.png" alt="" aria-hidden="true" />
+        <img src="pic/时期3-乐器.png" alt="" aria-hidden="true" />
       </div>
 
       <div class="ref-row">
@@ -153,10 +128,6 @@
         <span class="ref-text">明代宫廷绘画 — 十三簧笙形制成熟、音域完备</span>
       </div>
 
-      <div class="period-badge">
-        <span class="badge-dot"></span>
-        <span class="badge-text">第 三 时期 / 共 3 时期</span>
-      </div>
     </section>
 
   </main>
