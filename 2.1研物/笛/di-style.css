@@ -609,9 +609,7 @@ max-height: 660px;
 height: auto;
 display: block;
 margin: 0;
-z-index: 2;
 filter: brightness(0.95);
-
 }
 
 .furnace.hidden {
