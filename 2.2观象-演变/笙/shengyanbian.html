@@ -6,152 +6,159 @@
   <title>观象·演变 — 笙的历史演变</title>
   <!--
     笙历史演变界面 — 三时期展示 / 滚轮上下翻页
-    内容参考：中国十大乐器发展.xlsx · 笙工作表
-    图片：pic/1-生成.png / pic/2-敦煌.png / pic/3-宫中图-笙.png
+    按 .pen 设计重构：暗色背景 + 顶部导航条 + 大字时期字符 + 白色圆形按钮悬浮提示
+    图片：pic/时期1-1乐器.png
     命名统一：shengyanbian.{html,css,js}
   -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../generalcomponent.css" />
   <link rel="stylesheet" href="shengyanbian.css" />
 </head>
 <body>
   <main class="page">
+
     <!-- ========== 场景 1：商周·雏形 ========== -->
     <section class="scene active" id="scene-shangzhou" data-scene="shangzhou" aria-label="商周时期·雏形诞生">
-      <header class="panel-head">
-        <div>
-          <h4 class="kicker">Observing Phenomena</h4>
-          <h1>观象·演变</h1>
-        </div>
-      </header>
 
-      <div class="content-row">
-        <div class="left-pane">
-          <h4 class="period-kicker">商周时期</h4>
-          <h1 class="period-name">雏形诞生</h1>
-          <h3 class="period-year">约前1600 — 前256年</h3>
+      <!-- 顶部导航条 -->
+      <nav class="top-nav" aria-label="页面导航">
+        <span class="top-nav-item">研物</span>
+        <span class="top-nav-item active">观象</span>
+        <span class="top-nav-item">编年</span>
+        <span class="top-nav-item">抠图</span>
+      </nav>
 
-          <div class="divider-row">
-            <span class="divider-line"></span>
-            <span class="divider-dot"></span>
-          </div>
+      <!-- 大字时期字符 -->
+      <div class="period-char">商</div>
 
-          <div class="desc-area">
-            <p class="desc-text">笙是我国古老的簧管乐器，能奏和声。据传女娲发明了笙簧，用竹管和葫芦制成。笙是世界上最早使用自由簧的古老乐器，具有吹吸皆鸣的特点，也是中国传统吹管乐器中唯一能演奏和声的乐器。</p>
-            <p class="desc-text">商代已有笙的雏形，主要用于祭祀和礼乐场合，是宫廷音乐的重要组成部分。西周时期，笙发展为匏类乐器，形制和音律得到规范。《诗经》《周礼》等文献中有关于笙的记载。</p>
-          </div>
-        </div>
-
-        <div class="right-pane">
-          <div class="image-card">
-            <div class="image-frame">
-              <img class="period-image" src="pic/1-生成.png" alt="笙的生成起源" />
-            </div>
-          </div>
-          <div class="ref-row">
-            <span class="ref-dot"></span>
-            <span class="ref-text">《三才图会·器用卷》 — 最早将女娲与笙簧画在一起的图像</span>
-          </div>
-        </div>
+      <!-- 白色圆形按钮 + 悬浮提示 -->
+      <div class="circle-btn" id="circleBtn-shangzhou" aria-label="查看详情">
+        <div class="circle-inner"></div>
+      </div>
+      <div class="circle-tooltip" id="circleTooltip-shangzhou">
+        <div class="tt-text" id="circleTtText-shangzhou"></div>
       </div>
 
+      <!-- 引导文字 -->
+      <div class="enter-text">初现雏形</div>
+
+      <!-- 描述文字 -->
+      <div class="desc-block">
+        <p>笙是我国古老的簧管乐器，能奏和声。据传女娲发明了笙簧，用竹管和葫芦制成。笙是世界上最早使用自由簧的古老乐器，具有吹吸皆鸣的特点。</p>
+        <p>商代已有笙的雏形，主要用于祭祀和礼乐场合。《诗经》《周礼》等文献中有关于笙的记载。西周时期笙发展为匏类乐器，形制和音律得到规范。</p>
+      </div>
+
+      <!-- 主体图片 -->
+      <div class="main-image-area">
+        <img src="pic/时期1-1乐器.png" alt="笙的生成起源" />
+      </div>
+
+      <!-- 装饰旋转图片 -->
+      <div class="decor-image">
+        <img src="../../时期1-笙插画.png" alt="" aria-hidden="true" />
+      </div>
+
+      <!-- 图像来源 -->
+      <div class="ref-row">
+        <span class="ref-dot"></span>
+        <span class="ref-text">《三才图会·器用卷》 — 最早将女娲与笙簧画在一起的图像</span>
+      </div>
+
+      <!-- 时期徽章 -->
       <div class="period-badge">
         <span class="badge-dot"></span>
-        <span class="badge-text">第 一 时期  /  共 3 时期</span>
+        <span class="badge-text">第 一 时期 / 共 3 时期</span>
       </div>
     </section>
 
     <!-- ========== 场景 2：唐代·多种形制 ========== -->
     <section class="scene" id="scene-tang" data-scene="tang" aria-label="隋唐时期·多种形制">
-      <header class="panel-head">
-        <div>
-          <h4 class="kicker">Observing Phenomena</h4>
-          <h1>观象·演变</h1>
-        </div>
-      </header>
 
-      <div class="content-row">
-        <div class="left-pane">
-          <h4 class="period-kicker">隋唐时期</h4>
-          <h1 class="period-name">多种形制</h1>
-          <h3 class="period-year">618 — 907 年</h3>
+      <nav class="top-nav" aria-label="页面导航">
+        <span class="top-nav-item">研物</span>
+        <span class="top-nav-item active">观象</span>
+        <span class="top-nav-item">编年</span>
+        <span class="top-nav-item">抠图</span>
+      </nav>
 
-          <div class="divider-row">
-            <span class="divider-line"></span>
-            <span class="divider-dot"></span>
-          </div>
+      <div class="period-char">唐</div>
 
-          <div class="desc-area">
-            <p class="desc-text">唐代笙得到空前发展，出现多种形制和演奏名家。燕乐中大量使用笙，笙在宫廷乐队和民间演奏中皆有广泛应用。唐代文献中有大量关于笙的记载，笙曲目丰富，演奏技法日臻成熟，是笙艺术发展的黄金时期。</p>
-            <p class="desc-text">目前已知最早的笙实物为曾侯乙墓出土的14管笙，距今已有2400余年历史。其制作工艺精湛，管身排列有序，簧片结构完整，充分展示了古代笙的制作水平。唐代笙在此基础上继续发展，形制更加多样。</p>
-          </div>
-        </div>
+      <div class="circle-btn" id="circleBtn-tang" aria-label="查看详情">
+        <div class="circle-inner"></div>
+      </div>
+      <div class="circle-tooltip" id="circleTooltip-tang">
+        <div class="tt-text" id="circleTtText-tang"></div>
+      </div>
 
-        <div class="right-pane">
-          <div class="image-card">
-            <div class="image-frame">
-              <img class="period-image" src="pic/2-敦煌.png" alt="敦煌壁画中的笙" />
-            </div>
-          </div>
-          <div class="ref-row">
-            <span class="ref-dot"></span>
-            <span class="ref-text">敦煌壁画 — 唐代笙在燕乐中的演奏场景</span>
-          </div>
-        </div>
+      <div class="enter-text">进入繁盛</div>
+
+      <div class="desc-block">
+        <p>唐代笙得到空前发展，出现多种形制和演奏名家。燕乐中大量使用笙，笙在宫廷乐队和民间演奏中皆有广泛应用。</p>
+        <p>目前已知最早的笙实物为曾侯乙墓出土的14管笙，距今已有2400余年历史。其制作工艺精湛，管身排列有序，簧片结构完整。唐代笙在此基础上继续发展，形制更加多样。</p>
+      </div>
+
+      <div class="main-image-area">
+        <img src="pic/时期1-1乐器.png" alt="笙演奏图" />
+      </div>
+
+      <div class="decor-image">
+        <img src="../../时期1-笙插画.png" alt="" aria-hidden="true" />
+      </div>
+
+      <div class="ref-row">
+        <span class="ref-dot"></span>
+        <span class="ref-text">敦煌壁画 — 唐代笙在燕乐中的演奏场景</span>
       </div>
 
       <div class="period-badge">
         <span class="badge-dot"></span>
-        <span class="badge-text">第 二 时期  /  共 3 时期</span>
+        <span class="badge-text">第 二 时期 / 共 3 时期</span>
       </div>
     </section>
 
     <!-- ========== 场景 3：明代·十三簧 ========== -->
     <section class="scene" id="scene-ming" data-scene="ming" aria-label="明代·十三簧">
-      <header class="panel-head">
-        <div>
-          <h4 class="kicker">Observing Phenomena</h4>
-          <h1>观象·演变</h1>
-        </div>
-      </header>
 
-      <div class="content-row">
-        <div class="left-pane">
-          <h4 class="period-kicker">明代</h4>
-          <h1 class="period-name">十三簧</h1>
-          <h3 class="period-year">1368 — 1644 年</h3>
+      <nav class="top-nav" aria-label="页面导航">
+        <span class="top-nav-item">研物</span>
+        <span class="top-nav-item active">观象</span>
+        <span class="top-nav-item">编年</span>
+        <span class="top-nav-item">抠图</span>
+      </nav>
 
-          <div class="divider-row">
-            <span class="divider-line"></span>
-            <span class="divider-dot"></span>
-          </div>
+      <div class="period-char">明</div>
 
-          <div class="desc-area">
-            <p class="desc-text">明代笙发展为十三簧，音域大幅扩展，表现力显著增强。十三簧的配置使笙能够演奏更加复杂的旋律与丰富的和声，成为明代宫廷音乐和民间戏曲中不可或缺的核心乐器。</p>
-            <p class="desc-text">明代文献中有大量关于笙的记载，《明会典》《乐律全书》等典籍详细记录了笙的形制与演奏规范。明代的十三簧笙在制作工艺上达到了前所未有的高度，各地形成了不同风格的制笙流派，笙的形制逐渐定型，为现代笙的发展奠定了坚实基础。</p>
-          </div>
-        </div>
+      <div class="circle-btn" id="circleBtn-ming" aria-label="查看详情">
+        <div class="circle-inner"></div>
+      </div>
+      <div class="circle-tooltip" id="circleTooltip-ming">
+        <div class="tt-text" id="circleTtText-ming"></div>
+      </div>
 
-        <div class="right-pane">
-          <div class="image-card">
-            <div class="image-frame">
-              <img class="period-image" src="pic/3-宫中图-笙.png" alt="宫中图里的笙" />
-            </div>
-          </div>
-          <div class="ref-row">
-            <span class="ref-dot"></span>
-            <span class="ref-text">明代宫廷绘画 — 十三簧笙形制成熟、音域完备</span>
-          </div>
-        </div>
+      <div class="enter-text">十三簧成</div>
+
+      <div class="desc-block">
+        <p>明代笙发展为十三簧，音域大幅扩展，表现力显著增强。十三簧的配置使笙能够演奏更加复杂的旋律与丰富的和声。</p>
+        <p>《明会典》《乐律全书》等典籍详细记录了笙的形制与演奏规范。各地形成了不同风格的制笙流派，笙的形制逐渐定型，为现代笙的发展奠定了坚实基础。</p>
+      </div>
+
+      <div class="main-image-area">
+        <img src="pic/时期1-1乐器.png" alt="笙演奏图" />
+      </div>
+
+      <div class="decor-image">
+        <img src="../../时期1-笙插画.png" alt="" aria-hidden="true" />
+      </div>
+
+      <div class="ref-row">
+        <span class="ref-dot"></span>
+        <span class="ref-text">明代宫廷绘画 — 十三簧笙形制成熟、音域完备</span>
       </div>
 
       <div class="period-badge">
         <span class="badge-dot"></span>
-        <span class="badge-text">第 三 时期  /  共 3 时期</span>
+        <span class="badge-text">第 三 时期 / 共 3 时期</span>
       </div>
     </section>
+
   </main>
 
   <script src="shengyanbian.js"></script>

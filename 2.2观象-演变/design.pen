@@ -1447,6 +1447,559 @@
           "height": 960
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "zKsqh",
+      "x": -378,
+      "y": 3831,
+      "name": "3.2观象2",
+      "clip": true,
+      "width": 1440,
+      "height": 900,
+      "fill": "#000000ff",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "d3Nkf",
+          "x": 0,
+          "y": 0,
+          "name": "Rectangle 133",
+          "fill": "#d9d9d9ff",
+          "width": 3375,
+          "height": 73
+        },
+        {
+          "type": "text",
+          "id": "MgPr1",
+          "x": 102,
+          "y": 14,
+          "name": "研物",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "研物",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "x3yoxO",
+          "x": 282,
+          "y": 14,
+          "name": "观象",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "观象",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "P8SK0",
+          "x": 474,
+          "y": 14,
+          "name": "编年",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 365,
+          "content": "编年",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "buFdA",
+          "x": 1098,
+          "y": 114,
+          "name": "抠图",
+          "fill": "#000000ff",
+          "textGrowth": "fixed-width-height",
+          "width": 1180,
+          "height": 355,
+          "content": "抠图",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 45,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "F1gKwk",
+          "x": 0,
+          "y": 136,
+          "name": "二胡正面 2",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "mode": "fill"
+          },
+          "width": 413,
+          "height": 418
+        },
+        {
+          "type": "text",
+          "id": "EMFP7",
+          "x": 318,
+          "y": 447,
+          "name": "在唐朝，二胡作为.... 形制上... 常出现在... 在唐朝，二胡作为.... 形制上... 常出现在... 在唐朝，二胡作为.... 形制上... 常出现在...",
+          "fill": "#ffffffff",
+          "textGrowth": "fixed-width-height",
+          "width": 498,
+          "height": 107,
+          "content": "在唐朝，二胡作为....\n形制上...\n常出现在...\n在唐朝，二胡作为....\n形制上...\n常出现在...\n在唐朝，二胡作为....\n形制上...\n常出现在...",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 25,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "ellipse",
+          "id": "Qk6FQ",
+          "x": 254,
+          "y": 173,
+          "name": "Ellipse 90",
+          "sweepAngle": -360.00001001791264,
+          "fill": "#4f4f4fff",
+          "width": 236,
+          "height": 236
+        },
+        {
+          "type": "text",
+          "id": "uxmQX",
+          "x": 311,
+          "y": 196,
+          "name": "唐",
+          "fill": "#ffffffff",
+          "content": "唐",
+          "textAlign": "center",
+          "fontFamily": "FZLiShu-S01",
+          "fontSize": 120,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "ellipse",
+          "id": "v1TErK",
+          "x": 1338,
+          "y": 106,
+          "name": "Ellipse 77",
+          "sweepAngle": -360.00001001791264,
+          "fill": "#959595ff",
+          "width": 64,
+          "height": 64
+        },
+        {
+          "type": "rectangle",
+          "id": "wp0Fs",
+          "x": 947,
+          "y": 197,
+          "name": "二胡人物 1",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../%E5%AE%AB%E4%B9%90%E5%9B%BE%E7%AC%99%201.png",
+            "mode": "fill"
+          },
+          "width": 335,
+          "height": 590
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "KMYKF",
+      "x": 4560,
+      "y": 0,
+      "name": "观象·演变 — 商周 (imported)",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 40,
+      "children": [
+        {
+          "type": "text",
+          "id": "g6yN2M",
+          "name": "Kicker",
+          "fill": "#444444",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Observing Phenomena",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "M1CuX",
+          "name": "Title",
+          "fill": "#000000",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "观象·演变",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 36,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "U7x6Ri",
+          "name": "PeriodKicker",
+          "fill": "#333333",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "商周时期",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "ST2aV",
+          "name": "PeriodName",
+          "fill": "#000000",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "雏形诞生",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 28,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "WQgnn",
+          "name": "PeriodYear",
+          "fill": "#666666",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "约前1600 — 前256年",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "zbkhv",
+          "name": "Desc1",
+          "fill": "#111111",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "笙是我国古老的簧管乐器，能奏和声。据传女娲发明了笙簧，用竹管和葫芦制成。笙是世界上最早使用自由簧的古老乐器，具有吹吸皆鸣的特点，也是中国传统吹管乐器中唯一能演奏和声的乐器。",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "Lkx0F",
+          "name": "Desc2",
+          "fill": "#111111",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "商代已有笙的雏形，主要用于祭祀和礼乐场合，是宫廷音乐的重要组成部分。西周时期，笙发展为匏类乐器，形制和音律得到规范。《诗经》《周礼》等文献中有关于笙的记载。",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "YpfAY",
+          "name": "Image Frame — pic/1-生成.png",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "pic/1-生成.png",
+            "mode": "stretch"
+          },
+          "width": 480,
+          "height": 320
+        },
+        {
+          "type": "text",
+          "id": "ZAPAr",
+          "name": "Caption",
+          "fill": "#444444",
+          "content": "《三才图会·器用卷》 — 最早将女娲与笙簧画在一起的图像",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "note",
+          "id": "VtzyW",
+          "name": "注释 — 商周",
+          "width": 560,
+          "height": 160,
+          "content": "元素注释:\n- 标题: Title (可编辑文本)\n- Kicker: Kicker\n- 时代: PeriodKicker / PeriodName / PeriodYear\n- 段落: Desc1, Desc2 (可直写/替换文本)\n- 图片: Image Frame -> ./pic/1-生成.png\n- 样式: shengyanbian.css, ../generalcomponent.css\n- 交互: shengyanbian.js (滚轮上下翻页)"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "H3b1jl",
+      "x": 6080,
+      "y": 0,
+      "name": "观象·演变 — 隋唐 (imported)",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 40,
+      "children": [
+        {
+          "type": "text",
+          "id": "VhVX0",
+          "name": "Kicker",
+          "fill": "#444444",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Observing Phenomena",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "ywolr",
+          "name": "Title",
+          "fill": "#000000",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "观象·演变",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 36,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "roQK5",
+          "name": "PeriodKicker",
+          "fill": "#333333",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "隋唐时期",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "r8n9wK",
+          "name": "PeriodName",
+          "fill": "#000000",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "多种形制",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 28,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "xdatD",
+          "name": "PeriodYear",
+          "fill": "#666666",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "618 — 907 年",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "wKKzA",
+          "name": "Desc1",
+          "fill": "#111111",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "唐代笙得到空前发展，出现多种形制和演奏名家。燕乐中大量使用笙，笙在宫廷乐队和民间演奏中皆有广泛应用。唐代文献中有大量关于笙的记载，笙曲目丰富，演奏技法日臻成熟，是笙艺术发展的黄金时期。",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "rEmsS",
+          "name": "Desc2",
+          "fill": "#111111",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "目前已知最早的笙实物为曾侯乙墓出土的14管笙，距今已有2400余年历史。其制作工艺精湛，管身排列有序，簧片结构完整，充分展示了古代笙的制作水平。唐代笙在此基础上继续发展，形制更加多样。",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "z93Wn",
+          "name": "Image Frame — pic/2-敦煌.png",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "pic/2-敦煌.png",
+            "mode": "stretch"
+          },
+          "width": 480,
+          "height": 320
+        },
+        {
+          "type": "text",
+          "id": "ZZSzm",
+          "name": "Caption",
+          "fill": "#444444",
+          "content": "敦煌壁画 — 唐代笙在燕乐中的演奏场景",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "note",
+          "id": "z5MfWl",
+          "name": "注释 — 隋唐",
+          "width": 560,
+          "height": 160,
+          "content": "元素注释:\n- 标题: Title\n- Kicker: Kicker\n- 时代: PeriodKicker / PeriodName / PeriodYear\n- 段落: Desc1, Desc2\n- 图片: Image Frame -> ./pic/2-敦煌.png\n- 样式: shengyanbian.css, ../generalcomponent.css\n- 交互: shengyanbian.js"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "xf7Gr",
+      "x": 7600,
+      "y": 0,
+      "name": "观象·演变 — 明代 (imported)",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 40,
+      "children": [
+        {
+          "type": "text",
+          "id": "r1FKny",
+          "name": "Kicker",
+          "fill": "#444444",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Observing Phenomena",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "KIoHl",
+          "name": "Title",
+          "fill": "#000000",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "观象·演变",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 36,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "S9sBds",
+          "name": "PeriodKicker",
+          "fill": "#333333",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "明代",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "p8OJnc",
+          "name": "PeriodName",
+          "fill": "#000000",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "十三簧",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 28,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "u3Maq",
+          "name": "PeriodYear",
+          "fill": "#666666",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "1368 — 1644 年",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "q4mxjm",
+          "name": "Desc1",
+          "fill": "#111111",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "明代笙发展为十三簧，音域大幅扩展，表现力显著增强。十三簧的配置使笙能够演奏更加复杂的旋律与丰富的和声，成为明代宫廷音乐和民间戏曲中不可或缺的核心乐器。",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "mTc1w",
+          "name": "Desc2",
+          "fill": "#111111",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "明代文献中有大量关于笙的记载，《明会典》《乐律全书》等典籍详细记录了笙的形制与演奏规范。明代的十三簧笙在制作工艺上达到了前所未有的高度，各地形成了不同风格的制笙流派，笙的形制逐渐定型，为现代笙的发展奠定了坚实基础。",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "uSyOx",
+          "name": "Image Frame — pic/3-宫中图-笙.png",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "pic/3-宫中图-笙.png",
+            "mode": "stretch"
+          },
+          "width": 480,
+          "height": 320
+        },
+        {
+          "type": "text",
+          "id": "oKOks",
+          "name": "Caption",
+          "fill": "#444444",
+          "content": "明代宫廷绘画 — 十三簧笙形制成熟、音域完备",
+          "fontFamily": "Noto Serif SC",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "note",
+          "id": "Pw1oc",
+          "name": "注释 — 明代",
+          "width": 560,
+          "height": 160,
+          "content": "元素注释:\n- 标题: Title\n- Kicker: Kicker\n- 时代: PeriodKicker / PeriodName / PeriodYear\n- 段落: Desc1, Desc2\n- 图片: Image Frame -> ./pic/3-宫中图-笙.png\n- 样式: shengyanbian.css, ../generalcomponent.css\n- 交互: shengyanbian.js"
+        }
+      ]
     }
   ],
   "variables": {
