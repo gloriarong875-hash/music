@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>观象·演变 — 鼓的历史演变</title>
+<!-- ============================================================================ -->
+<!-- === 鼓历史演变界面 === -->
+<!-- === 功能：三时期展示（远古/商周/汉唐），滚轮上下翻页 === -->
+<!-- === 交互：进入时期后自动播放标题与内容演变动画 === -->
+<!-- ============================================================================ -->
+<link rel="stylesheet" href="guyanbian.css" />
+</head>
+<body>
+<main class="page">
+
+    <!-- ================ 场景 1：远古·起源 ================ -->
+    <section class="scene active" id="scene-yuangu" data-scene="yuangu" aria-label="远古时期·鼓之起源">
+
+    <!-- 顶部导航条 -->
+    <nav class="top-nav" aria-label="页面导航">
+        <span class="top-nav-item">研物</span>
+        <span class="top-nav-item active">观象</span>
+        <span class="top-nav-item">编年</span>
+        <span class="top-nav-item">抠图</span>
+    </nav>
+
+    <!-- 左上角标题面板：模仿桑基图 panel-head 结构 -->
+    <header class="panel-head">
+        <div>
+            <h4 class="kicker">Observing Phenomena · Evolution</h4>
+            <h1 class="panel-title">观象·演变</h1>
+        </div>
+    </header>
+
+    <!-- 初始时期卡片：自动演变后淡出 -->
+    <div class="period-intro-card" aria-hidden="true">
+        <img class="period-intro-art" src="pic/时期1-乐器.png" alt="" />
+        <div class="period-intro-copy">
+            <span class="period-intro-title">远古</span>
+            <span class="period-intro-subtitle">鼓之起源</span>
+        </div>
+    </div>
+
+    <!-- 场景标题（朝代名） -->
+    <h1 class="scene-title">远古</h1>
+    <!-- 场景副标题（时期特征） -->
+    <h2 class="scene-subtitle">鼓之起源</h2>
+
+    <!-- 描述文字块：自动演变后显现 -->
+    <div class="desc-block">
+        <p>鼓是人类最早发明的乐器之一，其历史可追溯至远古时期。最初的鼓可能是用树干、竹筒或兽皮制成，用于传递信号、祭祀仪式和原始舞蹈。</p>
+        <p>考古发现表明，早在新石器时代，中国就已经出现了土鼓和陶鼓。这些原始鼓器见证了中华文明早期的音乐发展和精神信仰。</p>
+    </div>
+
+    <!-- 右侧主图：演奏人物 -->
+    <div class="main-image-area">
+        <img src="pic/时期1-演奏.png" alt="远古时期鼓演奏" />
+        <div class="ref-row">
+            <span class="ref-dot"></span>
+            <span class="ref-text">远古岩画 — 原始鼓乐演奏场景</span>
+        </div>
+    </div>
+
+    <!-- 左侧装饰图：乐器展示 -->
+    <div class="decor-image">
+        <img src="pic/时期1-乐器.png" alt="" aria-hidden="true" />
+    </div>
+
+    </section>
+
+    <!-- ================ 场景 2：商周·青铜鼓 ================ -->
+    <section class="scene" id="scene-shangzhou" data-scene="shangzhou" aria-label="商周时期·青铜鼓">
+
+    <nav class="top-nav" aria-label="页面导航">
+        <span class="top-nav-item">研物</span>
+        <span class="top-nav-item active">观象</span>
+        <span class="top-nav-item">编年</span>
+        <span class="top-nav-item">抠图</span>
+    </nav>
+
+    <!-- 左上角标题面板 -->
+    <header class="panel-head">
+        <div>
+            <h4 class="kicker">Observing Phenomena · Evolution</h4>
+            <h1 class="panel-title">观象·演变</h1>
+        </div>
+    </header>
+
+    <div class="period-intro-card" aria-hidden="true">
+        <img class="period-intro-art" src="pic/时期2-乐器.png" alt="" />
+        <div class="period-intro-copy">
+            <span class="period-intro-title">商周</span>
+            <span class="period-intro-subtitle">青铜鼓盛</span>
+        </div>
+    </div>
+
+    <h1 class="scene-title">商周</h1>
+    <h2 class="scene-subtitle">青铜鼓盛</h2>
+
+    <div class="desc-block">
+        <p>商周时期，鼓的制作技术达到了新高度。青铜铸造技术的发展使得青铜鼓成为礼器和乐器的重要代表。青铜鼓不仅用于祭祀，也用于军事指挥和宫廷乐舞。</p>
+        <p>著名的崇阳铜鼓是商代青铜鼓的杰出代表，造型精美，纹饰华丽，反映了当时高超的工艺水平。青铜鼓的出现标志着鼓从实用器具向艺术珍品的转变。</p>
+    </div>
+
+    <div class="main-image-area">
+        <img src="pic/时期2-敦煌.png" alt="商周青铜鼓" />
+        <div class="ref-row">
+            <span class="ref-dot"></span>
+            <span class="ref-text">崇阳铜鼓 — 商代青铜鼓的杰出代表</span>
+        </div>
+    </div>
+
+    <div class="decor-image">
+        <img src="pic/时期2-乐器.png" alt="" aria-hidden="true" />
+    </div>
+
+    </section>
+
+    <!-- ================ 场景 3：汉唐·繁荣 ================ -->
+    <section class="scene" id="scene-hantang" data-scene="hantang" aria-label="汉唐时期·鼓乐繁荣">
+
+    <nav class="top-nav" aria-label="页面导航">
+        <span class="top-nav-item">研物</span>
+        <span class="top-nav-item active">观象</span>
+        <span class="top-nav-item">编年</span>
+        <span class="top-nav-item">抠图</span>
+    </nav>
+
+    <!-- 左上角标题面板 -->
+    <header class="panel-head">
+        <div>
+            <h4 class="kicker">Observing Phenomena · Evolution</h4>
+            <h1 class="panel-title">观象·演变</h1>
+        </div>
+    </header>
+
+    <div class="period-intro-card" aria-hidden="true">
+        <img class="period-intro-art" src="pic/时期3-乐器.png" alt="" />
+        <div class="period-intro-copy">
+            <span class="period-intro-title">汉唐</span>
+            <span class="period-intro-subtitle">鼓乐繁荣</span>
+        </div>
+    </div>
+
+    <h1 class="scene-title">汉唐</h1>
+    <h2 class="scene-subtitle">鼓乐繁荣</h2>
+
+    <div class="desc-block">
+        <p>汉唐时期是中国鼓乐发展的鼎盛时期。鼓的种类日益增多，出现了建鼓、鼗鼓、羯鼓、腰鼓等多种形制。鼓乐在宫廷燕乐、民间娱乐和军事活动中都发挥着重要作用。</p>
+        <p>唐代燕乐中的鼓类乐器尤为丰富，羯鼓更是备受宫廷青睐。鼓不仅是节奏乐器，更成为表达情感、烘托气氛的重要手段，对中国传统音乐的发展产生了深远影响。</p>
+    </div>
+
+    <div class="main-image-area">
+        <img src="pic/时期3-吹笙仕女.gif" alt="汉唐鼓乐演奏" />
+        <div class="ref-row">
+            <span class="ref-dot"></span>
+            <span class="ref-text">唐代壁画 — 鼓乐在燕乐中的演奏场景</span>
+        </div>
+    </div>
+
+    <div class="decor-image">
+        <img src="pic/时期3-乐器.png" alt="" aria-hidden="true" />
+    </div>
+
+    </section>
+
+</main>
+
+<!-- 交互逻辑脚本 -->
+<script src="guyanbian.js"></script>
+</body>
+</html>
