@@ -137,6 +137,7 @@ body, html {
     pointer-events:none;
     font-family: FZLiShu, "LiSu", "隶书", "Noto Serif SC", "PingFang SC", serif;
     font-weight:100;
+    top:-0.5px;
     letter-spacing:3px;
     transition:none;
     z-index:5;
@@ -204,20 +205,22 @@ body, html {
 }
 
 #string-description {
-    position:absolute;
-    left:-13vw;
-    top:15vh;
-    width:min(37vw,540px);
+    position:fixed;
+    left:8vw;
+    top:20vh;
+    width:min(34vw,490px);
     min-height:3.2em;
     color:var(--text);
     font-size:clamp(18px,1.55vw,27px);
     line-height:1.75;
     letter-spacing:2px;
     opacity:0;
-    transform:translateY(10px);
+    transform:translateY(8px);
     transition:opacity 0.35s ease, transform 0.35s ease;
     pointer-events:none;
     text-shadow:0 1px 10px rgba(255,255,255,0.45);
+    text-align:left;
+    z-index:30;
 }
 
 #string-description.visible {
@@ -237,35 +240,89 @@ body, html {
 /* ======================================== */
 
 #complete-overlay {
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:200;
+}
+#complete-overlay.visible { display:flex; }
+.completion-backdrop {
     position:absolute;
     inset:0;
+    background:rgba(31,45,37,0.48);
+    backdrop-filter:blur(5px);
+}
+.completion-card {
+    position:relative;
+    z-index:201;
+    width:min(520px,82vw);
+    max-height:82vh;
+    padding:22px;
+    border-radius:18px;
+    background-color:#eee7cb;
+    background-image:url("琴部件assets/2.1卡片背景.png"),
+        radial-gradient(circle at 20% 10%,rgba(0,0,0,0.03),transparent 8%),
+        radial-gradient(circle at 80% 80%,rgba(0,0,0,0.02),transparent 12%);
+    background-repeat:repeat,no-repeat,no-repeat;
+    background-blend-mode:normal,multiply,overlay;
+    color:#361e19;
+    box-shadow:0 20px 50px rgba(0,0,0,0.38);
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
-    background:rgba(136,169,147,0.85);
-    backdrop-filter:blur(8px);
-    z-index:200;
+    text-align:center;
+    overflow:hidden;
+}
+.completion-card::before,
+.completion-card::after {
+    content:"";
+    position:absolute;
+    top:12%;
+    left:50%;
+    width:8px;
+    height:8px;
+    border-radius:50%;
     opacity:0;
     pointer-events:none;
-    transition:opacity 0.7s ease;
 }
-#complete-overlay.visible { opacity:1; pointer-events:all; }
+.completion-card::before {
+    background:#f6d365;
+    box-shadow:28px -18px #e6b56a,-26px -30px #f0d88a,12px -46px #e3b981;
+}
+.completion-card::after {
+    background:#ffeab8;
+    box-shadow:-22px -12px #d8bf80,18px -34px #f1dd9e,-12px -46px #e6c97a;
+}
+.completion-animation {
+    width:100%;
+    height:min(49vh,420px);
+    overflow:hidden;
+    border-radius:12px;
+}
+.completion-animation img {
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:contain;
+}
 #complete-overlay .big {
-    font-size:48px;
-    color:var(--gold);
-    letter-spacing:10px;
-    text-shadow:0 0 21.875px var(--gold-shadow);
+    margin-top:14px;
+    font-size:24px;
+    color:#361e19;
+    letter-spacing:4px;
 }
 #complete-overlay .sub {
-    font-size:24px;
-    color:var(--text);
-    letter-spacing:4px;
-    margin:16px 0 32px;
+    font-size:18px;
+    color:#5a4a3a;
+    letter-spacing:3px;
+    margin:8px 0 18px;
 }
-#complete-overlay .btns { display:flex; gap:30px; }
+#complete-overlay .btns { display:flex; width:100%; gap:14px; }
 .complete-btn {
-    padding:10px 32px;
+    flex:1;
+    padding:11px 18px;
     border:none;
     background:#D6C481;
     color:#361E19;
@@ -276,12 +333,38 @@ body, html {
     border-radius:22px;
     transition:all 0.4s ease;
 }
+.complete-btn.secondary { background:#54483d; color:#f6eed7; }
 .complete-btn:hover {
     background:var(--gold);
     color:#361E19;
     box-shadow:0 0 24px rgba(201,169,110,0.35);
     transform:scale(1.05);
 }
+
+@keyframes completionBackdropIn { from { opacity:0; } to { opacity:1; } }
+@keyframes completionPop {
+    0% { opacity:0; transform:translateY(18px) scale(.96); }
+    60% { opacity:1; transform:translateY(-6px) scale(1.02); }
+    100% { transform:translateY(0) scale(1); }
+}
+@keyframes completionImageIn {
+    from { opacity:0; transform:translateY(12px) scale(.98); }
+    to { opacity:1; transform:translateY(0) scale(1); }
+}
+@keyframes completionImageFloat {
+    from { transform:translateY(-4px) rotate(-0.35deg); }
+    to { transform:translateY(7px) rotate(0.35deg); }
+}
+@keyframes completionConfetti {
+    from { opacity:1; transform:translateX(-50%) translateY(0) scale(1) rotate(0); }
+    to { opacity:0; transform:translateX(-50%) translateY(-140px) scale(.6) rotate(320deg); }
+}
+#complete-overlay.visible .completion-backdrop { animation:completionBackdropIn .36s ease-out both; }
+#complete-overlay.visible .completion-card { animation:completionPop .56s cubic-bezier(.2,.9,.3,1) both; }
+#complete-overlay.visible .completion-animation { animation:completionImageIn .6s cubic-bezier(.2,.9,.3,1) both; }
+#complete-overlay.visible .completion-animation img { animation:completionImageFloat 3.2s ease-in-out .6s infinite alternate; }
+#complete-overlay.visible .completion-card::before { animation:completionConfetti .92s cubic-bezier(.2,.8,.3,1) both; }
+#complete-overlay.visible .completion-card::after { animation:completionConfetti .98s cubic-bezier(.2,.8,.3,1) .06s both; }
 
 /* ======================================== */
 /* === 响应式：768px 以下移动端适配 === */
@@ -290,5 +373,8 @@ body, html {
 @media (max-width:768px) {
     .string-opt.steel { font-size:28px; }
     .string-opt.silk, .string-opt.nylon { font-size:22px; }
+    #string-description { left:7vw; top:12vh; width:72vw; }
+    .completion-card { width:calc(100% - 36px); padding:14px; }
+    .completion-animation { height:42vh; }
 
 }

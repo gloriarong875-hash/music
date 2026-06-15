@@ -21,7 +21,7 @@ const F = [
     ix:257,iy:138,iw:894,ih:624,         // Keyframe A: 裱布
     ix2:-112,iy2:-311,iw2:1411,ih2:985,  // Keyframe B: 髹漆一层
     txt:'', txt2:'麻布裹琴，加上含鹿角粉末的漆料',
-    tx:805,ty:674, tsize:32,tcolor:'#000000',
+    tx:805,ty:674, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     stage:1, sdone:[1,0,0,0],
     zoom:true,
@@ -30,41 +30,40 @@ const F = [
   { // 2: 步骤二 髹漆一层 (缩放终点，切换前最后一帧)
     img:'琴部件assets/步骤2-髹漆.png',
     ix:-112,iy:-311,iw:1411,ih:985,      // 与帧3同位置，保证切换无缝
-    txt:'麻布裹琴，加上含鹿角粉末的漆料', tx:805,ty:674, tsize:32,tcolor:'#000000',
+    txt:'麻布裹琴，加上含鹿角粉末的漆料', tx:805,ty:674, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     stage:1, sdone:[1,0,0,0],
     extra:null
   },
   { // 3: 步骤二 髹漆完成 (图像切换：髹漆→髹漆完成，位置/尺寸与帧2对齐)
     img:'琴部件assets/步骤2-髹漆完成.png',
-    ix:-112,iy:-311,iw:1411,ih:985,      // 与帧2完全对齐，无缝切换
+    ix:-112,iy:-390,iw:1411,ih:985,      // 与帧2完全对齐，无缝切换
     txt:'混合多种矿石的不同漆料多次髹涂打磨，琴面如镜，音韵愈沉',
-    tx:116,ty:654, tsize:32,tcolor:'#000000',
+    tx:116,ty:654, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     stage:1, sdone:[1,0,0,0],
     extra:null
   },
   { // 4: 步骤三 选弦介绍
-    img:'琴部件assets/步骤3-选弦.png', ix:114,iy:172,iw:1089,ih:555,
+    img:'琴部件assets/步骤3-选弦.png', ix:254,iy:252,iw:1089,ih:555,
     txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     stage:2, sdone:[1,1,0,0],
     extra:null
   },
   { // 5: 步骤三 选弦交互 [LOCK]
-    img:'琴部件assets/步骤3-选弦.png', ix:-620,iy:159,iw:3113,ih:1588,
-    txt:'弦音清亮', tx:96,ty:125, tsize:32,tcolor:'#3b4942',
+    img:'琴部件assets/步骤3-选弦.png', ix:-480,iy:239,iw:3113,ih:1588,
     overlay:null, tilted:null,
     stage:2, sdone:[1,1,0,0],
     lock:true,
     strings:[
-      {t:'steel', content:'钢弦', x:275,y:321,fs:42,color:'#766541',shadow:true},
-      {t:'silk', content:'丝弦', x:405,y:288,fs:32,color:'#647e6d'},
-      {t:'nylon',content:'钢丝尼龙弦',x:489,y:243,fs:32,color:'#647e6d'}
+      {t:'steel', content:'钢弦', x:325,y:281,fs:42,color:'#766541',shadow:true},
+      {t:'silk', content:'丝弦', x:455,y:258,fs:32,color:'#647e6d'},
+      {t:'nylon',content:'钢丝尼龙弦',x:509,y:203,fs:32,color:'#647e6d'}
     ],
     extra:[
-      {src:'琴部件assets/步骤3b-选弦备选.png', x:-86,y:195, w:1218,h:610, op:0.5},
-      {src:'琴部件assets/步骤3b-选弦备选.png', x:-181,y:232, w:1227,h:621, op:0.5}
+      {src:'琴部件assets/步骤3b-选弦备选.png', x:124,y:225, w:1218,h:610, op:0.5},
+      {src:'琴部件assets/步骤3b-选弦备选.png', x:20,y:252, w:1227,h:621, op:0.5}
     ]
   },
   { // 6: 步骤四 上弦
@@ -76,7 +75,6 @@ const F = [
   },
   { // 7: 步骤四 调音完成
     img:'琴部件assets/步骤4-调音上弦.png', ix:21,iy:-276,iw:1053,ih:1176,
-    txt:'调音上弦，七弦成韵', tx:0,ty:0, tsize:28,tcolor:'#3b4942',
     overlay:null, tilted:null,
     stage:3, sdone:[1,1,1,1],
     extra:null,
@@ -103,6 +101,7 @@ const scrollHint = document.getElementById('scroll-hint') || { textContent:'', c
 const topProgress = document.getElementById('top-progress');
 const completeO = document.getElementById('complete-overlay');
 const stageNames = ['制胚','髹漆','选弦','上弦'];
+const STAGE_STARTS = stageNames.map((_,stage)=>F.findIndex(frame=>frame.stage===stage));
 
 // ── nav-dots (统一使用 generalprocess.css) ──
 const navDotWrappers = document.querySelectorAll('.dot-wrapper');
@@ -196,19 +195,35 @@ document.addEventListener('keydown',e=>{
 // Step dot click navigation (unified nav-dots)
 navDotWrappers.forEach((wrapper,i)=>{
     wrapper.addEventListener('click',()=>{
-        if(isLocked&&!stringPicked) return;
-        for(let j=0;j<N;j++){
-            if(F[j].stage===i){
-                const p=j/(N-1);
-                scrollT=p; scrollP=p;
-                lastInput=performance.now();
-                applyVisuals(p);
-                startLoop();
-                break;
-            }
-        }
+        if(i===3&&!stringPicked) return;
+        goToStage(i);
     });
 });
+
+function getStageAt(p){
+    return F[getFrameIdx(p).idx].stage;
+}
+
+function leaveStringLock(){
+    isLocked=false;
+    stringP.classList.remove('visible');
+    scrollHint.classList.add('still');
+    scrollHint.textContent='↓ 滚轮浏览制作过程';
+}
+
+function goToStage(stage){
+    const safeStage=Math.max(0,Math.min(stageNames.length-1,stage));
+    if(safeStage===3&&!stringPicked) return;
+    if(safeStage<3) resetCompletion();
+    if(safeStage===2&&getStageAt(scrollP)>2) resetStringSelection();
+    if(isLocked&&safeStage!==2) leaveStringLock();
+    const p=STAGE_STARTS[safeStage]/(N-1);
+    scrollT=p;
+    scrollP=p;
+    lastInput=performance.now();
+    applyVisuals(p);
+    startLoop();
+}
 
 function startLoop(){
     if(animId) return;
@@ -234,7 +249,9 @@ function loop(){
     applyVisuals(scrollP);
     topProgress.style.width=(scrollP*100)+'%';
 
-    if(scrollP>0.99&&!stringPicked) showCompletion();
+    if(scrollP<0.95&&completed) resetCompletion();
+
+    if(scrollP>0.99&&stringPicked) showCompletion();
 
     const diff=Math.abs(eff-scrollP);
     if(diff>0.0005||scrollP<1){
@@ -259,7 +276,9 @@ function checkLock(){
     if(idx===LOCK_IDX&&!stringPicked){
         if(!isLocked){
             isLocked=true;
-            lockP=scrollP;
+            lockP=LOCK_IDX/(N-1);
+            scrollP=lockP;
+            scrollT=lockP;
             stringP.classList.add('visible');
             scrollHint.textContent='点击选择琴弦类型';
             scrollHint.classList.remove('still');
@@ -297,9 +316,23 @@ function applyStringHighlight(){
     const active=stringHover||stringPicked;
     imgA.style.filter=!active?'none':active==='steel'?'brightness(1.12) saturate(1.06)':'brightness(0.72) saturate(0.78)';
     imgEx.forEach((el,i)=>{
-        const type=i===0?'silk':'nylon';
+        const type=i===0?'nylon':'silk';
         el.style.filter=active===type?'brightness(1.45) saturate(1.22) drop-shadow(0 0 10px rgba(255,214,130,0.55))':'brightness(0.82) saturate(0.8)';
     });
+}
+
+function resetStringSelection(){
+    stringPicked=null;
+    stringHover=null;
+    isLocked=false;
+    stringP.classList.remove('visible');
+    stringDescription.classList.remove('visible');
+    stringOpts.forEach(opt=>{
+        opt.classList.remove('selected','hovered');
+        opt.setAttribute('aria-pressed','false');
+    });
+    imgA.style.filter='none';
+    imgEx.forEach(el=>{ el.style.filter='none'; });
 }
 
 stringOpts.forEach(opt=>{
@@ -319,16 +352,12 @@ stringOpts.forEach(opt=>{
         stringPicked=opt.dataset.type;
         setStringFocus(stringPicked);
         opt.classList.add('selected');
+        opt.setAttribute('aria-pressed','true');
         scrollHint.textContent=stringPicked==='steel'?'已选钢弦 · 清亮悠长':stringPicked==='silk'?'已选丝弦 · 温润古朴':'已选钢丝尼龙弦 · 刚柔并济';
         scrollHint.classList.add('still');
         setTimeout(()=>{
-            isLocked=false;
-            stringP.classList.remove('visible');
-            scrollHint.classList.add('still');
-            scrollHint.textContent='↓ 滚轮浏览制作过程';
-            scrollT=F[6].p_start||(6/(N-1));
-            lastInput=performance.now();
-            startLoop();
+            leaveStringLock();
+            goToStage(3);
             chime();
         },1200);
     });
@@ -447,9 +476,13 @@ function applyVisuals(p){
 
     if(!isZoomFrame&&!sameImageMove){
         if(nf){
+            imgA.style.zIndex='1';
+            imgB.style.zIndex='2';
             imgA.style.opacity=(1-t).toFixed(3);
             imgB.style.opacity=t.toFixed(3);
         }else{
+            imgA.style.zIndex='1';
+            imgB.style.zIndex='0';
             imgA.style.opacity='1';
             imgB.style.opacity='0';
         }
@@ -458,7 +491,7 @@ function applyVisuals(p){
     // ── Extra image layers (frame 6: string selection) ──
     imgEx.forEach(el=>{ el.style.opacity='0'; });
     const extras=cf.extra||(nf&&nf.extra?nf.extra:null);
-    const extraFade=cf.extra?1:(nf&&nf.extra?t:0);
+    const extraFade=cf.extra?(nf&&nf.stage!==2?1-t:1):(nf&&nf.extra?t:0);
     if(extras){
         extras.forEach((ex,i)=>{
             if(imgEx[i]){
@@ -468,7 +501,7 @@ function applyVisuals(p){
                 imgEx[i].style.transform=`translate(-50%,-50%) translate(${cx-50}vw,${cy-50}vh)`;
                 imgEx[i].style.width=pxToVW(ex.w)+'vw';
                 imgEx[i].style.height=pxToVH(ex.h)+'vh';
-                const type=i===0?'silk':'nylon';
+                const type=i===0?'nylon':'silk';
                 const active=stringHover||stringPicked;
                 const emphasis=active?(active===type?1:0.2):0.52;
                 imgEx[i].style.opacity=(ex.op*extraFade*emphasis).toFixed(3);
@@ -476,7 +509,13 @@ function applyVisuals(p){
         });
     }
     if(cf.stage===2||nf&&nf.stage===2) applyStringHighlight();
-    else imgA.style.filter='none';
+    else {
+        imgA.style.filter='none';
+        imgEx.forEach(el=>{
+            el.style.opacity='0';
+            el.style.filter='none';
+        });
+    }
 
     // ── Overlay rect (暗色遮罩) ──
     const orFade=(cf.overlay?1-t:0)+(nf&&nf.overlay?t:0);
@@ -556,8 +595,8 @@ function applyVisuals(p){
 
     // ── String options position ──
     if(cf.strings){
-        stringP.style.left=pxToVW(275)+'vw';
-        stringP.style.top=pxToVH(243)+'vh';
+        stringP.style.left=pxToVW(415)+'vw';
+        stringP.style.top=pxToVH(323)+'vh';
         stringP.style.width=pxToVW(250)+'vw';
         stringP.style.height=pxToVH(120)+'vh';
         cf.strings.forEach((s,i)=>{
@@ -568,6 +607,7 @@ function applyVisuals(p){
             el.style.top=pxToVH(s.y-243)+'vh';
             el.textContent=s.content;
             el.className='string-opt '+s.t;
+            el.setAttribute('aria-pressed',stringPicked===s.t?'true':'false');
             if(stringHover===s.t) el.classList.add('hovered');
             if(stringPicked&&s.t===stringPicked) el.classList.add('selected');
         });
@@ -617,11 +657,27 @@ function updateNavDots(frm){
 //  COMPLETION
 // ═══════════════════════════════════════════
 let completed=false;
+let completionTimer=null;
 function showCompletion(){
     if(completed) return;
     completed=true;
-    completeO.classList.add('visible');
     scrollHint.style.opacity='0';
+    completionTimer=setTimeout(()=>{
+        completeO.classList.add('visible');
+        completeO.setAttribute('aria-hidden','false');
+        completionTimer=null;
+    },2000);
+}
+
+function resetCompletion(){
+    if(completionTimer){
+        clearTimeout(completionTimer);
+        completionTimer=null;
+    }
+    completed=false;
+    completeO.classList.remove('visible');
+    completeO.setAttribute('aria-hidden','true');
+    scrollHint.style.opacity='';
 }
 
 document.getElementById('btn-restart').addEventListener('click',()=>location.reload());
@@ -631,28 +687,18 @@ document.getElementById('btn-back').addEventListener('click',()=>{
 
 // ── 右上角 cornerNav 前进/后退按钮 ──
 document.getElementById('backBtn').addEventListener('click',()=>{
-    if(isLocked&&!stringPicked){
-        isLocked=false;
-        stringP.classList.remove('visible');
-        scrollHint.classList.add('still');
-        scrollHint.textContent='↓ 滚轮浏览制作过程';
-    }
-    scrollT=Math.max(0,scrollT-KEY_STEP);
-    lastInput=performance.now();
-    startLoop();
+    goToStage(getStageAt(scrollP)-1);
 });
 document.getElementById('nextBtn').addEventListener('click',()=>{
-    if(isLocked&&!stringPicked) return;
-    scrollT=Math.min(1,scrollT+KEY_STEP);
-    lastInput=performance.now();
-    startLoop();
+    goToStage(getStageAt(scrollP)+1);
 });
 
 // ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
 const allSrcs=[...new Set(F.map(f=>f.img).concat(
-    (F[5].extra||[]).map(e=>e.src)
+    (F[5].extra||[]).map(e=>e.src),
+    ['琴部件assets/步骤4-琴演奏.png']
 ))];
 allSrcs.forEach(src=>{ const img=new Image(); img.src=src; });
 
