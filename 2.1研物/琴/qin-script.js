@@ -98,6 +98,7 @@ const overlayR = document.getElementById('overlay-rect');
 const tiltedR = document.getElementById('tilted-rect');
 const stringP = document.getElementById('string-panel');
 const stringOpts = stringP.querySelectorAll('.string-opt');
+const stringDescription = document.getElementById('string-description');
 const scrollHint = document.getElementById('scroll-hint') || { textContent:'', classList:{add(){},remove(){},contains(){return false;}}, style:{} };
 const topProgress = document.getElementById('top-progress');
 const completeO = document.getElementById('complete-overlay');
@@ -138,6 +139,7 @@ const SNAP_IDLE  = 400;
 
 let scrollT=0, scrollP=0, lastInput=0, animId=null;
 let isLocked=false, stringPicked=null;
+let stringHover=null;
 let lockP=0;
 const LOCK_IDX=5; // 选弦交互帧 (0-based index)
 
@@ -273,11 +275,49 @@ function checkLock(){
 // ═══════════════════════════════════════════
 //  STRING SELECTION
 // ═══════════════════════════════════════════
+const STRING_DETAILS={
+    steel:'钢弦音色清亮、余韵悠长，张力稳定，适合表现明快而通透的琴声。',
+    silk:'丝弦触感柔和，音色温润古朴，细微的吟猱变化最具传统韵味。',
+    nylon:'钢丝尼龙弦兼具稳定与柔韧，音色圆润饱满，也更易于日常维护。'
+};
+
+function setStringFocus(type){
+    stringHover=type;
+    stringOpts.forEach(opt=>opt.classList.toggle('hovered',opt.dataset.type===type));
+    if(type){
+        stringDescription.textContent=STRING_DETAILS[type];
+        stringDescription.classList.add('visible');
+    }else if(!stringPicked){
+        stringDescription.classList.remove('visible');
+    }
+    applyStringHighlight();
+}
+
+function applyStringHighlight(){
+    const active=stringHover||stringPicked;
+    imgA.style.filter=!active?'none':active==='steel'?'brightness(1.12) saturate(1.06)':'brightness(0.72) saturate(0.78)';
+    imgEx.forEach((el,i)=>{
+        const type=i===0?'silk':'nylon';
+        el.style.filter=active===type?'brightness(1.45) saturate(1.22) drop-shadow(0 0 10px rgba(255,214,130,0.55))':'brightness(0.82) saturate(0.8)';
+    });
+}
+
 stringOpts.forEach(opt=>{
+    opt.addEventListener('mouseenter',()=>setStringFocus(opt.dataset.type));
+    opt.addEventListener('focus',()=>setStringFocus(opt.dataset.type));
+    opt.addEventListener('mouseleave',()=>setStringFocus(stringPicked));
+    opt.addEventListener('blur',()=>setStringFocus(stringPicked));
+    opt.addEventListener('keydown',e=>{
+        if(e.key==='Enter'||e.key===' '){
+            e.preventDefault();
+            opt.click();
+        }
+    });
     opt.addEventListener('click',()=>{
         if(stringPicked) return;
         au(); ding();
         stringPicked=opt.dataset.type;
+        setStringFocus(stringPicked);
         opt.classList.add('selected');
         scrollHint.textContent=stringPicked==='steel'?'已选钢弦 · 清亮悠长':stringPicked==='silk'?'已选丝弦 · 温润古朴':'已选钢丝尼龙弦 · 刚柔并济';
         scrollHint.classList.add('still');
@@ -308,6 +348,14 @@ function pxToVW(v){ return (v/1440)*100; }
 function pxToVH(v){ return (v/900)*100; }
 
 function lerp(a,b,t){ return a+(b-a)*t; }
+function easeInOut(t){ return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2; }
+
+function setImgTween(el,from,to,t){
+    setImgPos(el,{
+        ix:lerp(from.ix,to.ix,t), iy:lerp(from.iy,to.iy,t),
+        iw:lerp(from.iw,to.iw,t), ih:lerp(from.ih,to.ih,t)
+    });
+}
 
 function setImgPos(el, frm, zoomT){
     let ix, iy, iw, ih;
@@ -338,11 +386,16 @@ function applyVisuals(p){
     let t=0;
     let zoomT=0; // step 1 internal zoom progress (0..1)
 
-    if(frac>1-TRANS&&idx<N-1){
+    const fullCrossfade=idx===2;
+    const sameImageMove=idx<N-1&&F[idx].img===F[idx+1].img&&!F[idx].zoom;
+    if((fullCrossfade||sameImageMove)&&idx<N-1){
+        nxt=idx+1;
+        t=easeInOut(frac);
+    }else if(frac>1-TRANS&&idx<N-1){
         nxt=idx+1;
         t=(frac-(1-TRANS))/TRANS;
         t=Math.max(0,Math.min(1,t));
-        t=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+        t=easeInOut(t);
     }
 
     const cf=F[cur], nf=nxt!==cur?F[nxt]:null;
@@ -369,6 +422,14 @@ function applyVisuals(p){
         setImgPos(imgA, cf, zoomT);
         imgA.style.opacity='1';
         imgB.style.opacity='0';
+    } else if(sameImageMove&&nf){
+        if(cur!==lastA){
+            imgA.src=cf.img;
+            lastA=cur;
+        }
+        setImgTween(imgA,cf,nf,t);
+        imgA.style.opacity='1';
+        imgB.style.opacity='0';
     } else if(cur!==lastA||(nf&&nxt!==lastB)){
         if(cur!==lastA){
             imgA.src=cf.img;
@@ -384,7 +445,7 @@ function applyVisuals(p){
         }
     }
 
-    if(!isZoomFrame){
+    if(!isZoomFrame&&!sameImageMove){
         if(nf){
             imgA.style.opacity=(1-t).toFixed(3);
             imgB.style.opacity=t.toFixed(3);
@@ -396,8 +457,10 @@ function applyVisuals(p){
 
     // ── Extra image layers (frame 6: string selection) ──
     imgEx.forEach(el=>{ el.style.opacity='0'; });
-    if(cf.extra){
-        cf.extra.forEach((ex,i)=>{
+    const extras=cf.extra||(nf&&nf.extra?nf.extra:null);
+    const extraFade=cf.extra?1:(nf&&nf.extra?t:0);
+    if(extras){
+        extras.forEach((ex,i)=>{
             if(imgEx[i]){
                 imgEx[i].src=ex.src;
                 const cx=pxToVW(ex.x+ex.w/2), cy=pxToVH(ex.y+ex.h/2);
@@ -405,10 +468,15 @@ function applyVisuals(p){
                 imgEx[i].style.transform=`translate(-50%,-50%) translate(${cx-50}vw,${cy-50}vh)`;
                 imgEx[i].style.width=pxToVW(ex.w)+'vw';
                 imgEx[i].style.height=pxToVH(ex.h)+'vh';
-                imgEx[i].style.opacity=ex.op;
+                const type=i===0?'silk':'nylon';
+                const active=stringHover||stringPicked;
+                const emphasis=active?(active===type?1:0.2):0.52;
+                imgEx[i].style.opacity=(ex.op*extraFade*emphasis).toFixed(3);
             }
         });
     }
+    if(cf.stage===2||nf&&nf.stage===2) applyStringHighlight();
+    else imgA.style.filter='none';
 
     // ── Overlay rect (暗色遮罩) ──
     const orFade=(cf.overlay?1-t:0)+(nf&&nf.overlay?t:0);
@@ -500,6 +568,7 @@ function applyVisuals(p){
             el.style.top=pxToVH(s.y-243)+'vh';
             el.textContent=s.content;
             el.className='string-opt '+s.t;
+            if(stringHover===s.t) el.classList.add('hovered');
             if(stringPicked&&s.t===stringPicked) el.classList.add('selected');
         });
     }
