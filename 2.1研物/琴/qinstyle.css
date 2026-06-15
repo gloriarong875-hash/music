@@ -1,3 +1,20 @@
+/*
+ * 古琴制作页视觉说明
+ * --------------------------------------------------------------------------
+ * 本文件按"制胚缩放、髹漆缩放与图像切换、选弦锁定、上弦完成、响应式"组织。
+ * generalprocess.css 提供通用颜色、字体层级、圆点导航和顶部进度条基础样式；
+ * 本文件只覆盖古琴页面特有的素材位置、交互反馈和步骤间显隐。
+ *
+ * 布局与维护约定：
+ * 1. --gold、--type-lg 等通用变量来自 generalprocess.css，本文件不重复定义。
+ * 2. 步骤一（制胚）和步骤二（髹漆）内部使用滚轮连续缩放，由 JS 驱动。
+ *    同图缩放帧的 image 尺寸/位置平滑插值；异图切换帧使用交叉淡入淡出。
+ * 3. 步骤三（选弦）锁定滚动，用户必须选择弦类型才能继续。
+ * 4. .nav-dots / .cornerNav / .hint 样式由 generalprocess.css 提供，
+ *    本文件仅微调 z-index 确保不被 canvas 内容遮挡。
+ * 5. 响应式规则集中在文件末尾，桌面布局修改后应同步检查 768px 以下覆盖项。
+ */
+
 /* ========== 本地方正隶书字体 ========== */
 @font-face {
   font-family: FZLiShu;
@@ -30,35 +47,42 @@ body, html {
     overflow:hidden;
     background:var(--bg);
     color:var(--text);
-    /* 统一使用隶书字体栈，与笙等页面保持一致 */
+    /* 统一使用隶书字体栈，与笙、笛等页面保持一致 */
     font-family: FZLiShu, "LiSu", "隶书", "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
     font-weight:100;
     user-select:none;
     -webkit-user-select:none;
 }
 
-/* ── Canvas ── */
+/* ======================================== */
+/* === CANVAS 与背景图 === */
+/* ======================================== */
+
 #canvas {
     position:relative;
     width:100vw; height:100vh;
     overflow:hidden;
     background:var(--bg);
 }
-	/* ── Background painting (pans L→R with scroll) ── */
-	#bg-painting {
-	    position:absolute;
-	    inset:0;
-	    z-index:0;
-	    background-image:url('图/bg_鹤听琴图.png');
-	    background-size:auto 110%;
-	    background-repeat:no-repeat;
-	    background-position:0% center;
-	    opacity:0.18;
-	    pointer-events:none;
-	    will-change:background-position;
-	}
 
-/* ── Image layers (two for crossfade) ── */
+/* 背景古画随滚动横向平移 (JS 驱动 backgroundPositionX) */
+#bg-painting {
+    position:absolute;
+    inset:0;
+    z-index:0;
+    background-image:url('图/bg_鹤听琴图.png');
+    background-size:auto 110%;
+    background-repeat:no-repeat;
+    background-position:0% center;
+    opacity:0.18;
+    pointer-events:none;
+    will-change:background-position;
+}
+
+/* ======================================== */
+/* === 图像层（双通道交叉淡入淡出） === */
+/* ======================================== */
+
 .img-layer {
     position:absolute;
     will-change:transform,opacity;
@@ -70,7 +94,7 @@ body, html {
 #img-a { z-index:1; }
 #img-b { z-index:0; opacity:0; }
 
-/* ── Image layers for frame 9 multi-image ── */
+/* 步骤三选弦交互的额外备选图像层 */
 .img-extra {
     position:absolute;
     will-change:transform,opacity;
@@ -80,7 +104,11 @@ body, html {
     opacity:0;
 }
 
-/* ── Dark overlay rect ── */
+/* ======================================== */
+/* === 装饰叠加层（暗色遮罩 / 倾斜矩形） === */
+/* ======================================== */
+
+/* 暗色遮罩矩形 (步骤二髹漆 / 步骤二完成) */
 .overlay-rect {
     position:absolute;
     pointer-events:none;
@@ -89,7 +117,7 @@ body, html {
     z-index:3;
 }
 
-/* ── Tilted rect (frame 6) ── */
+/* 倾斜半透明矩形 (步骤二琴体显现) */
 .tilted-rect {
     position:absolute;
     pointer-events:none;
@@ -99,7 +127,10 @@ body, html {
     background:#d9d9d9;
 }
 
-/* ── Text layers (two for crossfade) ── */
+/* ======================================== */
+/* === 文字层（双通道交叉淡入淡出） === */
+/* ======================================== */
+
 .text-layer {
     position:absolute;
     will-change:opacity,transform;
@@ -110,24 +141,12 @@ body, html {
     transition:none;
     z-index:5;
 }
-#text-a { }
 #text-b { opacity:0; }
 
-/* ── Decorative white circle ── */
-#decor-circle {
-    position:absolute;
-    width:62px; height:62px;
-    border-radius:50%;
-    background:var(--white-soft);
-    border:1px solid var(--white-soft);
-    box-shadow:0 0 8.75px 5px var(--white-shadow);
-    z-index:5;
-    pointer-events:none;
-    will-change:opacity,transform;
-    opacity:0;
-}
+/* ======================================== */
+/* === 步骤三：选弦交互面板 === */
+/* ======================================== */
 
-/* ── String options (only visible in frame 9) ── */
 #string-panel {
     position:absolute;
     z-index:10;
@@ -179,68 +198,17 @@ body, html {
     color:var(--silk);
 }
 
-/* ── Step indicator bar（与 generalprocess.css .nav-dots 视觉统一）── */
-#step-bar {
-    position:fixed;
-    top:36px; left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    align-items:center;
-    gap:80px;
-    z-index:50;
-}
+/* ======================================== */
+/* === 全流程导航点 === */
+/* ======================================== */
+/* .nav-dots / .dot-wrapper / .dot / .dot-label 由 generalprocess.css 提供 */
+/* 本文件仅微调 z-index 确保不被其他元素遮挡 */
+.nav-dots { z-index: 50; }
 
-.step-item {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    justify-content:flex-end;
-    height:28px;
-    cursor:pointer;
-    transition:all 0.4s ease;
-}
+/* ======================================== */
+/* === 完成遮罩层 === */
+/* ======================================== */
 
-.step-dot {
-    border-radius:50%;
-    transition:all 0.4s ease;
-}
-
-.step-dot.active {
-    width:14px; height:14px;
-    background:var(--gold);
-    border:2px solid var(--gold);
-    box-shadow:0 0 18px rgba(201,169,110,0.45);
-}
-
-.step-dot.done {
-    width:14px; height:14px;
-    background:var(--gold-dim);
-    border:2px solid var(--gold-dim);
-}
-
-.step-dot.pending {
-    width:14px; height:14px;
-    background:#444;
-    border:2px solid #555;
-}
-
-.step-label {
-    font-family: inherit;
-    font-size:16px;
-    letter-spacing:2px;
-    color:#7f7f7f;
-    opacity:1;
-    transform:translateY(0);
-    transition:color 0.4s ease;
-    white-space:nowrap;
-}
-
-.step-item.active-step .step-label,
-.step-dot.active ~ .step-label,
-.step-dot.done ~ .step-label { color:var(--gold); }
-
-/* ── Completion overlay ── */
 #complete-overlay {
     position:absolute;
     inset:0;
@@ -288,11 +256,11 @@ body, html {
     transform:scale(1.05);
 }
 
-/* ── Responsive ── */
+/* ======================================== */
+/* === 响应式：768px 以下移动端适配 === */
+/* ======================================== */
+
 @media (max-width:768px) {
-    #step-bar { gap:48px; top:24px; }
-    .step-label { font-size:13px; }
-    .step-dot, .step-dot.active, .step-dot.done, .step-dot.pending { width:12px; height:12px; }
     .string-opt.steel { font-size:28px; }
     .string-opt.silk, .string-opt.nylon { font-size:22px; }
     #scroll-hint { bottom:16px; font-size:11px; }
