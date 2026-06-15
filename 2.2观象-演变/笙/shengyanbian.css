@@ -1,538 +1,550 @@
 @charset "UTF-8";
 
-/*
-  笙历史演变界面 — 样式表
-  主题：黑色背景 + bg.png 背景图 + 白色圆形按钮
-  标题/副标题依照 ../../generalcomponent.css H1/H2 规范
-*/
+/* ============================================================================ */
+/* === 笙历史演变界面样式表 === */
+/* === 主题：黑色背景 + bg.png 背景图 + 白色圆形按钮 === */
+/* === 标题/副标题依照 ../../generalcomponent.css H1/H2 规范 === */
+/* ============================================================================ */
 
-/* ========== 本地方正隶书字体 ========== */
+/* ========== 本地方正隶书字体引入 ========== */
 @font-face {
-  font-family: FZLiShu;
-  src: url("../../方正隶书_GBK.ttf") format("truetype");
-  font-display: swap;
+font-family: FZLiShu;
+src: url("../../方正隶书_GBK.ttf") format("truetype");
+font-display: swap;
 }
 
-/* ========== 主题变量（暗色主题，变量名与 generalcomponent.css 统一） ========== */
+/* ========== 主题变量定义（暗色主题） ========== */
 :root {
-  --color-ink: #000000;
-  --color-surface: #0a0a0a;
-  --color-gold: #c9a96e;
-  --color-gold-soft: rgba(201, 169, 110, 0.8);
-  --color-paper: #ffffff;
-  --color-paper-dim: rgba(255, 255, 255, 0.75);
-  --color-paper-faint: rgba(255, 255, 255, 0.45);
-  --color-red: #C06E69;
-  --color-brown: #3a2a1a;
+--color-ink: #000000;
+--color-surface: #0a0a0a;
+--color-gold: #c9a96e;
+--color-gold-soft: rgba(201, 169, 110, 0.8);
+--color-paper: #ffffff;
+--color-paper-dim: rgba(255, 255, 255, 0.75);
+--color-paper-faint: rgba(255, 255, 255, 0.45);
+--color-red: #C06E69;
+--color-brown: #3a2a1a;
 
-  --type-h1: 48px;
-  --type-h2: 26px;
-  --type-h3: 22px;
-  --type-h4: 18px;
+--type-h1: 48px;
+--type-h2: 26px;
+--type-h3: 22px;
+--type-h4: 18px;
 
-  --font-display: FZLiShu, "Noto Serif SC", "LiSu", "隶书", "Microsoft YaHei", serif;
-  --font-body: FZLiShu, "Noto Serif SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+--font-display: FZLiShu, "Noto Serif SC", "LiSu", "隶书", "Microsoft YaHei", serif;
+--font-body: FZLiShu, "Noto Serif SC", "Microsoft YaHei", "PingFang SC", sans-serif;
 }
 
-/* ========== 基础重置与全局 ========== */
+/* ========== 基础重置与全局样式 ========== */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+box-sizing: border-box;
+margin: 0;
+padding: 0;
 }
 
+/* 页面根元素：全屏沉浸式背景 */
 html,
 body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: #000000;
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(46, 46, 50, 0.5)),
-  url("pic/bg.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: var(--color-paper);
-  font-family: var(--font-display);
-  user-select: none;
-  -webkit-user-select: none;
+width: 100%;
+height: 100%;
+overflow: hidden;
+background-color: #000000;
+background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(46, 46, 50, 0.5)),
+url("pic/bg.png");
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+color: var(--color-paper);
+font-family: var(--font-display);
+user-select: none;
+-webkit-user-select: none;
 }
 
+/* 主页面容器：相对定位，溢出隐藏 */
 .page {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+position: relative;
+width: 100%;
+height: 100%;
+overflow: hidden;
 }
 
-/* 暗色遮罩层，使背景图不过亮 */
+/* 暗色遮罩层：使背景图不过亮 */
 .page::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  z-index: 0;
+content: "";
+position: absolute;
+inset: 0;
+background: rgba(0, 0, 0, 0.5);
+pointer-events: none;
+z-index: 0;
 }
 
 /* ========== 顶部导航条 ========== */
 .top-nav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 30;
-  width: 100%;
-  height: 73px;
-  background: #d9d9d9;
-  display: flex;
-  align-items: center;
-  gap: clamp(24px, 4vw, 60px);
-  padding: 0 clamp(32px, 5vw, 102px);
+position: absolute;
+top: 0;
+left: 0;
+z-index: 30;
+width: 100%;
+height: 73px;
+background: #d9d9d9;
+display: flex;
+align-items: center;
+gap: clamp(24px, 4vw, 60px);
+padding: 0 clamp(32px, 5vw, 102px);
 }
 
+/* 导航项：隶书字体，active 时显示下划线 */
 .top-nav-item {
-  font-family: FZLiShu, "Noto Serif SC", serif;
-  font-size: clamp(20px, 2.8vw, 26px);
-  font-weight: normal;
-  color: #000000;
-  letter-spacing: 2px;
-  cursor: default;
-  opacity: 0.85;
-  transition: opacity 0.3s ease;
+font-family: FZLiShu, "Noto Serif SC", serif;
+font-size: clamp(20px, 2.8vw, 26px);
+font-weight: normal;
+color: #000000;
+letter-spacing: 2px;
+cursor: default;
+opacity: 0.85;
+transition: opacity 0.3s ease;
 }
 
 .top-nav-item.active {
-  opacity: 1;
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 2px;
+opacity: 1;
+text-decoration: underline;
+text-underline-offset: 6px;
+text-decoration-thickness: 2px;
 }
 
-/* ========== 场景容器 ========== */
+/* ========== 场景容器：三时期共用，通过 active 控制显隐 ========== */
 .scene {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.6s ease, visibility 0.6s ease;
-  z-index: 5;
+position: absolute;
+inset: 0;
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+transition: opacity 0.6s ease, visibility 0.6s ease;
+z-index: 5;
 }
 
 .scene.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  z-index: 10;
+opacity: 1;
+visibility: visible;
+pointer-events: auto;
+z-index: 10;
 }
 
-/* ========== 场景标题 H1（依照 generalcomponent.css .h1，位置按 .pen Frame1） ========== */
+/* ========== 场景标题 H1：大字显示朝代名（商/唐/明） ========== */
 .scene-title {
-  position: absolute;
-  z-index: 15;
-  font-family: FZLiShu, "Noto Serif SC", serif;
-  color: var(--color-paper);
-  font-size: var(--type-h1);
-  font-weight: 400;
-  letter-spacing: 4px;
-  line-height: 1.14;
-  text-shadow: 0 4px 14px #000;
-  text-align: center;
-  left: 26%;
-  top: 48%;
-  transform: translate(-50%, -50%);
-  transition: all 0.6s ease;
-  pointer-events: none;
+position: absolute;
+z-index: 15;
+font-family: FZLiShu, "Noto Serif SC", serif;
+color: var(--color-paper);
+font-size: var(--type-h1);
+font-weight: 400;
+letter-spacing: 4px;
+line-height: 1.14;
+text-shadow: 0 4px 14px #000;
+text-align: center;
+left: 26%;
+top: 48%;
+transform: translate(-50%, -50%);
+transition: all 0.6s ease;
+pointer-events: none;
 }
 
-/* ========== 场景副标题 H2（依照 generalcomponent.css .h2，位置按 .pen Frame1） ========== */
+/* ========== 场景副标题 H2：显示时期特征描述 ========== */
 .scene-subtitle {
-  position: absolute;
-  z-index: 20;
-  font-family: FZLiShu, "Noto Serif SC", serif;
-  color: var(--color-paper);
-  font-size: var(--type-h2);
-  font-weight: 400;
-  letter-spacing: 4px;
-  line-height: 1.18;
-  text-shadow: 0 4px 14px #000;
-  text-align: center;
-  left: 32%;
-  top: 56%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  transition: all 0.6s ease;
+position: absolute;
+z-index: 20;
+font-family: FZLiShu, "Noto Serif SC", serif;
+color: var(--color-paper);
+font-size: var(--type-h2);
+font-weight: 400;
+letter-spacing: 4px;
+line-height: 1.18;
+text-shadow: 0 4px 14px #000;
+text-align: center;
+left: 32%;
+top: 56%;
+transform: translate(-50%, -50%);
+pointer-events: none;
+transition: all 0.6s ease;
 }
 
-/* ========== 白色圆形按钮（固定位置，hover 仅发光缩放） ========== */
+/* ========== 白色圆形按钮：悬停触发场景联动动画 ========== */
 .circle-btn {
-  position: absolute;
-  z-index: 25;
-  width: 62px;
-  height: 62px;
-  cursor: pointer;
-  pointer-events: auto;
-  left: 23.68%;
-  top: 60%;
-  transform: translate(-50%, -50%);
+position: absolute;
+z-index: 25;
+width: 62px;
+height: 62px;
+cursor: pointer;
+pointer-events: auto;
+left: 23.68%;
+top: 60%;
+transform: translate(-50%, -50%);
 }
 
+/* 按钮内部圆形：半透明白色，发光边框 */
 .circle-inner {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow:
+width: 62px;
+height: 62px;
+border-radius: 50%;
+background: rgba(255, 255, 255, 0.8);
+box-shadow:
     0 0 35px 5px rgba(255, 255, 255, 0.25),
     inset 0 0 0 1px rgba(255, 255, 255, 0.8);
-  transition: all 0.35s ease;
+transition: all 0.35s ease;
 }
 
+/* hover 状态：更亮发光，金色外圈，放大 */
 .circle-btn:hover .circle-inner {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow:
+background: rgba(255, 255, 255, 0.95);
+box-shadow:
     0 0 50px 10px rgba(255, 255, 255, 0.45),
     0 0 80px 15px rgba(201, 169, 110, 0.4),
     inset 0 0 0 1px rgba(255, 255, 255, 0.95);
-  transform: scale(1.18);
+transform: scale(1.18);
 }
 
+/* active 状态：缩小动画 */
 .circle-btn:active .circle-inner {
-  transform: scale(0.93);
+transform: scale(0.5);
 }
 
-/* ========== 右侧演奏人物图区（位置按 .pen Frame1: x840 y133 w516 h730） ========== */
+/* ========== 右侧演奏人物图区：展示各时期笙演奏场景 ========== */
 .main-image-area {
-  position: absolute;
-  z-index: 10;
-  right: 5.83%;
-  top: 14.78%;
-  width: clamp(260px, 35.83vw, 516px);
-  max-height: 75vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: right 0.6s ease, top 0.6s ease, width 0.6s ease;
+position: absolute;
+z-index: 10;
+right: 5.83%;
+top: 14.78%;
+width: clamp(260px, 35.83vw, 516px);
+max-height: 75vh;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: right 0.6s ease, top 0.6s ease, width 0.6s ease;
 }
 
 .main-image-area img,
 .main-image-area video {
-  width: 100%;
-  height: 100%;
-  max-height: 75vh;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 40px rgba(0, 0, 0, 0.5));
-  transition: all 0.6s ease;
+width: 100%;
+height: 100%;
+max-height: 75vh;
+object-fit: contain;
+filter: drop-shadow(0 8px 40px rgba(0, 0, 0, 0.5));
+transition: all 0.6s ease;
 }
 
-/* ========== 左侧装饰旋转图片（位置按 .pen Frame1: x102 y276.68 w179.44） ========== */
+/* ========== 左侧装饰旋转图片：装饰性乐器展示 ========== */
 .decor-image {
-  position: absolute;
-  z-index: 5;
-  left: 7.08%;
-  top: 30%;
-  width: clamp(10px, 12.46vw, 179px);
-  opacity: 1;
-  transform: rotate(10.8deg);
-  transition: all 0.6s ease;
-  pointer-events: none;
+position: absolute;
+z-index: 5;
+left: 7.08%;
+top: 30%;
+width: clamp(10px, 12.46vw, 179px);
+opacity: 1;
+transform: rotate(10.8deg);
+transition: all 0.6s ease;
+pointer-events: none;
 }
 
 .decor-image img {
-  width: 80%;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4));
+width: 80%;
+height: auto;
+object-fit: contain;
+filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4));
 }
 
-/* ========== 时期徽章 ========== */
+/* ========== 时期徽章：左下角显示当前时期名称 ========== */
 .period-badge {
-  position: absolute;
-  bottom: 40px;
-  left: 64px;
-  z-index: 25;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: bottom 0.6s ease;
+position: absolute;
+bottom: 40px;
+left: 64px;
+z-index: 25;
+display: flex;
+align-items: center;
+gap: 6px;
+transition: bottom 0.6s ease;
 }
 
 .badge-dot {
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-paper-faint);
+display: block;
+width: 6px;
+height: 6px;
+border-radius: 50%;
+background: var(--color-paper-faint);
 }
 
 .badge-text {
-  color: var(--color-paper-faint);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 2px;
-  line-height: 1.3;
+color: var(--color-paper-faint);
+font-family: var(--font-body);
+font-size: 13px;
+font-weight: 400;
+letter-spacing: 2px;
+line-height: 1.3;
 }
 
-/* ========== 图像来源行（右下方） ========== */
+/* ========== 图像来源行：右下角标注图片出处 ========== */
 .ref-row {
-  position: absolute;
-  bottom: 44px;
-  right: 64px;
-  z-index: 15;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: bottom 0.6s ease;
+position: absolute;
+bottom: 44px;
+right: 64px;
+z-index: 15;
+display: flex;
+align-items: center;
+gap: 10px;
+transition: bottom 0.6s ease;
 }
 
 .ref-dot {
-  flex-shrink: 0;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-gold);
+flex-shrink: 0;
+width: 5px;
+height: 5px;
+border-radius: 50%;
+background: var(--color-gold);
 }
 
 .ref-text {
-  color: var(--color-paper-faint);
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.6px;
-  line-height: 1.5;
-  max-width: 320px;
+color: var(--color-paper-faint);
+font-family: var(--font-body);
+font-size: 12px;
+font-weight: 400;
+letter-spacing: 0.6px;
+line-height: 1.5;
+max-width: 320px;
 }
 
 /* ================================================================ */
-/* === 各时期图像独立尺寸 === */
+/* === 各时期图像独立尺寸调整 === */
 /* ================================================================ */
 
-/* 时期2 唐代 — 放大 */
+/* 唐代场景：主图放大，装饰图也较大 */
 #scene-tang .main-image-area {
-  right: 10%;
-  top: 30%;
-  width: clamp(320px, 42vw, 620px);
+right: 10%;
+top: 30%;
+width: clamp(320px, 42vw, 620px);
 }
 #scene-tang .decor-image {
-  left: 5%;
-  top: 30%;
-  width: clamp(80px, 16vw, 230px);
+left: 5%;
+top: 30%;
+width: clamp(80px, 16vw, 230px);
 }
+/* 唐代 hover 状态：主图缩小右移，装饰图缩小下移 */
 #scene-tang.hovered .main-image-area {
-  right: 2%;
-  top: 40%;
-  width: clamp(200px, 30vw, 440px);
+right: 2%;
+top: 40%;
+width: clamp(200px, 30vw, 440px);
 }
 #scene-tang.hovered .decor-image {
-  left: 10%;
-  top: 53%;
-  width: clamp(60px, 10vw, 150px);
+left: 10%;
+top: 53%;
+width: clamp(60px, 10vw, 150px);
 }
 
-/* 时期3 明代 — 缩小 */
+/* 明代场景：主图和装饰图都较小 */
 #scene-ming .main-image-area {
-  right: 8%;
-  top: 18%;
-  width: clamp(200px, 28vw, 400px);
+right: 8%;
+top: 18%;
+width: clamp(200px, 28vw, 400px);
 }
 #scene-ming .decor-image {
-  left: 9%;
-  top: 34%;
-  width: clamp(40px, 9vw, 130px);
+left: 9%;
+top: 34%;
+width: clamp(40px, 9vw, 130px);
 }
+/* 明代 hover 状态：进一步缩小 */
 #scene-ming.hovered .main-image-area {
-  right: 5%;
-  top: 26%;
-  width: clamp(100px, 16vw, 260px);
+right: 5%;
+top: 26%;
+width: clamp(100px, 16vw, 260px);
 }
 #scene-ming.hovered .decor-image {
-  left: 6%;
-  top: 50%;
-  width: clamp(30px, 5vw, 80px);
+left: 6%;
+top: 50%;
+width: clamp(30px, 5vw, 80px);
 }
 
 /* ================================================================ */
-/* === HOVER STATE（.pen Frame 2 精确坐标） === */
+/* === HOVER 悬停状态：标题上移 + 描述显现 + 图片缩小 === */
 /* ================================================================ */
 
-/* 标题上移：.pen Frame2 x313 y241 */
+/* 标题上移 */
 .scene.hovered .scene-title {
-  left: 30%;
-  top: 40%;
+left: 30%;
+top: 40%;
 }
 
-/* 副标题上移：.pen Frame2 x373 y372 */
+/* 副标题上移 */
 .scene.hovered .scene-subtitle {
-  left: 32%;
-  top: 45%;
+left: 32%;
+top: 45%;
 }
-
-/* 按钮位置不变 */
 
 /* 主体演奏图进一步缩小+右移 */
 .scene.hovered .main-image-area {
-  right: 6%;
-  top: 23.44%;
-  width: clamp(140px, 22vw, 340px);
+right: 6%;
+top: 23.44%;
+width: clamp(140px, 22vw, 340px);
 }
 
-/* 左侧装饰图缩小+下移：.pen Frame2 x62 y421.33 w112 rot22.2° */
+/* 左侧装饰图缩小+下移+旋转+降低透明度 */
 .scene.hovered .decor-image {
-  left: 4.31%;
-  top: 46.81%;
-  width: clamp(50px, 7.78vw, 112px);
-  opacity: 0.35;
-  transform: rotate(22.2deg);
+left: 4.31%;
+top: 46.81%;
+width: clamp(50px, 7.78vw, 112px);
+opacity: 0.35;
+transform: rotate(22.2deg);
 }
 
-/* 描述文字块悬浮显现：向右偏移 */
+/* 描述文字块：悬浮时淡入显现 */
 .desc-block {
-  position: absolute;
-  z-index: 15;
-  max-width: clamp(280px, 35vw, 500px);
-  left: 30%;
-  top: 55.33%;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  pointer-events: none;
+position: absolute;
+z-index: 15;
+max-width: clamp(280px, 35vw, 500px);
+left: 30%;
+top: 55.33%;
+opacity: 0;
+transform: translateY(12px);
+transition: opacity 0.5s ease, transform 0.5s ease;
+pointer-events: none;
 }
 
 .scene.hovered .desc-block {
-  opacity: 0.9;
-  transform: translateY(0);
+opacity: 0.9;
+transform: translateY(0);
 }
 
+/* 描述文字样式：隶书字体，半透明白色 */
 .desc-block p {
-  font-family: FZLiShu, "Noto Serif SC", serif;
-  font-size: clamp(14px, 1.7vw, 18px);
-  color: var(--color-paper-dim);
-  line-height: 1.7;
-  letter-spacing: 0.8px;
-  margin-bottom: 8px;
+font-family: FZLiShu, "Noto Serif SC", serif;
+font-size: clamp(14px, 1.7vw, 18px);
+color: var(--color-paper-dim);
+line-height: 1.7;
+letter-spacing: 0.8px;
+margin-bottom: 8px;
 }
 
 /* 时期徽章：悬浮时上移 */
 .scene.hovered .period-badge {
-  bottom: 48px;
+bottom: 48px;
 }
 
 /* 图像来源行：悬浮时上移 */
 .scene.hovered .ref-row {
-  bottom: 52px;
+bottom: 52px;
 }
 
-/* ========== 响应式 ========== */
+/* ================================================================ */
+/* === 响应式适配 === */
+/* ================================================================ */
+
+/* 平板端适配（1024px以下） */
 @media (max-width: 1024px) {
-  .top-nav {
+.top-nav {
     height: 56px;
     padding: 0 32px;
     gap: 28px;
-  }
-  .top-nav-item {
+}
+.top-nav-item {
     font-size: 18px;
-  }
-  .scene-title {
+}
+.scene-title {
     font-size: 28px;
     left: 18%;
     top: 35%;
-  }
-  .scene-subtitle {
+}
+.scene-subtitle {
     font-size: 22px;
     left: 26%;
     top: 48%;
-  }
-  .circle-btn {
+}
+.circle-btn {
     width: 52px;
     height: 52px;
     left: 20%;
     top: 56%;
-  }
-  .circle-inner {
-    width: 52px;
-    height: 52px;
-  }
-  .main-image-area {
+}
+.circle-inner {
+    width: 48px;
+    height: 48px;
+}
+.main-image-area {
     width: clamp(200px, 42vw, 380px);
     right: 5%;
     top: 16%;
-  }
-  .desc-block {
+}
+.desc-block {
     max-width: 50vw;
     left: 18%;
     top: 52%;
-  }
-  .period-badge {
+}
+.period-badge {
     left: 32px;
     bottom: 32px;
-  }
-  .ref-row {
+}
+.ref-row {
     right: 32px;
     bottom: 36px;
-  }
+}
 }
 
+/* 移动端适配（640px以下） */
 @media (max-width: 640px) {
-  .top-nav {
+.top-nav {
     height: 44px;
     padding: 0 16px;
     gap: 16px;
-  }
-  .top-nav-item {
+}
+.top-nav-item {
     font-size: 14px;
     letter-spacing: 1px;
-  }
-  .scene-title {
+}
+.scene-title {
     font-size: 24px;
     left: 14%;
     top: 30%;
-  }
-  .scene-subtitle {
+}
+.scene-subtitle {
     font-size: 18px;
     left: 22%;
     top: 42%;
-  }
-  .circle-btn {
+}
+.circle-btn {
     width: 44px;
     height: 44px;
     left: 16%;
     top: 50%;
-  }
-  .circle-inner {
-    width: 44px;
-    height: 44px;
-  }
-  .main-image-area {
+}
+.circle-inner {
+    width: 40px;
+    height: 40px;
+}
+.main-image-area {
     width: 55vw;
     right: 4%;
     top: 26%;
     max-height: 50vh;
-  }
-  .decor-image {
+}
+.decor-image {
     width: clamp(50px, 10vw, 90px);
     left: 4%;
     top: 33%;
     opacity: 0.3;
-  }
-  .desc-block {
+}
+.desc-block {
     max-width: 70vw;
     left: 14%;
     top: 48%;
-  }
-  .desc-block p {
+}
+.desc-block p {
     font-size: 12px;
-  }
-  .period-badge {
+}
+.period-badge {
     left: 16px;
     bottom: 24px;
-  }
-  .ref-row {
+}
+.ref-row {
     right: 16px;
     bottom: 28px;
-  }
-  .badge-text,
-  .ref-text {
+}
+.badge-text,
+.ref-text {
     font-size: 10px;
-  }
+}
 }
