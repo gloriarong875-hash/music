@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════
-//  FRAMES DATA — 9 storyboard frames from .pen
-//  已删除合琴分镜；步骤一、二内部通过滚轮实现图像连续放大
+//  FRAMES DATA — 8 storyboard frames from .pen
+//  步骤一、二内部通过滚轮实现图像连续放大
+//  步骤二髹漆→髹漆完成切换点两图位置/尺寸对齐 (1411×985)
 //  Positions in design px (1440x900 canvas)
 // ═══════════════════════════════════════════
 const F = [
@@ -15,51 +16,42 @@ const F = [
     zoom:true,
     extra:null
   },
-  { // 1: 步骤二 裱布 → 髹漆一层 (滚轮放大)
+  { // 1: 步骤二 裱布 → 髹漆一层 (滚轮放大，同图)
     img:'琴部件assets/步骤2-髹漆.png',
     ix:257,iy:138,iw:894,ih:624,         // Keyframe A: 裱布
     ix2:-112,iy2:-311,iw2:1411,ih2:985,  // Keyframe B: 髹漆一层
     txt:'', txt2:'麻布裹琴，加上含鹿角粉末的漆料',
     tx:805,ty:674, tsize:32,tcolor:'#000000',
-    overlay:null,
-    overlay2:{x:215,y:349,w:1084,h:125, fill:'#2d324069'},
-    tilted:null,
+    overlay:null, tilted:null,
     stage:1, sdone:[1,0,0,0],
     zoom:true,
     extra:null
   },
-  { // 2: 步骤二 髹漆一层 → 琴体显现 (图像切换：髹漆→髹漆完成)
-    img:'琴部件assets/步骤2-髹漆.png', ix:-112,iy:-311,iw:1411,ih:985,
+  { // 2: 步骤二 髹漆一层 (缩放终点，切换前最后一帧)
+    img:'琴部件assets/步骤2-髹漆.png',
+    ix:-112,iy:-311,iw:1411,ih:985,      // 与帧3同位置，保证切换无缝
     txt:'麻布裹琴，加上含鹿角粉末的漆料', tx:805,ty:674, tsize:32,tcolor:'#000000',
-    overlay:{x:215,y:349,w:1084,h:125, fill:'#2d324069'},
-    tilted:null,
+    overlay:null, tilted:null,
     stage:1, sdone:[1,0,0,0],
     extra:null
   },
-  { // 3: 步骤二 琴体显现 (图像切换：髹漆→髹漆完成)
-    img:'琴部件assets/步骤2-髹漆完成.png', ix:172,iy:325,iw:1127,ih:163,
-    txt:'麻布裹琴，加上含鹿角粉末的漆料', tx:826,ty:776, tsize:32,tcolor:'#000000',
-    overlay:{x:215,y:349,w:1084,h:125, fill:'#2d324069'},
-    tilted:{x:40,y:349,w:1166,h:513, rot:14.923, opacity:0.1},
+  { // 3: 步骤二 髹漆完成 (图像切换：髹漆→髹漆完成，位置/尺寸与帧2对齐)
+    img:'琴部件assets/步骤2-髹漆完成.png',
+    ix:-112,iy:-311,iw:1411,ih:985,      // 与帧2完全对齐，无缝切换
+    txt:'混合多种矿石的不同漆料多次髹涂打磨，琴面如镜，音韵愈沉',
+    tx:116,ty:654, tsize:32,tcolor:'#000000',
+    overlay:null, tilted:null,
     stage:1, sdone:[1,0,0,0],
     extra:null
   },
-  { // 4: 步骤二 打磨完成
-    img:'琴部件assets/步骤2-髹漆完成.png', ix:172,iy:325,iw:1127,ih:163,
-    txt:'混合多种矿石的不同漆料多次髹涂打磨，琴面如镜，音韵愈沉', tx:116,ty:654, tsize:32,tcolor:'#000000',
-    overlay:{x:172,y:325,w:1119,h:163, fill:'#433634c4'},
-    tilted:null,
-    stage:1, sdone:[1,0,0,0],
-    extra:null
-  },
-  { // 5: 步骤三 选弦介绍
+  { // 4: 步骤三 选弦介绍
     img:'琴部件assets/步骤3-选弦.png', ix:114,iy:172,iw:1089,ih:555,
     txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     stage:2, sdone:[1,1,0,0],
     extra:null
   },
-  { // 6: 步骤三 选弦交互 [LOCK]
+  { // 5: 步骤三 选弦交互 [LOCK]
     img:'琴部件assets/步骤3-选弦.png', ix:-620,iy:159,iw:3113,ih:1588,
     txt:'弦音清亮', tx:96,ty:125, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
@@ -75,14 +67,14 @@ const F = [
       {src:'琴部件assets/步骤3b-选弦备选.png', x:-181,y:232, w:1227,h:621, op:0.5}
     ]
   },
-  { // 7: 步骤四 上弦
+  { // 6: 步骤四 上弦
     img:'琴部件assets/步骤4-调音上弦.png', ix:252,iy:132,iw:569,ih:636,
     txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
     stage:3, sdone:[1,1,1,0],
     extra:null
   },
-  { // 8: 步骤四 调音完成
+  { // 7: 步骤四 调音完成
     img:'琴部件assets/步骤4-调音上弦.png', ix:21,iy:-276,iw:1053,ih:1176,
     txt:'调音上弦，七弦成韵', tx:0,ty:0, tsize:28,tcolor:'#3b4942',
     overlay:null, tilted:null,
@@ -91,7 +83,7 @@ const F = [
     final:true
   }
 ];
-const N = F.length; // 9
+const N = F.length; // 8
 
 // ═══════════════════════════════════════════
 //  DOM REFS
@@ -106,7 +98,7 @@ const overlayR = document.getElementById('overlay-rect');
 const tiltedR = document.getElementById('tilted-rect');
 const stringP = document.getElementById('string-panel');
 const stringOpts = stringP.querySelectorAll('.string-opt');
-const scrollHint = document.getElementById('scroll-hint');
+const scrollHint = document.getElementById('scroll-hint') || { textContent:'', classList:{add(){},remove(){},contains(){return false;}}, style:{} };
 const topProgress = document.getElementById('top-progress');
 const completeO = document.getElementById('complete-overlay');
 const stageNames = ['制胚','髹漆','选弦','上弦'];
@@ -140,14 +132,14 @@ function chime(){ [261.63,329.63,392,523.25].forEach((f,i)=>setTimeout(()=>tone(
 
 const SENS       = 0.0002;
 const TOUCH_SENS = 0.00035;
-const KEY_STEP   = 0.125;  // 1/8 ≈ 每个分镜 (9帧→8段)
+const KEY_STEP   = 0.143;  // 1/7 ≈ 每个分镜 (8帧→7段)
 const SMOOTH     = 0.12;
 const SNAP_IDLE  = 400;
 
 let scrollT=0, scrollP=0, lastInput=0, animId=null;
 let isLocked=false, stringPicked=null;
 let lockP=0;
-const LOCK_IDX=6; // 选弦交互帧 (0-based index, was 8 before removing 合琴)
+const LOCK_IDX=5; // 选弦交互帧 (0-based index)
 
 // ── 鼠标滚轮 ──
 function onWheel(e){
@@ -294,7 +286,7 @@ stringOpts.forEach(opt=>{
             stringP.classList.remove('visible');
             scrollHint.classList.add('still');
             scrollHint.textContent='↓ 滚轮浏览制作过程';
-            scrollT=F[7].p_start||(7/(N-1));
+            scrollT=F[6].p_start||(6/(N-1));
             lastInput=performance.now();
             startLoop();
             chime();
@@ -363,9 +355,6 @@ function applyVisuals(p){
         const frameRange = frameEnd - frameStart;
         zoomT = frameRange > 0 ? Math.max(0, Math.min(1, (p - frameStart) / frameRange)) : 0;
     }
-    // Detect crossfade-based zoom transition (same img, same stage)
-    const isZoomXfade = isZoomFrame && nf && cf.img===nf.img && cf.stage===nf.stage;
-
     // ── Background painting pan L→R with scroll ──
     const bgPaint=document.getElementById('bg-painting');
     if(bgPaint) bgPaint.style.backgroundPositionX=(p*100)+'%';
@@ -421,28 +410,16 @@ function applyVisuals(p){
         });
     }
 
-    // ── Overlay rect (暗色遮罩：步骤二髹漆 / 步骤二完成) ──
-    let orOpacity = 0;
-    if(isZoomFrame && cf.overlay2){
-        // Zoom frame with overlay2: fade in near end of zoom
-        orOpacity = Math.max(0, (zoomT - 0.6) / 0.4);
-        overlayR.style.left=pxToVW(cf.overlay2.x)+'vw';
-        overlayR.style.top=pxToVH(cf.overlay2.y)+'vh';
-        overlayR.style.width=pxToVW(cf.overlay2.w)+'vw';
-        overlayR.style.height=pxToVH(cf.overlay2.h)+'vh';
-        overlayR.style.background=cf.overlay2.fill;
-    } else {
-        const orFade=(cf.overlay?1-t:0)+(nf&&nf.overlay?t:0);
-        orOpacity = orFade;
-        if(cf.overlay&&orFade>0){
-            overlayR.style.left=pxToVW(cf.overlay.x)+'vw';
-            overlayR.style.top=pxToVH(cf.overlay.y)+'vh';
-            overlayR.style.width=pxToVW(cf.overlay.w)+'vw';
-            overlayR.style.height=pxToVH(cf.overlay.h)+'vh';
-            overlayR.style.background=cf.overlay.fill;
-        }
+    // ── Overlay rect (暗色遮罩) ──
+    const orFade=(cf.overlay?1-t:0)+(nf&&nf.overlay?t:0);
+    overlayR.style.opacity=orFade.toFixed(3);
+    if(cf.overlay&&orFade>0){
+        overlayR.style.left=pxToVW(cf.overlay.x)+'vw';
+        overlayR.style.top=pxToVH(cf.overlay.y)+'vh';
+        overlayR.style.width=pxToVW(cf.overlay.w)+'vw';
+        overlayR.style.height=pxToVH(cf.overlay.h)+'vh';
+        overlayR.style.background=cf.overlay.fill;
     }
-    overlayR.style.opacity=orOpacity.toFixed(3);
 
     // ── Tilted rect ──
     const trFade=(cf.tilted?1-t:0)+(nf&&nf.tilted?t:0);
@@ -606,7 +583,7 @@ document.getElementById('nextBtn').addEventListener('click',()=>{
 //  INIT
 // ═══════════════════════════════════════════
 const allSrcs=[...new Set(F.map(f=>f.img).concat(
-    (F[6].extra||[]).map(e=>e.src)
+    (F[5].extra||[]).map(e=>e.src)
 ))];
 allSrcs.forEach(src=>{ const img=new Image(); img.src=src; });
 
