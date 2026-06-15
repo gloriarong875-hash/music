@@ -1,10 +1,10 @@
 /**
  * ============================================================================
  * === 笙历史演变页面交互脚本 ===
- * === 功能：三时期滚轮翻页 + 白色圆形按钮悬停联动 ===
+ * === 功能：三时期滚轮翻页 + 入场自动演变 ===
  * === 滚轮向上 → 上一时期；滚轮向下 → 下一时期 ===
  * === 键盘 ↑← → 上一页；↓→ PageDown → 下一页 ===
- * === 悬停白色圆形按钮 → 标题/副标题同步上移 + 描述文字显现 ===
+ * === 每个时期进入后，标题先放大展示，再自动展开图文内容 ===
  * ============================================================================
  */
 
@@ -14,16 +14,18 @@
 /* ========== 场景配置 ========== */
 var SCENES = ['shangzhou', 'tang', 'ming'];  // 三个时期ID
 var SCENE_LABELS = {
-    shangzhou: '商周·雏形',
-    tang: '唐代·多种形制',
-    ming: '明代·十三簧'
+    shangzhou: '商周·雏形 — Shang · Early Form',
+    tang: '唐代·繁盛 — Tang · Flourishing',
+    ming: '明代·十三簧 — Ming · Thirteen Reeds'
 };
 
 // 状态变量
 var currentIndex = -1;      // 当前场景索引
 var scenes = {};            // 场景DOM元素映射
 var scrollTimer = null;     // 滚轮冷却计时器
+var evolutionTimer = null;  // 当前时期自动演变计时器
 var SCROLL_COOLDOWN = 800;  // 滚轮冷却时间（毫秒），防止连续触发
+var EVOLUTION_DELAY = 1600; // 标题独立展示时长
 
 /* ========== 初始化函数 ========== */
 function init() {
@@ -55,8 +57,6 @@ function init() {
     }
     });
 
-    // 6. 绑定圆形按钮悬停事件
-    setupHoverListeners();
 }
 
 /* ========== 滚轮事件处理 ========== */
@@ -93,10 +93,20 @@ function showScene(index) {
     // 隐藏上一个场景
     if (scenes[prevId]) {
     scenes[prevId].classList.remove('active');
-    scenes[prevId].classList.remove('hovered');
+    scenes[prevId].classList.remove('evolved');
     }
     // 显示下一个场景
-    if (scenes[nextId]) scenes[nextId].classList.add('active');
+    if (scenes[nextId]) {
+    scenes[nextId].classList.remove('evolved');
+    scenes[nextId].classList.add('active');
+    }
+
+    clearTimeout(evolutionTimer);
+    evolutionTimer = setTimeout(function () {
+    if (scenes[nextId] && scenes[nextId].classList.contains('active')) {
+        scenes[nextId].classList.add('evolved');
+    }
+    }, EVOLUTION_DELAY);
 
     // 更新当前索引
     currentIndex = index;
@@ -137,37 +147,6 @@ function handleKeyboard(e) {
         showScene(SCENES.length - 1);  // 跳转到最后一页
         break;
     }
-}
-
-/* ========== 悬停监听：切换场景 .hovered 类 ========== */
-function setupHoverListeners() {
-    // mouseover → 添加 .hovered 类
-    document.addEventListener('mouseover', function (e) {
-    var btn = e.target.closest('.circle-btn');
-    if (!btn) {
-        // 离开按钮区域 → 移除当前活跃场景的 hovered
-        var activeScene = document.querySelector('.scene.active');
-        if (activeScene && (!e.relatedTarget || !e.relatedTarget.closest('.circle-btn'))) {
-        activeScene.classList.remove('hovered');
-        }
-        return;
-    }
-
-    var sceneEl = btn.closest('.scene');
-    if (!sceneEl || !sceneEl.classList.contains('active')) return;
-
-    sceneEl.classList.add('hovered');
-    }, true);
-
-    // mouseout → 移除 .hovered 类
-    document.addEventListener('mouseout', function (e) {
-    var btn = e.target.closest('.circle-btn');
-    if (!btn) return;
-    if (e.relatedTarget && e.relatedTarget.closest('.circle-btn')) return;
-
-    var sceneEl = btn.closest('.scene');
-    if (sceneEl) sceneEl.classList.remove('hovered');
-    }, true);
 }
 
 /* ========== 启动脚本 ========== */
