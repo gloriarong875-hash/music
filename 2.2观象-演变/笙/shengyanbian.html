@@ -1,137 +1,141 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>观象·演变 — 笙的历史演变</title>
-  <!--
-    笙历史演变界面 — 三时期展示 / 滚轮上下翻页
-    标题/副标题依照 generalcomponent.css H1/H2 规范
-    右侧演奏人物图按时期顺序：pic/时期1-演奏.png / 时期2-敦煌.png / 时期3-吹笙仕女.gif
-  -->
-  <link rel="stylesheet" href="shengyanbian.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>观象·演变 — 笙的历史演变</title>
+<!-- ============================================================================ -->
+<!-- === 笙历史演变界面 === -->
+<!-- === 功能：三时期展示（商周/唐代/明代），滚轮上下翻页 === -->
+<!-- === 交互：白色圆形按钮悬停触发场景联动动画 === -->
+<!-- ============================================================================ -->
+<link rel="stylesheet" href="shengyanbian.css" />
 </head>
 <body>
-  <main class="page">
+<main class="page">
 
-    <!-- ========== 场景 1：商周·雏形 ========== -->
+    <!-- ================ 场景 1：商周·雏形 ================ -->
     <section class="scene active" id="scene-shangzhou" data-scene="shangzhou" aria-label="商周时期·雏形诞生">
 
-      <nav class="top-nav" aria-label="页面导航">
+    <!-- 顶部导航条 -->
+    <nav class="top-nav" aria-label="页面导航">
         <span class="top-nav-item">研物</span>
         <span class="top-nav-item active">观象</span>
         <span class="top-nav-item">编年</span>
         <span class="top-nav-item">抠图</span>
-      </nav>
+    </nav>
 
-      <h1 class="scene-title">商</h1>
-      <h2 class="scene-subtitle">初现雏形</h2>
+    <!-- 场景标题（朝代名） -->
+    <h1 class="scene-title">商</h1>
+    <!-- 场景副标题（时期特征） -->
+    <h2 class="scene-subtitle">初现雏形</h2>
 
-      <!-- 白色圆形按钮（仅 hover 发光，不触发浮窗、不移动位置） -->
-      <div class="circle-btn" id="circleBtn-shangzhou" aria-label="查看详情">
+    <!-- 白色圆形按钮：悬停触发场景联动动画 -->
+    <div class="circle-btn" id="circleBtn-shangzhou" aria-label="查看详情">
         <div class="circle-inner"></div>
-      </div>
+    </div>
 
-      <!-- 描述文字 -->
-      <div class="desc-block">
+    <!-- 描述文字块：悬停时显现 -->
+    <div class="desc-block">
         <p>笙是我国古老的簧管乐器，能奏和声。据传女娲发明了笙簧，用竹管和葫芦制成。笙是世界上最早使用自由簧的古老乐器，具有吹吸皆鸣的特点。</p>
         <p>商代已有笙的雏形，主要用于祭祀和礼乐场合。《诗经》《周礼》等文献中有关于笙的记载。西周时期笙发展为匏类乐器，形制和音律得到规范。</p>
-      </div>
+    </div>
 
-      <!-- 右侧演奏人物图 -->
-      <div class="main-image-area">
+    <!-- 右侧主图：演奏人物 -->
+    <div class="main-image-area">
         <img src="pic/时期1-演奏.png" alt="商周时期笙演奏" />
-      </div>
+    </div>
 
-      <!-- 装饰旋转图片 -->
-      <div class="decor-image">
+    <!-- 左侧装饰图：乐器展示 -->
+    <div class="decor-image">
         <img src="../../时期1-笙插画.png" alt="" aria-hidden="true" />
-      </div>
+    </div>
 
-      <!-- 图像来源 -->
-      <div class="ref-row">
+    <!-- 图像来源标注 -->
+    <div class="ref-row">
         <span class="ref-dot"></span>
         <span class="ref-text">《三才图会·器用卷》 — 最早将女娲与笙簧画在一起的图像</span>
-      </div>
+    </div>
 
     </section>
 
-    <!-- ========== 场景 2：唐代·多种形制 ========== -->
+    <!-- ================ 场景 2：唐代·繁盛 ================ -->
     <section class="scene" id="scene-tang" data-scene="tang" aria-label="隋唐时期·多种形制">
 
-      <nav class="top-nav" aria-label="页面导航">
+    <nav class="top-nav" aria-label="页面导航">
         <span class="top-nav-item">研物</span>
         <span class="top-nav-item active">观象</span>
         <span class="top-nav-item">编年</span>
         <span class="top-nav-item">抠图</span>
-      </nav>
+    </nav>
 
-      <h1 class="scene-title">唐</h1>
-      <h2 class="scene-subtitle">进入繁盛</h2>
+    <h1 class="scene-title">唐</h1>
+    <h2 class="scene-subtitle">进入繁盛</h2>
 
-      <div class="circle-btn" id="circleBtn-tang" aria-label="查看详情">
+    <div class="circle-btn" id="circleBtn-tang" aria-label="查看详情">
         <div class="circle-inner"></div>
-      </div>
+    </div>
 
-      <div class="desc-block">
+    <div class="desc-block">
         <p>唐代笙得到空前发展，出现多种形制和演奏名家。燕乐中大量使用笙，笙在宫廷乐队和民间演奏中皆有广泛应用。</p>
         <p>目前已知最早的笙实物为曾侯乙墓出土的14管笙，距今已有2400余年历史。其制作工艺精湛，管身排列有序，簧片结构完整。唐代笙在此基础上继续发展，形制更加多样。</p>
-      </div>
+    </div>
 
-      <div class="main-image-area">
+    <div class="main-image-area">
         <img src="pic/时期2-敦煌.png" alt="唐代敦煌壁画笙演奏" />
-      </div>
+    </div>
 
-      <div class="decor-image">
+    <div class="decor-image">
         <img src="pic/时期2-乐器.png" alt="" aria-hidden="true" />
-      </div>
+    </div>
 
-      <div class="ref-row">
+    <div class="ref-row">
         <span class="ref-dot"></span>
         <span class="ref-text">敦煌壁画 — 唐代笙在燕乐中的演奏场景</span>
-      </div>
+    </div>
 
     </section>
 
-    <!-- ========== 场景 3：明代·十三簧 ========== -->
+    <!-- ================ 场景 3：明代·成熟 ================ -->
     <section class="scene" id="scene-ming" data-scene="ming" aria-label="明代·十三簧">
 
-      <nav class="top-nav" aria-label="页面导航">
+    <nav class="top-nav" aria-label="页面导航">
         <span class="top-nav-item">研物</span>
         <span class="top-nav-item active">观象</span>
         <span class="top-nav-item">编年</span>
         <span class="top-nav-item">抠图</span>
-      </nav>
+    </nav>
 
-      <h1 class="scene-title">明</h1>
-      <h2 class="scene-subtitle">十三簧成</h2>
+    <h1 class="scene-title">明</h1>
+    <h2 class="scene-subtitle">十三簧成</h2>
 
-      <div class="circle-btn" id="circleBtn-ming" aria-label="查看详情">
+    <div class="circle-btn" id="circleBtn-ming" aria-label="查看详情">
         <div class="circle-inner"></div>
-      </div>
+    </div>
 
-      <div class="desc-block">
+    <div class="desc-block">
         <p>明代笙发展为十三簧，音域大幅扩展，表现力显著增强。十三簧的配置使笙能够演奏更加复杂的旋律与丰富的和声。</p>
         <p>《明会典》《乐律全书》等典籍详细记录了笙的形制与演奏规范。各地形成了不同风格的制笙流派，笙的形制逐渐定型，为现代笙的发展奠定了坚实基础。</p>
-      </div>
+    </div>
 
-      <div class="main-image-area">
+    <div class="main-image-area">
         <img src="pic/时期3-吹笙仕女.gif" alt="明代吹笙仕女" />
-      </div>
+    </div>
 
-      <div class="decor-image">
+    <div class="decor-image">
         <img src="pic/时期3-乐器.png" alt="" aria-hidden="true" />
-      </div>
+    </div>
 
-      <div class="ref-row">
+    <div class="ref-row">
         <span class="ref-dot"></span>
         <span class="ref-text">明代宫廷绘画 — 十三簧笙形制成熟、音域完备</span>
-      </div>
+    </div>
 
     </section>
 
-  </main>
+</main>
 
-  <script src="shengyanbian.js"></script>
+<!-- 交互逻辑脚本 -->
+<script src="shengyanbian.js"></script>
 </body>
 </html>
