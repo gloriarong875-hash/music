@@ -1,80 +1,68 @@
 // ═══════════════════════════════════════════
-//  FRAMES DATA — 11 storyboard frames from .pen
+//  FRAMES DATA — 9 storyboard frames from .pen
+//  已删除合琴分镜；步骤一、二内部通过滚轮实现图像连续放大
 //  Positions in design px (1440x900 canvas)
 // ═══════════════════════════════════════════
 const F = [
-  { // 0: 琴1-1 制胚开始
-    img:'琴部件assets/步骤1-制胚.png', ix:272,iy:161,iw:896,ih:578,
-    txt:'', tx:848,ty:311, tsize:32,tcolor:'#3b4942',
+  { // 0: 步骤一 制胚开始 → 滚轮放大至开槽
+    img:'琴部件assets/步骤1-制胚.png',
+    ix:272,iy:161,iw:896,ih:578,        // Keyframe A (zoom=0)
+    ix2:-366,iy2:-305,iw2:1325,ih2:855, // Keyframe B (zoom=1)
+    txt:'', txt2:'开槽决定了古琴最终的音色',
+    tx:848,ty:311, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
-    whiteOn:false, wx:928,wy:627,
     stage:0, sdone:[0,0,0,0],
+    zoom:true,
     extra:null
   },
-  { // 1: 琴1-2 开槽
-    img:'琴部件assets/步骤1-制胚.png', ix:-766,iy:-515,iw:1866,ih:1204,
-    txt:'开槽决定了古琴最终的音色', tx:848,ty:311, tsize:32,tcolor:'#3b4942',
-    overlay:null, tilted:null,
-    whiteOn:true, wx:928,wy:627,
-    stage:0, sdone:[0,0,0,0],
-    extra:null
-  },
-  { // 2: 琴1-3 合琴
-    img:'琴部件assets/步骤1-制胚.png', ix:-770,iy:-489,iw:1866,ih:1204,
-    txt:'琴面和琴底相合称为合琴', tx:848,ty:311, tsize:32,tcolor:'#3b4942',
-    overlay:null, tilted:null,
-    whiteOn:true, wx:928,wy:627,
-    stage:0, sdone:[0,0,0,0],
-    extra:null
-  },
-  { // 3: 排箫2-1 裱布
-    img:'琴部件assets/步骤2-髹漆.png', ix:257,iy:138,iw:894,ih:624,
-    txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
-    overlay:null, tilted:null,
-    whiteOn:true, wx:928,wy:627,
+  { // 1: 步骤二 裱布 → 髹漆一层 (滚轮放大)
+    img:'琴部件assets/步骤2-髹漆.png',
+    ix:257,iy:138,iw:894,ih:624,         // Keyframe A: 裱布
+    ix2:-112,iy2:-311,iw2:1411,ih2:985,  // Keyframe B: 髹漆一层
+    txt:'', txt2:'麻布裹琴，加上含鹿角粉末的漆料',
+    tx:805,ty:674, tsize:32,tcolor:'#000000',
+    overlay:null,
+    overlay2:{x:215,y:349,w:1084,h:125, fill:'#2d324069'},
+    tilted:null,
     stage:1, sdone:[1,0,0,0],
+    zoom:true,
     extra:null
   },
-  { // 4: 排箫2-2 髹漆一层
+  { // 2: 步骤二 髹漆一层 → 琴体显现 (图像切换：髹漆→髹漆完成)
     img:'琴部件assets/步骤2-髹漆.png', ix:-112,iy:-311,iw:1411,ih:985,
     txt:'麻布裹琴，加上含鹿角粉末的漆料', tx:805,ty:674, tsize:32,tcolor:'#000000',
     overlay:{x:215,y:349,w:1084,h:125, fill:'#2d324069'},
     tilted:null,
-    whiteOn:true, wx:928,wy:627,
     stage:1, sdone:[1,0,0,0],
     extra:null
   },
-  { // 5: 排箫2-3 琴体显现
-    img:'琴部件assets/结构图-琴整体.png', ix:172,iy:325,iw:1127,ih:163,
+  { // 3: 步骤二 琴体显现 (图像切换：髹漆→髹漆完成)
+    img:'琴部件assets/步骤2-髹漆完成.png', ix:172,iy:325,iw:1127,ih:163,
     txt:'麻布裹琴，加上含鹿角粉末的漆料', tx:826,ty:776, tsize:32,tcolor:'#000000',
     overlay:{x:215,y:349,w:1084,h:125, fill:'#2d324069'},
     tilted:{x:40,y:349,w:1166,h:513, rot:14.923, opacity:0.1},
-    whiteOn:true, wx:928,wy:627,
     stage:1, sdone:[1,0,0,0],
     extra:null
   },
-  { // 6: 排箫2-4 打磨完成
-    img:'琴部件assets/结构图-琴整体.png', ix:172,iy:325,iw:1127,ih:163,
+  { // 4: 步骤二 打磨完成
+    img:'琴部件assets/步骤2-髹漆完成.png', ix:172,iy:325,iw:1127,ih:163,
     txt:'混合多种矿石的不同漆料多次髹涂打磨，琴面如镜，音韵愈沉', tx:116,ty:654, tsize:32,tcolor:'#000000',
     overlay:{x:172,y:325,w:1119,h:163, fill:'#433634c4'},
     tilted:null,
-    whiteOn:true, wx:928,wy:627,
     stage:1, sdone:[1,0,0,0],
     extra:null
   },
-  { // 7: 排箫3-1 选弦介绍
+  { // 5: 步骤三 选弦介绍
     img:'琴部件assets/步骤3-选弦.png', ix:114,iy:172,iw:1089,ih:555,
     txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
-    whiteOn:true, wx:928,wy:627,
     stage:2, sdone:[1,1,0,0],
     extra:null
   },
-  { // 8: 排箫3-2 选弦交互 [LOCK]
+  { // 6: 步骤三 选弦交互 [LOCK]
     img:'琴部件assets/步骤3-选弦.png', ix:-620,iy:159,iw:3113,ih:1588,
     txt:'弦音清亮', tx:96,ty:125, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
-    whiteOn:true, wx:928,wy:627,
     stage:2, sdone:[1,1,0,0],
     lock:true,
     strings:[
@@ -87,25 +75,23 @@ const F = [
       {src:'琴部件assets/步骤3b-选弦备选.png', x:-181,y:232, w:1227,h:621, op:0.5}
     ]
   },
-  { // 9: 排箫4-1 上弦
+  { // 7: 步骤四 上弦
     img:'琴部件assets/步骤4-调音上弦.png', ix:252,iy:132,iw:569,ih:636,
     txt:'', tx:0,ty:0, tsize:32,tcolor:'#3b4942',
     overlay:null, tilted:null,
-    whiteOn:true, wx:928,wy:627,
     stage:3, sdone:[1,1,1,0],
     extra:null
   },
-  { // 10: 排箫4-2 调音完成
+  { // 8: 步骤四 调音完成
     img:'琴部件assets/步骤4-调音上弦.png', ix:21,iy:-276,iw:1053,ih:1176,
     txt:'调音上弦，七弦成韵', tx:0,ty:0, tsize:28,tcolor:'#3b4942',
     overlay:null, tilted:null,
-    whiteOn:false, wx:928,wy:627,
     stage:3, sdone:[1,1,1,1],
     extra:null,
     final:true
   }
 ];
-const N = F.length; // 11
+const N = F.length; // 9
 
 // ═══════════════════════════════════════════
 //  DOM REFS
@@ -118,15 +104,16 @@ const txtA = document.getElementById('text-a');
 const txtB = document.getElementById('text-b');
 const overlayR = document.getElementById('overlay-rect');
 const tiltedR = document.getElementById('tilted-rect');
-const decorC = document.getElementById('decor-circle');
 const stringP = document.getElementById('string-panel');
 const stringOpts = stringP.querySelectorAll('.string-opt');
 const scrollHint = document.getElementById('scroll-hint');
 const topProgress = document.getElementById('top-progress');
 const completeO = document.getElementById('complete-overlay');
-const stepItems = document.querySelectorAll('.step-item');
-const stepBar = document.getElementById('step-bar');
 const stageNames = ['制胚','髹漆','选弦','上弦'];
+
+// ── nav-dots (统一使用 generalprocess.css) ──
+const navDotWrappers = document.querySelectorAll('.dot-wrapper');
+const navDots = document.getElementById('navDots');
 
 // ═══════════════════════════════════════════
 //  AUDIO
@@ -149,41 +136,31 @@ function chime(){ [261.63,329.63,392,523.25].forEach((f,i)=>setTimeout(()=>tone(
 
 // ═══════════════════════════════════════════════════════════
 //  SCROLL ENGINE — 滚动引擎
-//  scrollT = 用户目标位置 (target)  [0..1]
-//  scrollP = 平滑后的实际位置 (progress) [0..1]
-//  lastInput = 最后一次用户输入的时间戳 (ms)
 // ═══════════════════════════════════════════════════════════
 
-// ──【调试参数 · TUNING CONSTANTS】─────────────────────────
-//  修改以下数值即可调整滚动手感，无需改动其他代码
-const SENS       = 0.0002;  // 滚轮灵敏度 (wheel sensitivity)
-                             // 越大 → 滚一格前进越多  建议范围 0.0003~0.002
-const TOUCH_SENS = 0.00035; // 触摸滑动灵敏度 (touch sensitivity)
-                             // 越大 → 手指滑动前进越多  建议范围 0.0002~0.0015
-const KEY_STEP   = 0.091;   // 键盘单步跨度 (keyboard step size)
-                             // 默认 1/11 ≈ 一个分镜  调小=更精细  调大=跳更多
-const SMOOTH     = 0.12;    // 惯性平滑系数 (lerp smoothing)
-                             // 越大 → 跟手越快但有顿挫  建议 0.08~0.2
-const SNAP_IDLE  = 400;     // 空闲吸附等待 (ms) (snap idle delay)
-                             // 停止操作 N 毫秒后自动吸附到最近分镜
+const SENS       = 0.0002;
+const TOUCH_SENS = 0.00035;
+const KEY_STEP   = 0.125;  // 1/8 ≈ 每个分镜 (9帧→8段)
+const SMOOTH     = 0.12;
+const SNAP_IDLE  = 400;
 
 let scrollT=0, scrollP=0, lastInput=0, animId=null;
 let isLocked=false, stringPicked=null;
 let lockP=0;
-const LOCK_IDX=8; // 选弦交互帧 (0-based index of 排箫3-2)
+const LOCK_IDX=6; // 选弦交互帧 (0-based index, was 8 before removing 合琴)
 
-// ── 鼠标滚轮 (wheel) ──────────────────────────────────────
+// ── 鼠标滚轮 ──
 function onWheel(e){
     e.preventDefault();
-    if(isLocked&&!stringPicked) return;          // 选弦锁定时忽略滚轮
-    scrollT+=e.deltaY*SENS;                      // 累积滚动增量
-    scrollT=Math.max(0,Math.min(1,scrollT));     // 限制在 0..1 范围
-    lastInput=performance.now();                 // 记录输入时间
-    startLoop();                                 // 启动动画循环
+    if(isLocked&&!stringPicked) return;
+    scrollT+=e.deltaY*SENS;
+    scrollT=Math.max(0,Math.min(1,scrollT));
+    lastInput=performance.now();
+    startLoop();
 }
 window.addEventListener('wheel',onWheel,{passive:false});
 
-// ── 触摸滑动 (touch) ──────────────────────────────────────
+// ── 触摸滑动 ──
 let touchStartY=0;
 canvas.addEventListener('touchstart',e=>{
     if(isLocked&&!stringPicked) return;
@@ -192,41 +169,40 @@ canvas.addEventListener('touchstart',e=>{
 canvas.addEventListener('touchmove',e=>{
     if(isLocked&&!stringPicked) return;
     e.preventDefault();
-    const dy=touchStartY-e.touches[0].clientY;   // 计算滑动距离
-    touchStartY=e.touches[0].clientY;            // 重置起点（增量模式）
+    const dy=touchStartY-e.touches[0].clientY;
+    touchStartY=e.touches[0].clientY;
     scrollT+=dy*TOUCH_SENS;
     scrollT=Math.max(0,Math.min(1,scrollT));
     lastInput=performance.now();
     startLoop();
 },{passive:false});
 
-// ── 键盘导航 (keyboard) ───────────────────────────────────
+// ── 键盘导航 ──
 document.addEventListener('keydown',e=>{
     if(e.key==='ArrowRight'||e.key==='ArrowDown'){
         e.preventDefault();
         if(isLocked&&!stringPicked) return;
-        scrollT=Math.min(1,scrollT+KEY_STEP);    // 向前一步
+        scrollT=Math.min(1,scrollT+KEY_STEP);
         lastInput=performance.now();
         startLoop();
     }else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
         e.preventDefault();
-        if(isLocked&&!stringPicked){              // 选弦锁定时允许回退
+        if(isLocked&&!stringPicked){
             isLocked=false;
             stringP.classList.remove('visible');
             scrollHint.classList.add('still');
             scrollHint.textContent='↓ 滚轮浏览制作过程';
         }
-        scrollT=Math.max(0,scrollT-KEY_STEP);    // 向后一步
+        scrollT=Math.max(0,scrollT-KEY_STEP);
         lastInput=performance.now();
         startLoop();
     }
 });
 
-// Step dot click navigation
-stepItems.forEach((item,i)=>{
-    item.addEventListener('click',()=>{
+// Step dot click navigation (unified nav-dots)
+navDotWrappers.forEach((wrapper,i)=>{
+    wrapper.addEventListener('click',()=>{
         if(isLocked&&!stringPicked) return;
-        // Find first frame with this stage, snap to its center
         for(let j=0;j<N;j++){
             if(F[j].stage===i){
                 const p=j/(N-1);
@@ -245,38 +221,27 @@ function startLoop(){
     loop();
 }
 
-// ── 动画主循环 (main animation loop) ──────────────────────
 function loop(){
-    // 1. 空闲吸附检测：用户停止操作 SNAP_IDLE ms 后，吸附到最近分镜中心
     const idle=performance.now()-lastInput;
     let eff=scrollT;
     if(idle>SNAP_IDLE){
         const near=Math.round(scrollP*(N-1))/(N-1);
         eff=near;
     }
-    // 2. 惯性平滑 (lerp)：scrollP 追赶 eff (target)
     scrollP+=(eff-scrollP)*SMOOTH;
     scrollP=Math.max(0,Math.min(1,scrollP));
 
-    // 3. 选弦锁定：限制滚动范围在锁定帧内
     if(isLocked&&!stringPicked){
         scrollP=Math.min(lockP,scrollP);
         scrollP=Math.max(F[LOCK_IDX].p_start||(LOCK_IDX/(N-1)),scrollP);
     }
 
-    // 4. 检测是否进入锁定帧
     checkLock();
-
-    // 5. 根据当前 scrollP 更新所有可见元素
     applyVisuals(scrollP);
-
-    // 6. 更新顶部进度条
     topProgress.style.width=(scrollP*100)+'%';
 
-    // 7. 检测是否到达末尾
     if(scrollP>0.99&&!stringPicked) showCompletion();
 
-    // 8. 判断是否继续循环：差值>阈值 或 未到达终点
     const diff=Math.abs(eff-scrollP);
     if(diff>0.0005||scrollP<1){
         animId=requestAnimationFrame(loop);
@@ -286,13 +251,10 @@ function loop(){
     }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  LOCK LOGIC — 选弦锁定机制
-//  当 scrollP 进入第 8 帧 (排箫3-2) 时锁定滚动
-//  用户必须点击弦类型才能解锁继续
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  LOCK LOGIC
+// ═══════════════════════════════════════════
 
-// 根据进度 p 计算当前帧索引和小数部分  [idx: 整数帧号, frac: 帧内进度 0..1]
 function getFrameIdx(p){
     const raw=p*(N-1);
     return {idx:Math.min(N-1,Math.max(0,Math.floor(raw))), frac:raw-Math.floor(raw)};
@@ -300,17 +262,15 @@ function getFrameIdx(p){
 
 function checkLock(){
     const {idx}=getFrameIdx(scrollP);
-    // 进入锁定帧 → 激活锁定
     if(idx===LOCK_IDX&&!stringPicked){
         if(!isLocked){
             isLocked=true;
-            lockP=scrollP;                        // 记录锁定时的 p 值
-            stringP.classList.add('visible');     // 显示弦选项面板
+            lockP=scrollP;
+            stringP.classList.add('visible');
             scrollHint.textContent='点击选择琴弦类型';
-            scrollHint.classList.remove('still');     // 脉冲动画强调
+            scrollHint.classList.remove('still');
         }
     }
-    // 已选弦且离开锁定帧 → 清理锁定 UI
     if(isLocked&&stringPicked&&idx!==LOCK_IDX){
         stringP.classList.remove('visible');
         scrollHint.classList.add('still');
@@ -318,54 +278,61 @@ function checkLock(){
     }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  STRING SELECTION — 选弦交互 (仅 Frame 8 可见)
-//  用户点击钢弦/丝弦/钢丝尼龙弦后解锁滚动
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  STRING SELECTION
+// ═══════════════════════════════════════════
 stringOpts.forEach(opt=>{
     opt.addEventListener('click',()=>{
-        if(stringPicked) return;                  // 已选过则忽略
-        au(); ding();                             // 音效反馈
-        stringPicked=opt.dataset.type;            // 'steel' | 'silk' | 'nylon'
-        opt.classList.add('selected');            // 高亮选中项
-        // 更新底部提示文字
+        if(stringPicked) return;
+        au(); ding();
+        stringPicked=opt.dataset.type;
+        opt.classList.add('selected');
         scrollHint.textContent=stringPicked==='steel'?'已选钢弦 · 清亮悠长':stringPicked==='silk'?'已选丝弦 · 温润古朴':'已选钢丝尼龙弦 · 刚柔并济';
         scrollHint.classList.add('still');
-        setTimeout(()=>{                          // 1.2s 后解锁并自动推进
+        setTimeout(()=>{
             isLocked=false;
             stringP.classList.remove('visible');
             scrollHint.classList.add('still');
             scrollHint.textContent='↓ 滚轮浏览制作过程';
-            scrollT=F[9].p_start||(9/(N-1));      // 跳转到 Frame 10 起始
+            scrollT=F[7].p_start||(7/(N-1));
             lastInput=performance.now();
             startLoop();
-            chime();                              // 完成音效
+            chime();
         },1200);
     });
 });
 
 // ═══════════════════════════════════════════════════════════
 //  VISUAL RENDER — apply(p)
-//  根据 scrollP (0..1) 计算当前分镜，更新所有可见 DOM 元素
-//  分镜边界处使用交叉淡入淡出 (crossfade) 平滑过渡
+//  步骤一（制胚）内部通过滚轮实现图像连续放大 (zoom transition)
+//  其他步骤间使用交叉淡入淡出 (crossfade)
 // ═══════════════════════════════════════════════════════════
 
-// ──【调试参数 · RENDER TUNING】────────────────────────────
-const TRANS=0.12;  // 分镜过渡区占比 (transition zone fraction)
-                    // 0.12 = 每个分镜 12% 范围为过渡区  调大=过渡更慢
+const TRANS=0.12;
 
-let lastA=-1, lastB=-1; // 两个图片层当前显示的帧号 (-1=未初始化)
+let lastA=-1, lastB=-1;
 
-// 设计稿 px → 视口 vw/vh 转换 (design canvas = 1440×900)
 function pxToVW(v){ return (v/1440)*100; }
 function pxToVH(v){ return (v/900)*100; }
 
-function setImgPos(el, frm){
-    // center the image in viewport
-    const cx=pxToVW(frm.ix+frm.iw/2);
-    const cy=pxToVH(frm.iy+frm.ih/2);
-    const sw=pxToVW(frm.iw);
-    const sh=pxToVH(frm.ih);
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+function setImgPos(el, frm, zoomT){
+    let ix, iy, iw, ih;
+    if(frm.zoom && zoomT!==undefined){
+        // Interpolate between keyframe A and B
+        const t = zoomT;
+        ix = lerp(frm.ix, frm.ix2||frm.ix, t);
+        iy = lerp(frm.iy, frm.iy2||frm.iy, t);
+        iw = lerp(frm.iw, frm.iw2||frm.iw, t);
+        ih = lerp(frm.ih, frm.ih2||frm.ih, t);
+    } else {
+        ix = frm.ix; iy = frm.iy; iw = frm.iw; ih = frm.ih;
+    }
+    const cx=pxToVW(ix+iw/2);
+    const cy=pxToVH(iy+ih/2);
+    const sw=pxToVW(iw);
+    const sh=pxToVH(ih);
     el.style.left='50%';
     el.style.top='50%';
     el.style.transform=`translate(-50%,-50%) translate(${cx-50}vw,${cy-50}vh)`;
@@ -376,24 +343,44 @@ function setImgPos(el, frm){
 function applyVisuals(p){
     const {idx,frac}=getFrameIdx(p);
     let cur=idx, nxt=idx;
-    let t=0; // 0=fully cur, 1=fully nxt
+    let t=0;
+    let zoomT=0; // step 1 internal zoom progress (0..1)
 
     if(frac>1-TRANS&&idx<N-1){
         nxt=idx+1;
         t=(frac-(1-TRANS))/TRANS;
         t=Math.max(0,Math.min(1,t));
-        // ease
         t=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
     }
 
     const cf=F[cur], nf=nxt!==cur?F[nxt]:null;
-// ── Background painting pan L→R with scroll ──
-const bgPaint=document.getElementById('bg-painting');
-if(bgPaint) bgPaint.style.backgroundPositionX=(p*100)+'%';
+
+    // Zoom mode: when current frame has zoom flag, interpolate within its range
+    const isZoomFrame = cf.zoom;
+    if(isZoomFrame){
+        const frameStart = cur/(N-1);
+        const frameEnd = (cur+1)/(N-1);
+        const frameRange = frameEnd - frameStart;
+        zoomT = frameRange > 0 ? Math.max(0, Math.min(1, (p - frameStart) / frameRange)) : 0;
+    }
+    // Detect crossfade-based zoom transition (same img, same stage)
+    const isZoomXfade = isZoomFrame && nf && cf.img===nf.img && cf.stage===nf.stage;
+
+    // ── Background painting pan L→R with scroll ──
+    const bgPaint=document.getElementById('bg-painting');
+    if(bgPaint) bgPaint.style.backgroundPositionX=(p*100)+'%';
 
     // ── Images ──
-    if(cur!==lastA||(nf&&nxt!==lastB)){
-        // Swap: B becomes current, A becomes next (or vice versa)
+    if(isZoomFrame){
+        // Zoom mode: single image lerps position/size
+        if(cur!==lastA){
+            imgA.src=cf.img;
+            lastA=cur;
+        }
+        setImgPos(imgA, cf, zoomT);
+        imgA.style.opacity='1';
+        imgB.style.opacity='0';
+    } else if(cur!==lastA||(nf&&nxt!==lastB)){
         if(cur!==lastA){
             imgA.src=cf.img;
             setImgPos(imgA,cf);
@@ -408,16 +395,17 @@ if(bgPaint) bgPaint.style.backgroundPositionX=(p*100)+'%';
         }
     }
 
-    if(nf){
-        // Crossfade: A=current, B=next
-        imgA.style.opacity=(1-t).toFixed(3);
-        imgB.style.opacity=t.toFixed(3);
-    }else{
-        imgA.style.opacity='1';
-        imgB.style.opacity='0';
+    if(!isZoomFrame){
+        if(nf){
+            imgA.style.opacity=(1-t).toFixed(3);
+            imgB.style.opacity=t.toFixed(3);
+        }else{
+            imgA.style.opacity='1';
+            imgB.style.opacity='0';
+        }
     }
 
-    // ── Extra image layers (frame 8) ──
+    // ── Extra image layers (frame 6: string selection) ──
     imgEx.forEach(el=>{ el.style.opacity='0'; });
     if(cf.extra){
         cf.extra.forEach((ex,i)=>{
@@ -433,16 +421,28 @@ if(bgPaint) bgPaint.style.backgroundPositionX=(p*100)+'%';
         });
     }
 
-    // ── Overlay rect ──
-    const orFade=(cf.overlay?1-t:0)+(nf&&nf.overlay?t:0);
-    overlayR.style.opacity=orFade.toFixed(3);
-    if(cf.overlay&&orFade>0){
-        overlayR.style.left=pxToVW(cf.overlay.x)+'vw';
-        overlayR.style.top=pxToVH(cf.overlay.y)+'vh';
-        overlayR.style.width=pxToVW(cf.overlay.w)+'vw';
-        overlayR.style.height=pxToVH(cf.overlay.h)+'vh';
-        overlayR.style.background=cf.overlay.fill;
+    // ── Overlay rect (暗色遮罩：步骤二髹漆 / 步骤二完成) ──
+    let orOpacity = 0;
+    if(isZoomFrame && cf.overlay2){
+        // Zoom frame with overlay2: fade in near end of zoom
+        orOpacity = Math.max(0, (zoomT - 0.6) / 0.4);
+        overlayR.style.left=pxToVW(cf.overlay2.x)+'vw';
+        overlayR.style.top=pxToVH(cf.overlay2.y)+'vh';
+        overlayR.style.width=pxToVW(cf.overlay2.w)+'vw';
+        overlayR.style.height=pxToVH(cf.overlay2.h)+'vh';
+        overlayR.style.background=cf.overlay2.fill;
+    } else {
+        const orFade=(cf.overlay?1-t:0)+(nf&&nf.overlay?t:0);
+        orOpacity = orFade;
+        if(cf.overlay&&orFade>0){
+            overlayR.style.left=pxToVW(cf.overlay.x)+'vw';
+            overlayR.style.top=pxToVH(cf.overlay.y)+'vh';
+            overlayR.style.width=pxToVW(cf.overlay.w)+'vw';
+            overlayR.style.height=pxToVH(cf.overlay.h)+'vh';
+            overlayR.style.background=cf.overlay.fill;
+        }
     }
+    overlayR.style.opacity=orOpacity.toFixed(3);
 
     // ── Tilted rect ──
     const trFade=(cf.tilted?1-t:0)+(nf&&nf.tilted?t:0);
@@ -455,51 +455,58 @@ if(bgPaint) bgPaint.style.backgroundPositionX=(p*100)+'%';
         tiltedR.style.transform=`rotate(${cf.tilted.rot}deg)`;
     }
 
-    // ── White circle ──
-    const wcFade=(cf.whiteOn?1-t:0)+(nf&&nf.whiteOn?t:0);
-    decorC.style.opacity=wcFade.toFixed(3);
-    const wcf=cf.whiteOn?cf:nf&&nf.whiteOn?nf:null;
-    if(wcf){
-        decorC.style.left=pxToVW(wcf.wx)+'vw';
-        decorC.style.top=pxToVH(wcf.wy)+'vh';
-    }
-
-    // ── Text ──
-    const ct=cf.txt||''; const nt=nf?nf.txt||'':'';
-    if(ct&&!nt){
-        txtA.textContent=ct;
-        txtA.style.left=pxToVW(cf.tx)+'vw'; txtA.style.top=pxToVH(cf.ty)+'vh';
-        txtA.style.fontSize=pxToVW(cf.tsize*0.7)+'vw';
-        txtA.style.color=cf.tcolor;
-        txtA.style.opacity=(1-t).toFixed(3);
-        txtB.style.opacity='0';
-    }else if(nt&&!ct){
-        txtB.textContent=nt;
-        txtB.style.left=pxToVW(nf.tx)+'vw'; txtB.style.top=pxToVH(nf.ty)+'vh';
-        txtB.style.fontSize=pxToVW(nf.tsize*0.7)+'vw';
-        txtB.style.color=nf.tcolor;
-        txtA.style.opacity='0';
-        txtB.style.opacity=t.toFixed(3);
-    }else if(ct&&nt&&ct!==nt){
-        txtA.textContent=ct;
-        txtA.style.left=pxToVW(cf.tx)+'vw'; txtA.style.top=pxToVH(cf.ty)+'vh';
-        txtA.style.fontSize=pxToVW(cf.tsize*0.7)+'vw';
-        txtA.style.color=cf.tcolor;
-        txtA.style.opacity=(1-t).toFixed(3);
-        txtB.textContent=nt;
-        txtB.style.left=pxToVW(nf.tx)+'vw'; txtB.style.top=pxToVH(nf.ty)+'vh';
-        txtB.style.fontSize=pxToVW(nf.tsize*0.7)+'vw';
-        txtB.style.color=nf.tcolor;
-        txtB.style.opacity=t.toFixed(3);
-    }else if(ct){
-        txtA.textContent=ct;
-        txtA.style.left=pxToVW(cf.tx)+'vw'; txtA.style.top=pxToVH(cf.ty)+'vh';
-        txtA.style.fontSize=pxToVW(cf.tsize*0.7)+'vw';
-        txtA.style.color=cf.tcolor;
-        txtA.style.opacity='1';
-        txtB.style.opacity='0';
-    }else{
-        txtA.style.opacity='0'; txtB.style.opacity='0';
+    // ── Text (场景主文案，双通道交叉淡入淡出) ──
+    if(isZoomFrame){
+        // Zoom mode: text "开槽决定了古琴最终的音色" fades in at zoomT > 0.5
+        const showText2 = zoomT > 0.5;
+        if(cf.txt2 && showText2){
+            txtA.textContent = cf.txt2;
+            txtA.style.left=pxToVW(cf.tx)+'vw'; txtA.style.top=pxToVH(cf.ty)+'vh';
+            txtA.style.fontSize=pxToVW(cf.tsize*0.7)+'vw';
+            txtA.style.color=cf.tcolor;
+            txtA.style.opacity=Math.min(1, (zoomT-0.5)*2).toFixed(3);
+            txtB.style.opacity='0';
+        } else {
+            txtA.style.opacity='0';
+            txtB.style.opacity='0';
+        }
+    } else {
+        const ct=cf.txt||''; const nt=nf?nf.txt||'':'';
+        if(ct&&!nt){
+            txtA.textContent=ct;
+            txtA.style.left=pxToVW(cf.tx)+'vw'; txtA.style.top=pxToVH(cf.ty)+'vh';
+            txtA.style.fontSize=pxToVW(cf.tsize*0.7)+'vw';
+            txtA.style.color=cf.tcolor;
+            txtA.style.opacity=(1-t).toFixed(3);
+            txtB.style.opacity='0';
+        }else if(nt&&!ct){
+            txtB.textContent=nt;
+            txtB.style.left=pxToVW(nf.tx)+'vw'; txtB.style.top=pxToVH(nf.ty)+'vh';
+            txtB.style.fontSize=pxToVW(nf.tsize*0.7)+'vw';
+            txtB.style.color=nf.tcolor;
+            txtA.style.opacity='0';
+            txtB.style.opacity=t.toFixed(3);
+        }else if(ct&&nt&&ct!==nt){
+            txtA.textContent=ct;
+            txtA.style.left=pxToVW(cf.tx)+'vw'; txtA.style.top=pxToVH(cf.ty)+'vh';
+            txtA.style.fontSize=pxToVW(cf.tsize*0.7)+'vw';
+            txtA.style.color=cf.tcolor;
+            txtA.style.opacity=(1-t).toFixed(3);
+            txtB.textContent=nt;
+            txtB.style.left=pxToVW(nf.tx)+'vw'; txtB.style.top=pxToVH(nf.ty)+'vh';
+            txtB.style.fontSize=pxToVW(nf.tsize*0.7)+'vw';
+            txtB.style.color=nf.tcolor;
+            txtB.style.opacity=t.toFixed(3);
+        }else if(ct){
+            txtA.textContent=ct;
+            txtA.style.left=pxToVW(cf.tx)+'vw'; txtA.style.top=pxToVH(cf.ty)+'vh';
+            txtA.style.fontSize=pxToVW(cf.tsize*0.7)+'vw';
+            txtA.style.color=cf.tcolor;
+            txtA.style.opacity='1';
+            txtB.style.opacity='0';
+        }else{
+            txtA.style.opacity='0'; txtB.style.opacity='0';
+        }
     }
 
     // ── String options position ──
@@ -520,8 +527,8 @@ if(bgPaint) bgPaint.style.backgroundPositionX=(p*100)+'%';
         });
     }
 
-    // ── Update step dots ──
-    updateStepDots(cf);
+    // ── Update nav dots (unified .nav-dots) ──
+    updateNavDots(cf);
 
     // ── Scroll hint ──
     if(!isLocked&&!stringPicked){
@@ -529,26 +536,34 @@ if(bgPaint) bgPaint.style.backgroundPositionX=(p*100)+'%';
         const snNext=cf.stage<3?stageNames[cf.stage+1]:'';
         if(p<0.05) scrollHint.textContent='↓ 滚轮浏览制作过程';
         else if(p>0.95) scrollHint.textContent='制作完成';
+        else if(isZoomFrame&&cf.stage===0&&zoomT<0.5) scrollHint.textContent='滚动放大 · 查看琴胚细节';
+        else if(isZoomFrame&&cf.stage===1&&zoomT<0.5) scrollHint.textContent='滚动放大 · 查看髹漆工艺';
+        else if(isZoomFrame&&cf.stage===1&&zoomT>=0.5) scrollHint.textContent='髹漆层层 · 琴体渐显';
         else scrollHint.textContent=sn+(snNext?' → '+snNext:'');
         scrollHint.classList.add('still');
     }
 }
 
 // ═══════════════════════════════════════════
-//  STEP INDICATOR
+//  NAV DOTS (unified generalprocess.css)
 // ═══════════════════════════════════════════
-function updateStepDots(frm){
+function updateNavDots(frm){
     const st=frm.stage;
     const sd=frm.sdone;
-    stepItems.forEach((item,i)=>{
-        const dot=item.querySelector('.step-dot');
-        const lbl=item.querySelector('.step-label');
-        item.classList.remove('active-step');
-        dot.className='step-dot';
-        if(sd[i]){ dot.classList.add('done'); }
-        else if(i===st){ dot.classList.add('active'); item.classList.add('active-step'); }
-        else { dot.classList.add('pending'); }
-        lbl.textContent=stageNames[i];
+    navDotWrappers.forEach((wrapper,i)=>{
+        const dot=wrapper.querySelector('.dot');
+        wrapper.classList.remove('active','completed');
+        dot.classList.remove('active','completed');
+        if(sd[i]){
+            wrapper.classList.add('completed');
+            dot.classList.add('completed');
+        }else if(i===st){
+            wrapper.classList.add('active');
+            dot.classList.add('active');
+            wrapper.setAttribute('aria-current','step');
+        }else{
+            wrapper.removeAttribute('aria-current');
+        }
     });
 }
 
@@ -568,25 +583,41 @@ document.getElementById('btn-back').addEventListener('click',()=>{
     window.location.href='../../index.html?instrument=%E7%90%B4';
 });
 
+// ── 右上角 cornerNav 前进/后退按钮 ──
+document.getElementById('backBtn').addEventListener('click',()=>{
+    if(isLocked&&!stringPicked){
+        isLocked=false;
+        stringP.classList.remove('visible');
+        scrollHint.classList.add('still');
+        scrollHint.textContent='↓ 滚轮浏览制作过程';
+    }
+    scrollT=Math.max(0,scrollT-KEY_STEP);
+    lastInput=performance.now();
+    startLoop();
+});
+document.getElementById('nextBtn').addEventListener('click',()=>{
+    if(isLocked&&!stringPicked) return;
+    scrollT=Math.min(1,scrollT+KEY_STEP);
+    lastInput=performance.now();
+    startLoop();
+});
+
 // ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
-// Preload all images
 const allSrcs=[...new Set(F.map(f=>f.img).concat(
-    (F[8].extra||[]).map(e=>e.src)
+    (F[6].extra||[]).map(e=>e.src)
 ))];
 allSrcs.forEach(src=>{ const img=new Image(); img.src=src; });
 
-// Set initial state
 imgA.src=F[0].img;
-setImgPos(imgA,F[0]);
+setImgPos(imgA,F[0],0);
 imgA.style.opacity='1';
 imgB.style.opacity='0';
 lastA=0; lastB=-1;
-updateStepDots(F[0]);
+updateNavDots(F[0]);
 topProgress.style.width='0%';
 
-// Start loop for initial render
 scrollP=0; scrollT=0;
 lastInput=performance.now();
 startLoop();
