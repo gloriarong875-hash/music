@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>鼓结构与物源桑基图</title>
+  <!--
+    中文脚注（页面说明）
+    - 此页面完全沿用 3.1 笙页的左右版式：左侧结构展示（`.left-pane`），右侧桑基图（`.right-pane`）。
+    - 鼓的图片统一放在 `鼓部件assets`；如果后续替换图片，只要保持文件名或同步修改下方 img 的 src。
+    - 部件介绍面板（`.part-info`）固定在视口左下，可在 `generalcomponent.css` 修改 `left`/`bottom`。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="drumstyle.css" />
+  <link rel="stylesheet" href="../site-nav/site-nav.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="layout" aria-label="鼓结构与桑基图展示">
+      <div class="left-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Observing Phenomena</h4>
+            <h1>观象·结构</h1>
+          </div>
+        </header>
+
+        <nav class="cornerNav" aria-label="场景跳转">
+          <button class="navBtn" id="prevScene" type="button" aria-label="回到上一步">‹</button>
+          <button class="navBtn" id="nextScene" type="button" aria-label="直接下一步">›</button>
+        </nav>
+
+        <div class="stage">
+          <div class="core" aria-label="鼓平面图到结构爆炸展示">
+            <div class="orbit-shell" aria-hidden="false">
+              <div class="orbit-rings"></div>
+              <div class="orbit-system">
+                <div class="orbit-node" data-part="鼓皮" style="--angle:-92deg;--angle-back:92deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="鼓部件assets/零件1-鼓皮.png" alt="鼓皮" />
+                    <span class="orbit-label">鼓皮</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="鼓钉" style="--angle:28deg;--angle-back:-28deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="鼓部件assets/零件2-鼓钉.png" alt="鼓钉" />
+                    <span class="orbit-label">鼓钉</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="鼓框" style="--angle:150deg;--angle-back:-150deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="鼓部件assets/零件3-鼓框.png" alt="鼓框" />
+                    <span class="orbit-label">鼓框</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <img class="plane-view" src="鼓部件assets/鼓平面图1.png" alt="鼓平面图" />
+            <img class="structure-piece piece-pi" data-part="鼓皮" src="鼓部件assets/结构图1-鼓皮.png" alt="结构图1 鼓皮" />
+            <img class="structure-piece piece-ding" data-part="鼓钉" src="鼓部件assets/结构图2-鼓钉.png" alt="结构图2 鼓钉" />
+            <img class="structure-piece piece-kuang" data-part="鼓框" src="鼓部件assets/结构图3-鼓框.png" alt="结构图3 鼓框" />
+
+            <div class="stack-index" aria-hidden="true">
+              <span>01</span>
+              <span>02</span>
+              <span>03</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Data Visualization</h4>
+            <h1>观象·物源</h1>
+          </div>
+        </header>
+        <div class="chart-wrap">
+          <div id="sankey-chart" role="img" aria-label="鼓部件到工艺、产地、材质与八音的桑基图"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 部件介绍面板：固定在屏幕左下，避免被结构图遮挡。通过 JS 在悬停时显示/隐藏。 -->
+    <aside class="part-info" aria-live="polite">
+      <h3 id="partTitle">鼓皮</h3>
+      <p id="partBody" class="part-body">鼓皮是鼓面发声的核心，通常以牛皮鞣制、拉伸并绷紧在鼓框上，承担主要击打振动。</p>
+    </aside>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="general.js"></script>
+  <script src="drumscript.js"></script>
+  <script src="../site-nav/site-nav.js"></script>
+</body>
+</html>
+
