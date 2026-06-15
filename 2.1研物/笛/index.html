@@ -9,33 +9,78 @@
 </head>
 <body>
 
+<!--
+    竹笛制作交互页结构说明
+    1. parallaxStage：步骤 1“择竹”，滚轮控制三段视差，并用顶部细线表示本步骤内部进度。
+    2. navDots：全流程统一进度导航，四个圆点依次对应择竹、汗青、开孔、试音。
+    3. bake-stage：步骤 2 与步骤 3 共用舞台，由 JavaScript 写入 data-mode="bake/drill" 隔离控件。
+       步骤 2 仅包含长按烘烤，完成后直接进入步骤 3，不再设置通节凿穿环节。
+       步骤 3 点击右下角白色按钮拾取本地凿子图片，随后跟随指针完成最后两孔。
+    4. final-stage：步骤 4，先选择笛膜，再进入键盘或点击孔位试音。
+
+    关键结构约定
+    - 所有脚本查询的 id 必须保持唯一；修改 id 时需同步修改 di-script.js。
+    - #bake-stage 内的烘烤和开孔元素会同时存在于 DOM，但 CSS 根据 data-mode 隔离显示。
+    - .holes-layer 的前六孔由脚本初始化为完成态，最后两个孔为用户实际操作目标。
+    - #drillChiselImg 必须保持 pointer-events:none，避免跟随鼠标时遮挡孔位点击。
+    - 笛膜选项的 data-type 必须与 di-script.js 中 membraneTypes 的键一致。
+
+    文件职责
+    - index.html：提供语义结构、素材路径、交互控件和无障碍文本。
+    - di-style.css：负责舞台布局、步骤显隐、动画反馈和响应式适配。
+    - di-script.js：负责状态机、视差、长按计时、凿子跟随、打孔和音频合成。
+-->
+
 <!-- ======================================== -->
 <!-- === STAGE 1: PARALLAX BAMBOO SELECTION === -->
 <!-- ======================================== -->
+
+<!--
+    全流程共用背景
+    ------------------------------------------------------------------------
+    背景素材与遮罩统一由 #bg-layer 管理，步骤 1-4 不再各自维护背景。
+    后续如需替换整页背景，只修改此节点对应的 CSS background 即可。
+-->
+<div id="bg-layer" aria-hidden="true"></div>
+
 <div class="parallax-scene" id="parallaxStage">
     <!-- Top Progress Bar -->
     <div class="progress-bar-top" id="parallaxProgressFill"></div>
 
-    <!-- Fixed Background -->
-    <div class="bg-fixed"><img src="笛部件assets/背景图.png" alt=""></div>
-
-    <!-- 新 1 — far bamboo, LEFT side, zooms past -->
+    <!--
+        三组竹材与指导文字
+        data-guide-side 控制说明出现在图片左侧或右侧；具体间距在 CSS 的
+        .bamboo-guide 中调整。JavaScript 只负责跟随图片及按吸附距离渐显。
+    -->
+    <!-- 新竹：第一个吸附点，年岁不足，不宜制笛。 -->
     <div class="layer layer-xin clickable" id="layerXin" data-bamboo="xin">
         <img src="笛部件assets/步骤1-3新竹.png" alt="新竹">
     </div>
-    <!-- 歪 — near bamboo, RIGHT side when selectable, zooms past -->
+    <div class="bamboo-guide guide-xin" id="guideXin" data-guide-side="right" aria-hidden="false">
+        <div class="guide-name">新竹</div>
+        <div class="guide-rule">年岁尚浅，竹质含水较多</div>
+        <div class="guide-result">不宜制笛 · 继续寻觅</div>
+    </div>
+
+    <!-- 歪竹：第二个吸附点，竹身弯曲，应当剔除。 -->
     <div class="layer layer-wai clickable" id="layerWai" data-bamboo="wai">
         <img src="笛部件assets/步骤1-2歪竹.png" alt="歪竹">
     </div>
-    <!-- 直 1 — mid bamboo, approaches center, final focus -->
+    <div class="bamboo-guide guide-wai" id="guideWai" data-guide-side="left" aria-hidden="true">
+        <div class="guide-name">歪竹</div>
+        <div class="guide-rule">杆身歪斜，难以保证音孔准直</div>
+        <div class="guide-result">应当剔除 · 再择良材</div>
+    </div>
+
+    <!-- 直竹：第三个吸附点，满足条件，点击进入汗青。 -->
     <div class="layer layer-zhi clickable" id="layerZhi" data-bamboo="zhi">
         <img src="笛部件assets/步骤1-1直竹.png" alt="直竹">
     </div>
-
-    <!-- White Circle Button -->
-    <div class="circle-btn" id="circleBtn"><div class="circle-inner"></div></div>
-    <!-- Circle Tooltip -->
-    <div class="circle-tooltip" id="circleTooltip"><div class="tt-text" id="circleTtText"></div></div>
+    <div class="bamboo-guide guide-zhi" id="guideZhi" data-guide-side="left" aria-hidden="true">
+        <div class="guide-name">直竹</div>
+        <div class="guide-rule">三年以上，壁厚均匀、杆直无虫蛀</div>
+        <div class="guide-result">适宜制笛 · 点击选取</div>
+    </div>
 </div>
 
 <!-- Back Button (global, positioned fixed) -->
@@ -44,7 +89,7 @@
     <button class="navBtn" id="nextBtn" type="button" aria-label="前进到下一步">›</button>
 </nav>
 
-<!-- Step Indicator (parallax sub-steps, fixed position) -->
+<!-- 步骤 1 内部的三个视差吸附点；不替代下方全流程四步导航。 -->
 <div class="step-indicator" id="stepIndicator">
     <div class="step-label-group">
         <span class="step-label-text">择竹</span>
@@ -61,17 +106,16 @@
 <!-- === GLOBAL ELEMENTS === -->
 <!-- ======================================== -->
 
-<div id="bg-layer"></div>
 <div class="fire-glow"></div>
 
-<div class="nav-dots" id="navDots">
-    <div class="dot-wrapper active"><div class="dot active"></div><div class="dot-label">择竹</div></div>
-    <div class="dot-wrapper"><div class="dot"></div><div class="dot-label">汗青</div></div>
-    <div class="dot-wrapper"><div class="dot"></div><div class="dot-label">开孔</div></div>
-    <div class="dot-wrapper"><div class="dot"></div><div class="dot-label">试音</div></div>
+<!-- 全流程进度：所有步骤共用同一组节点，激活与完成状态由 setNavStage() 更新。 -->
+<div class="nav-dots visible" id="navDots" role="list" aria-label="竹笛制作进度">
+    <div class="dot-wrapper active" role="listitem" aria-current="step"><div class="dot active"></div><div class="dot-label">择竹</div></div>
+    <div class="dot-wrapper" role="listitem"><div class="dot"></div><div class="dot-label">汗青</div></div>
+    <div class="dot-wrapper" role="listitem"><div class="dot"></div><div class="dot-label">开孔</div></div>
+    <div class="dot-wrapper" role="listitem"><div class="dot"></div><div class="dot-label">试音</div></div>
 </div>
 
-<div class="select-badge" id="selectBadge"></div>
 <div class="hint scroll-hint" id="scrollHint">滚轮滑动 · 深入丛林</div>
 
 <!-- ======================================== -->
@@ -83,6 +127,9 @@
     <div class="stage-sub" id="sub-text">烘烤去湿可防止竹笛后期开裂</div>
 
     <div class="bamboo-container" id="bamboo-container">
+        <div class="progress-container" id="progress-container" aria-label="烘烤进度">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
         <img class="furnace" src="笛部件assets/步骤2-炉.png" alt="炉" />
         <img id="bamboo-pipe" src="笛部件assets/步骤1-4笛身.png" alt="竹管">
         <div class="steam" id="steam">
@@ -91,50 +138,23 @@
             <div class="steam-particle" style="left: 62%; bottom: 32%; animation-delay: 0.5s;"></div>
             <div class="steam-particle" style="left: 78%; bottom: 40%; animation-delay: 0.8s;"></div>
         </div>
-        <div class="node-clear-animation" id="clear-animation">
-            <div class="clear-particle" style="left: 24%; top: 50%;"></div>
-            <div class="clear-particle" style="left: 50%; top: 50%; animation-delay: 0.2s;"></div>
-            <div class="clear-particle" style="left: 76%; top: 50%; animation-delay: 0.4s;"></div>
-        </div>
     </div>
 
-    <div class="swipe-hint" id="swipe-hint">
-        <div class="swipe-arrow">
-            <svg viewBox="0 0 30 40"><path d="M15 35 L15 5 M5 15 L15 5 L25 15" /></svg>
-            <svg viewBox="0 0 30 40" style="transform: rotate(180deg);"><path d="M15 35 L15 5 M5 15 L15 5 L25 15" /></svg>
-        </div>
-        <div class="swipe-text">来回滑动烘烤竹管</div>
-    </div>
-
-    <div class="swipe-counter" id="swipe-counter">
-        <div class="swipe-dot" id="dot-1"></div>
-        <div class="swipe-dot" id="dot-2"></div>
-        <div class="swipe-dot" id="dot-3"></div>
-    </div>
-
-    <button class="chisel-tool" id="chisel-tool" aria-label="凿子">
-        <svg viewBox="0 0 24 24">
-            <path d="M4 20 L8 16 L18 6 L20 4 L22 6 L20 8 L10 18 L6 22 Z" />
-            <path d="M16 4 L20 8" stroke-linecap="round"/>
-            <path d="M8 16 L10 18" stroke-linecap="round"/>
-        </svg>
+    <button class="bake-hold-btn" id="bakeHoldBtn" type="button" aria-label="长按烘烤竹管">
+        <span class="bake-hold-inner"></span>
     </button>
-    <div class="chisel-hint" id="chisel-hint">完成烘烤后点击凿子打通内节</div>
+    <div class="bake-hold-hint" id="bakeHoldHint">长按白色圆钮烘烤</div>
 
-    <!-- Drill Pickup Button (unified white circle, for stage 3 drill) -->
+    <!--
+        步骤 3 工具区：按钮固定在右下角。点击后按钮隐藏并显示凿子；
+        凿子图片使用本地“步骤2-凿子.png”，位置由 pointermove 在脚本中更新。
+    -->
     <button class="drill-pickup-btn" id="drillPickupBtn" aria-label="拿起凿子开孔">
         <div class="drill-pickup-inner"></div>
     </button>
     <div class="drill-pickup-hint" id="drillPickupHint">点击白色按钮拿起凿子</div>
-    <div class="drill-chisel-img" id="drillChiselImg" aria-label="凿子">
-        <svg viewBox="0 0 24 24" width="90" height="90">
-            <path d="M4 20 L8 16 L18 6 L20 4 L22 6 L20 8 L10 18 L6 22 Z" fill="none" stroke="#c9a96e" stroke-width="1.5"/>
-            <path d="M16 4 L20 8" stroke="#c9a96e" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M8 16 L10 18" stroke="#c9a96e" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-    </div>
-
-    <div class="progress-container" id="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+    <img class="drill-chisel-img" id="drillChiselImg"
+         src="笛部件assets/步骤2-凿子.png" alt="用于开孔的凿子">
 
     <div class="holes-layer" id="holes-layer" style="display:none;">
         <div class="hole ink-mark hole-1" data-index="0" data-name="吹孔" data-note="上" data-tone="宫"></div>
@@ -179,25 +199,26 @@
 <!-- ======================================== -->
 
 <div id="final-stage" class="final-stage" aria-label="试音工序">
-    <div id="final-bg-layer"></div>
-
     <div class="membrane-stage" id="final-membrane-stage">
-        <div class="membrane-title">笛膜为魂，采芦苇内膜，薄如蝉翼，透似轻纱</div>
-        <div class="membrane-sub">请选择膜材，贴于膜孔之上</div>
 
+
+        <!--
+            三种膜材均使用笛部件assets中的实物图。
+            data-type 连接 JavaScript 音色参数，data-desc 用于选中后的文字反馈。
+        -->
         <div class="membrane-options">
             <div class="membrane-item" data-type="reed" data-desc="清亮高亢">
-                <div class="membrane-icon">苇</div>
+                <div class="membrane-icon"><img src="笛部件assets/步骤4-1芦苇膜.png" alt="芦苇膜材"></div>
                 <div class="membrane-name">芦苇膜</div>
                 <div class="membrane-desc">音色清亮</div>
             </div>
             <div class="membrane-item" data-type="bamboo" data-desc="温润醇厚">
-                <div class="membrane-icon">竹</div>
+                <div class="membrane-icon"><img src="笛部件assets/步骤4-1笛膜.png" alt="竹制笛膜"></div>
                 <div class="membrane-name">竹膜</div>
                 <div class="membrane-desc">音色温润</div>
             </div>
             <div class="membrane-item" data-type="paper" data-desc="浑厚低沉">
-                <div class="membrane-icon">纸</div>
+                <div class="membrane-icon"><img src="笛部件assets/步骤4-1纸膜.png" alt="纸膜材"></div>
                 <div class="membrane-name">纸膜</div>
                 <div class="membrane-desc">音色浑厚</div>
             </div>
@@ -235,9 +256,8 @@
             </div>
         </div>
     </div>
-
-    <div class="stage-text" id="final-main-text">笛开七孔，上应七星。五声二变，清浊自辨</div>
-    <div class="stage-text sub" id="final-sub-text">按键盘数字键 1-7 吹奏音阶</div>
+    <div class="stage-text" id="final-main-text">择一笛膜，辨其音色</div>
+    <div class="stage-text sub" id="final-sub-text">选膜后使用数字键 1-7 听音</div>
 
     <div class="end-buttons" id="final-end-buttons">
         <button class="end-btn restart" id="final-restart-btn" title="再次体验">再次<br>体验</button>

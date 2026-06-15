@@ -70,7 +70,7 @@ body, html {
     position:absolute;
     inset:0;
     z-index:0;
-    background-image:url('图/bg_鹤听琴图.png');
+    background-image:url('琴部件assets/背景-鹤听琴图.png');
     background-size:auto 110%;
     background-repeat:no-repeat;
     background-position:0% center;
@@ -263,5 +263,5 @@ body, html {
 @media (max-width:768px) {
     .string-opt.steel { font-size:28px; }
     .string-opt.silk, .string-opt.nylon { font-size:22px; }
-    #scroll-hint { bottom:16px; font-size:11px; }
+
 }

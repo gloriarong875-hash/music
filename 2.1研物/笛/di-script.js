@@ -1,3 +1,26 @@
+/*
+ * 竹笛制作页交互说明
+ * --------------------------------------------------------------------------
+ * currentNavStage 表示全流程步骤：0 择竹、1 汗青、2 开孔、3 试音。
+ * phase 表示共用舞台内部状态：bake -> drill -> tone。步骤 2 烘烤完成后直接进入
+ * 步骤 3，不再保留旧版 clear/clearing/done 通节凿穿状态。
+ * 切换全流程步骤时统一调用 setNavStage()，它同时更新视觉类与 aria-current。
+ * 步骤 1 使用 requestAnimationFrame 平滑插值视差；步骤 2 使用长按计时烘烤；
+ * 步骤 3 只开放最后两个孔。点击右下角按钮后，本地凿子图片会跟随 Pointer
+ * Events 提供的坐标移动；步骤 4 根据膜材参数合成不同音色。
+ *
+ * 状态与数据约定：
+ * 1. currentNavStage 只描述四个页面步骤，phase 描述当前可执行的交互模式。
+ * 2. showParallaxStage/showBakeStage/showDrillStage/showToneStage 是四个主要入口；
+ *    每个入口必须完整恢复自己的 DOM 状态，确保前进、后退结果一致。
+ * 3. bakeProgress 范围为 0..1，长按时按 BAKE_HOLD_DURATION 线性增长，松开暂停。
+ * 4. drillTargets 始终取 holes 的最后两个元素；TOTAL_HOLES 因而自动等于 2。
+ * 5. drillChiselPickedUp 决定孔位是否可点击以及本地凿子是否响应 pointermove。
+ * 6. 跟随图片使用 clientX/clientY，与 CSS fixed 定位处于同一视口坐标系。
+ * 7. 进入试音或返回其他步骤时必须移除 visible/picked-up，防止工具残留。
+ * 8. Web Audio 必须由用户手势触发，所有入口先调用 initAudio() 再播放声音。
+ */
+
 // ============================================================
 // === SHARED AUDIO HELPERS ===
 // ============================================================
@@ -33,33 +56,6 @@ function playBakeSound() {
     gain.connect(audioCtx.destination);
     osc.start();
     osc.stop(audioCtx.currentTime + 0.2);
-}
-
-function playChiselSound() {
-    if (!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.15);
-    const noise = audioCtx.createBufferSource();
-    const bufferSize = audioCtx.sampleRate * 0.08;
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.2;
-    noise.buffer = buffer;
-    const noiseGain = audioCtx.createGain();
-    noiseGain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-    noise.connect(noiseGain);
-    noiseGain.connect(audioCtx.destination);
-    noise.start();
 }
 
 function playDrillSound() {
@@ -120,10 +116,11 @@ const L = {
     wai: document.getElementById('layerWai'),
     zhi: document.getElementById('layerZhi'),
 };
-const circleBtn    = document.getElementById('circleBtn');
-const circleTL     = document.getElementById('circleTooltip');
-const circleTt     = document.getElementById('circleTtText');
-const selectBadge  = document.getElementById('selectBadge');
+const bambooGuides = {
+    xin: document.getElementById('guideXin'),
+    wai: document.getElementById('guideWai'),
+    zhi: document.getElementById('guideZhi'),
+};
 const scrollHint   = document.getElementById('scrollHint');
 const parallaxProgressFill = document.getElementById('parallaxProgressFill');
 const stepDots     = document.querySelectorAll('.step-dot');
@@ -132,45 +129,32 @@ const backBtn      = document.getElementById('backBtn');
 const nextBtn      = document.getElementById('nextBtn');
 
 const allLayers    = [L.xin, L.wai, L.zhi];
-const BAMBOO_NAME  = { xin:'嫩竹 · 不宜', wai:'歪竹 · 弃用', zhi:'直竹 · 已选 ✓' };
 
 // Design base 1440×900
 const DW = 1440, DH = 900;
 
-// Keyframes: walk-forward into forest
+// 竹子滚动位置
 const KF = {
     // 新 1 — far bamboo, LEFT side. Appears in focus → zooms past → gone.
     xin: [
-        { p:0,    x:  4, y: -5, w: 40, h: 88, o:1.0  },
+        { p:0,    x:  4, y: -2, w: 48, h: 104, o:1.0  },
         { p:0.25, x:-18, y:-20, w: 85, h:170, o:0.40 },
         { p:0.5,  x:-50, y:-45, w:150, h:300, o:0    },
     ],
     // 歪 — near bamboo, RIGHT side when selectable → zooms past right.
     wai: [
-        { p:0,    x: 72, y: 12, w:  8, h: 16, o:0.08 },
-        { p:0.5,  x: 60, y: -6, w: 34, h: 68, o:1.0  },
-        { p:0.7,  x: 34, y:-20, w: 62, h:120, o:0.50 },
-        { p:1.0,  x:-25, y:-40, w:120, h:230, o:0    },
+        { p:0,    x: 50, y:20, w:  18, h: 50, o:0.08 },
+        { p:0.5,  x: 50, y: -21, w: 54, h: 128, o:1.0  },
+        { p:0.7,  x: 64, y:-20, w: 62, h:140, o:0.50 },
+        { p:1.0,  x:85, y:-40, w:120, h:230, o:0    },
     ],
     // 直 1 — mid bamboo, approaches from right, becomes final hero (centered).
     zhi: [
         { p:0,    x: 72, y:  8, w:  8, h: 16, o:0.05 },
-        { p:0.5,  x: 40, y:  0, w: 20, h: 40, o:0.25 },
-        { p:1.0,  x: 26, y: -6, w: 48, h: 94, o:1.0  },
-    ],
-    // White circle — follows the active bamboo
-    circle: [
-        { p:0,    x: 52, y: 58 },
-        { p:0.5,  x: 58, y: 52 },
-        { p:1.0,  x: 36, y: 54 },
+        { p:0.5,  x: 60, y:  0, w: 20, h: 40, o:0.25 },
+        { p:1.0,  x: 36, y:  0, w: 48, h: 108, o:1.0  },
     ],
 };
-
-function getTooltipText(p) {
-    if (p < 0.25) return '应取3年以上的老竹，直径2-3公分';
-    if (p < 0.65) return '剔除歪斜虫蛀之竹，择其笔直者';
-    return '应取质地均匀、壁厚杆直、无虫蛀的竹材';
-}
 
 // Helpers
 function lerp(a,b,t) { return a+(b-a)*t; }
@@ -208,6 +192,36 @@ const SMOOTHING         = 0.12;
 const SNAP_SMOOTHING    = 0.22;
 const SENSITIVITY       = 0.0012;
 
+/*
+ * 近图指导配置
+ * --------------------------------------------------------------------------
+ * snap 对应竹材出现最清晰的滚动进度；fadeRange 越大，文字提前出现且更晚消失。
+ * anchorY 是说明相对图片高度的位置，0.5 表示垂直居中。
+ */
+const GUIDE_CONFIG = {
+    xin: { snap: 0,   fadeRange: 0.25, anchorY: 0.45 },
+    wai: { snap: 0.5, fadeRange: 0.24, anchorY: 0.48 },
+    zhi: { snap: 1,   fadeRange: 0.28, anchorY: 0.44 },
+};
+
+function updateBambooGuides(p) {
+    Object.entries(GUIDE_CONFIG).forEach(([type, config]) => {
+        const guide = bambooGuides[type];
+        const rect = L[type].getBoundingClientRect();
+        const distance = Math.abs(p - config.snap);
+        const opacity = Math.max(0, Math.min(1, 1 - distance / config.fadeRange));
+        const side = guide.dataset.guideSide;
+        const isCompact = window.innerWidth <= 768;
+
+        // 小屏幕改为图片中心锚定，避免左右展开的说明超出视口。
+        guide.style.left = `${isCompact ? rect.left + rect.width / 2 : side === 'right' ? rect.right : rect.left}px`;
+        guide.style.top = `${rect.top + rect.height * config.anchorY}px`;
+        guide.style.opacity = opacity.toFixed(3);
+        guide.classList.toggle('is-near', opacity > 0.12);
+        guide.setAttribute('aria-hidden', opacity > 0.12 ? 'false' : 'true');
+    });
+}
+
 // Apply all layers at given progress
 function apply(p) {
     const xi = lerpKF(KF.xin, p);
@@ -225,8 +239,8 @@ function apply(p) {
     L.zhi.style.width  = zh.w+'vw'; L.zhi.style.height = zh.h+'vh';
     L.zhi.style.opacity = zh.o;
 
-    const ci = lerpKF(KF.circle, p);
-    circleBtn.style.transform = `translate(${ci.x}vw,${ci.y}vh)`;
+    // 指导文字跟随各竹材，并在接近对应吸附点时渐显。
+    updateBambooGuides(p);
 
     // Top progress bar
     parallaxProgressFill.style.width = (p * 100) + '%';
@@ -357,7 +371,6 @@ nextBtn.addEventListener('click', () => {
             // From parallax → advance to bake
             if (selected === 'zhi') {
                 // Already selected good bamboo, transition directly
-                selectBadge.classList.remove('show');
                 transitionToBake();
             } else {
                 // Auto-select zhi and transition
@@ -367,28 +380,22 @@ nextBtn.addEventListener('click', () => {
                 startParallaxLoop();
                 selected = 'zhi';
                 L.zhi.classList.add('selected');
-                selectBadge.textContent = BAMBOO_NAME['zhi'];
-                selectBadge.classList.add('show');
                 scrollHint.textContent = '良竹已择 · 进入汗青工序';
                 scrollHint.classList.add('still');
                 setTimeout(() => {
-                    selectBadge.classList.remove('show');
                     transitionToBake();
                 }, 900);
             }
             break;
         case 1:
             // From bake → advance to drill
-            if (phase === 'done' || phase === 'drill') {
+            if (phase === 'drill') {
                 showDrillStage();
-            } else if (phase === 'clear' || phase === 'clearing') {
-                finishClearing();
-            } else if (phase === 'bake' && swipeCount >= TOTAL_SWIPES_NEEDED) {
+            } else if (phase === 'bake' && bakeProgress >= 1) {
                 finishBaking();
             } else {
                 // Force complete baking
-                swipeCount = TOTAL_SWIPES_NEEDED;
-                updateSwipeCounter();
+                bakeProgress = 1;
                 progressBar.style.width = '100%';
                 finishBaking();
             }
@@ -398,16 +405,16 @@ nextBtn.addEventListener('click', () => {
             if (drilledCount >= TOTAL_HOLES) {
                 // Already done, just transition
                 playCompleteSound();
-                completeOverlay.querySelector('.complete-text').innerText = '七孔俱全';
+                completeOverlay.querySelector('.complete-text').innerText = '开孔完成';
                 completeOverlay.querySelector('.complete-sub').innerText = '笛开孔完成，进入最后试音步骤';
                 completeOverlay.classList.add('active');
                 setNavStage(3);
                 setTimeout(showToneStage, 1200);
             } else {
                 // Auto-complete remaining holes
-                holes.forEach(hole => {
+                drillTargets.forEach(hole => {
                     if (!hole.classList.contains('drilled')) {
-                        drillHole(hole);
+                        drillHole(hole, true);
                     }
                 });
             }
@@ -432,13 +439,10 @@ allLayers.forEach(layer => {
             allLayers.forEach(l=>l.classList.remove('selected'));
             this.classList.add('selected');
             selected = type;
-            selectBadge.textContent = BAMBOO_NAME[type];
-            selectBadge.classList.add('show');
             scrollHint.textContent = '良竹已择 · 进入汗青工序';
             scrollHint.classList.add('still');
 
             setTimeout(() => {
-                selectBadge.classList.remove('show');
                 transitionToBake();
             }, 900);
             return;
@@ -457,19 +461,14 @@ allLayers.forEach(layer => {
             this.style.transform = savedTransform;
         }, 400);
 
-        // Show badge
+        // 保留竹材高亮反馈；判断文字已直接显示在图片附近。
         if (selected === type) {
             selected = null;
             this.classList.remove('selected');
-            selectBadge.classList.remove('show');
         } else {
             allLayers.forEach(l=>l.classList.remove('selected'));
             selected = type;
             this.classList.add('selected');
-            selectBadge.textContent = BAMBOO_NAME[type];
-            selectBadge.classList.add('show');
-            clearTimeout(this._t);
-            this._t = setTimeout(() => selectBadge.classList.remove('show'), 2000);
         }
 
         // Update scroll hint
@@ -481,19 +480,8 @@ allLayers.forEach(layer => {
     });
 });
 
-// Circle tooltip
-function posTooltip() {
-    const text = getTooltipText(scrollProgress);
-    circleTt.textContent = text;
-    const r = circleBtn.getBoundingClientRect();
-    circleTL.style.left = (r.left + r.width/2) + 'px';
-    circleTL.style.top  = (r.top - 22) + 'px';
-    circleTL.style.transform = 'translate(-50%, -100%)';
-}
-circleBtn.addEventListener('mouseenter', () => { posTooltip(); circleTL.classList.add('visible'); });
-circleBtn.addEventListener('mouseleave', () => circleTL.classList.remove('visible'));
-circleBtn.addEventListener('mousemove', posTooltip);
-window.addEventListener('resize', () => { if (parallaxActive) { apply(scrollProgress); posTooltip(); } });
+// 窗口尺寸变化后重新计算竹图与说明文字的相对位置。
+window.addEventListener('resize', () => { if (parallaxActive) apply(scrollProgress); });
 
 // ============================================================
 // === TRANSITION: PARALLAX → BAKE ===
@@ -511,15 +499,16 @@ function showParallaxStage() {
     stageBake.classList.add('hidden');
     finalStage.classList.remove('visible');
 
-    // Hide global bake/tone elements
-    navDots.classList.remove('visible');
-    bgLayer.style.display = 'none';
+    // 返回步骤 1 时恢复统一四步导航，并将“择竹”标为当前步骤。
+    navDots.classList.add('visible');
+    setNavStage(0);
     fireGlow.style.display = 'none';
 
     // Show parallax stage
     parallaxStage.classList.remove('hidden');
     stepIndicator.style.opacity = '1';
     parallaxProgressFill.style.width = '0%';
+    scrollHint.style.display = 'block';
     scrollHint.style.opacity = '1';
     scrollHint.classList.remove('still');
 
@@ -531,20 +520,17 @@ function showParallaxStage() {
     selected = null;
     activeDot = 0;
     allLayers.forEach(l => l.classList.remove('selected'));
-    selectBadge.classList.remove('show');
     stepDots.forEach((d, i) => d.classList.toggle('active', i === 0));
 
     // Reset phase (in case we're coming back from bake)
     phase = 'bake';
-    isDragging = false;
-    swipeCount = 0;
-    clearClicks = 0;
+    stopBakingHold();
+    bakeProgress = 0;
     bambooOffset = 0;
 
     // Apply initial state and restart loop
     apply(0);
     startParallaxLoop();
-    posTooltip();
 }
 
 function transitionToBake() {
@@ -555,7 +541,7 @@ function transitionToBake() {
         parallaxAnimId = null;
     }
     parallaxStage.classList.add('hidden');
-    selectBadge.classList.remove('show');
+    scrollHint.style.display = 'none';
     scrollHint.style.opacity = '0';
     stepIndicator.style.opacity = '0';
     parallaxProgressFill.style.width = '100%';
@@ -574,16 +560,13 @@ const navDotWrappers = document.querySelectorAll('.dot-wrapper');
 
 const bambooPipe = document.getElementById('bamboo-pipe');
 const bambooContainer = document.getElementById('bamboo-container');
-const swipeHint = document.getElementById('swipe-hint');
-const swipeCounter = document.getElementById('swipe-counter');
 const progressContainer = document.getElementById('progress-container');
 const progressBar = document.getElementById('progress-bar');
+const bakeHoldBtn = document.getElementById('bakeHoldBtn');
+const bakeHoldHint = document.getElementById('bakeHoldHint');
 const steamEl = document.getElementById('steam');
 const mainText = document.getElementById('main-text');
 const subText = document.getElementById('sub-text');
-const chiselTool = document.getElementById('chisel-tool');
-const chiselHint = document.getElementById('chisel-hint');
-const clearAnimation = document.getElementById('clear-animation');
 const holesLayer = document.getElementById('holes-layer');
 const scaleOverlay = document.getElementById('scale-overlay');
 const gongchePanel = document.getElementById('gongche-panel');
@@ -599,6 +582,7 @@ let drillChiselPickedUp = false;
 function setNavStage(index) {
     navDotWrappers.forEach((dot, i) => {
         dot.classList.remove('active', 'completed');
+        dot.removeAttribute('aria-current');
         const circle = dot.querySelector('.dot');
         circle.classList.remove('active', 'completed');
         if (i < index) {
@@ -607,6 +591,7 @@ function setNavStage(index) {
         } else if (i === index) {
             dot.classList.add('active');
             circle.classList.add('active');
+            dot.setAttribute('aria-current', 'step');
         }
     });
 }
@@ -614,16 +599,15 @@ function setNavStage(index) {
 function showBakeStage() {
     // Show global elements for bake stage
     navDots.classList.add('visible');
-    bgLayer.style.display = 'block';
     fireGlow.style.display = 'block';
     fireGlow.style.opacity = '0.8';
 
     stageBake.classList.remove('hidden');
     stageBake.dataset.mode = 'bake';
+    stageBake.classList.remove('tool-active');
     setNavStage(1);
-    swipeHint.classList.remove('hidden');
-    progressContainer.style.opacity = '0';
-    swipeCounter.classList.remove('visible');
+    stopBakingHold();
+    progressContainer.style.opacity = '1';
     bgLayer.style.transform = 'scale(1)';
     bambooOffset = 0;
     bambooPipe.style.setProperty('--bamboo-offset', '0px');
@@ -633,15 +617,11 @@ function showBakeStage() {
     mainText.innerText = '新竹砍下需要阴干2年以上';
     subText.innerText = '烘烤去湿可防止竹笛后期开裂';
     bambooPipe.classList.remove('baked', 'baking');
-    clearClicks = 0;
-    swipeCount = 0;
-    updateSwipeCounter();
+    bakeProgress = 0;
     progressBar.style.width = '0%';
+    bakeHoldBtn.classList.remove('hidden', 'holding');
+    bakeHoldHint.classList.remove('hidden');
     completeOverlay.classList.remove('active');
-    chiselTool.classList.remove('active');
-    chiselTool.style.display = 'flex';
-    chiselHint.classList.remove('visible');
-    chiselHint.style.display = 'block';
     holesLayer.style.display = 'none';
     holesLayer.querySelectorAll('.hole').forEach(hole => {
         hole.classList.remove('drilled');
@@ -661,194 +641,115 @@ function showBakeStage() {
 }
 
 // ============================================================
-// === BAKE: Drag / Swipe logic ===
+// === BAKE: Hold button to heat ===
 // ============================================================
 
-function getY(e) {
-    return e.touches ? e.touches[0].clientY : e.clientY;
-}
-
-let isDragging = false;
-let lastY = 0;
-let direction = 0;
-let lastDirection = 0;
-let swipeCount = 0;
-const TOTAL_SWIPES_NEEDED = 3;
+let bakeProgress = 0;
+let bakeHoldFrame = null;
+let bakeHoldStartedAt = 0;
+let bakeProgressAtHoldStart = 0;
+const BAKE_HOLD_DURATION = 3000;
 let phase = 'bake';
-let clearClicks = 0;
-const TOTAL_CLEAR_CLICKS = 3;
 let bambooOffset = 0;
-const MAX_BAMBOO_OFFSET = 28;
-const MIN_BAMBOO_OFFSET = -28;
 
-function handleStart(e) {
-    if (phase !== 'bake') return;
+function startBakingHold(e) {
+    if (phase !== 'bake' || bakeProgress >= 1) return;
+    e.preventDefault();
     initAudio();
-    isDragging = true;
-    lastY = getY(e);
-    direction = 0;
-    lastDirection = 0;
+    if (e.pointerId !== undefined) bakeHoldBtn.setPointerCapture(e.pointerId);
+    bakeHoldStartedAt = performance.now();
+    bakeProgressAtHoldStart = bakeProgress;
+    bakeHoldBtn.classList.add('holding');
     bambooPipe.classList.add('baking');
     steamEl.classList.add('active');
     progressContainer.style.opacity = '1';
-    swipeCounter.classList.add('visible');
-    bambooContainer.classList.add('grabbing');
+    bakeHoldHint.textContent = '持续按住 · 正在烘烤';
+    updateBakingHold();
 }
 
-function handleMove(e) {
-    if (!isDragging || phase !== 'bake') return;
-    e.preventDefault();
-    const currentY = getY(e);
-    const delta = currentY - lastY;
-    if (Math.abs(delta) > 15) {
-        const newDirection = delta > 0 ? 1 : -1;
-        bambooOffset = Math.max(MIN_BAMBOO_OFFSET, Math.min(MAX_BAMBOO_OFFSET, bambooOffset + delta * 0.16));
-        bambooPipe.style.setProperty('--bamboo-offset', `${bambooOffset}px`);
-        if (lastDirection !== 0 && newDirection !== lastDirection) {
-            swipeCount++;
-            updateSwipeCounter();
-            playBakeSound();
-            const progress = Math.min((swipeCount / TOTAL_SWIPES_NEEDED) * 100, 100);
-            progressBar.style.width = progress + '%';
-            if (swipeCount === 1) {
-                mainText.innerText = '竹管受热，水分开始蒸发';
-            } else if (swipeCount === 2) {
-                mainText.innerText = '色泽转深，竹质紧实';
-            }
-        }
-        lastDirection = newDirection;
-        lastY = currentY;
+function updateBakingHold(now = performance.now()) {
+    if (!bakeHoldBtn.classList.contains('holding') || phase !== 'bake') return;
+    bakeProgress = Math.min(1, bakeProgressAtHoldStart + (now - bakeHoldStartedAt) / BAKE_HOLD_DURATION);
+    progressBar.style.width = `${bakeProgress * 100}%`;
+    if (bakeProgress >= 0.66) {
+        mainText.innerText = '色泽转深，竹质紧实';
+    } else if (bakeProgress >= 0.25) {
+        mainText.innerText = '竹管受热，水分开始蒸发';
     }
-    if (swipeCount >= TOTAL_SWIPES_NEEDED && phase === 'bake') {
+    if (bakeProgress >= 1) {
+        playBakeSound();
+        stopBakingHold();
         finishBaking();
+        return;
     }
+    bakeHoldFrame = requestAnimationFrame(updateBakingHold);
 }
 
-function handleEnd() {
-    isDragging = false;
+function stopBakingHold() {
+    if (bakeHoldFrame) cancelAnimationFrame(bakeHoldFrame);
+    bakeHoldFrame = null;
+    bakeHoldBtn.classList.remove('holding');
     bambooPipe.classList.remove('baking');
     steamEl.classList.remove('active');
-    bambooContainer.classList.remove('grabbing');
-}
-
-function updateSwipeCounter() {
-    for (let i = 1; i <= TOTAL_SWIPES_NEEDED; i++) {
-        const dot = document.getElementById('dot-' + i);
-        if (dot) dot.classList.toggle('active', i <= swipeCount);
-    }
+    if (phase === 'bake') bakeHoldHint.textContent = bakeProgress > 0 ? '继续长按完成烘烤' : '长按白色圆钮烘烤';
 }
 
 const furnace = document.querySelector('.furnace');
 
 function finishBaking() {
-    phase = 'clear';
+    phase = 'drill';
+    stopBakingHold();
     bambooPipe.classList.add('baked');
-    swipeHint.classList.add('hidden');
-    swipeCounter.style.opacity = '0';
     progressContainer.style.opacity = '0';
+    bakeHoldBtn.classList.add('hidden');
+    bakeHoldHint.classList.add('hidden');
     furnace.classList.add('hidden');
     bambooPipe.style.left = '45%';
     bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(0deg)';
     bambooPipe.style.bottom = '25%';
-    mainText.innerText = '烘烤完成，点击右侧凿子打通内节';
-    subText.innerText = '通节修内是为了保证气流通畅，为开孔调音打下基础';
-    chiselTool.classList.add('active');
-    chiselHint.classList.add('visible');
-    bambooPipe.style.animation = 'pulse 2s ease-in-out infinite';
-}
-
-function handleChiselClick(e) {
-    if (phase !== 'clear' && phase !== 'clearing') return;
-    e.preventDefault();
-    e.stopPropagation();
-    initAudio();
-    phase = 'clearing';
-    clearClicks++;
-    chiselTool.classList.remove('clicking');
-    void chiselTool.offsetWidth;
-    chiselTool.classList.add('clicking');
-    playChiselSound();
-    bambooPipe.style.animation = 'shake 0.3s ease-in-out';
+    mainText.innerText = '烘烤完成';
+    subText.innerText = '竹管已去湿定型，准备进入开孔工序';
+    playCompleteSound();
+    completeOverlay.querySelector('.complete-text').innerText = '汗青完成';
+    completeOverlay.querySelector('.complete-sub').innerText = '竹管已定型，准备开最后两孔';
+    completeOverlay.classList.add('active');
     setTimeout(() => {
-        if (phase === 'clearing' || phase === 'clear') {
-            bambooPipe.style.animation = 'pulse 2s ease-in-out infinite';
-        }
-    }, 300);
-    const particles = clearAnimation.querySelectorAll('.clear-particle');
-    particles.forEach((p, i) => {
-        setTimeout(() => {
-            p.style.animation = 'none';
-            void p.offsetWidth;
-            p.style.animation = 'clearBurst 0.5s ease-out forwards';
-        }, i * 100);
-    });
-    clearAnimation.classList.add('active');
-    setTimeout(() => clearAnimation.classList.remove('active'), 600);
-    if (clearClicks === 1) {
-        mainText.innerText = '凿子破节，竹屑纷飞';
-    } else if (clearClicks === 2) {
-        mainText.innerText = '内节渐通，气流将畅';
-    }
-    if (clearClicks >= TOTAL_CLEAR_CLICKS) {
-        finishClearing();
-    }
-}
-
-function finishClearing() {
-    phase = 'done';
-    chiselTool.classList.remove('active');
-    chiselHint.classList.remove('visible');
-    bambooPipe.style.animation = '';
-    mainText.innerText = '内节已通，气流通畅';
-    subText.innerText = '竹管内外壁已修整平滑';
-    setTimeout(() => {
-        playCompleteSound();
-        completeOverlay.querySelector('.complete-text').innerText = '汗青完成';        completeOverlay.querySelector('.complete-sub').innerText = '准备进入第二步：开孔';
-        completeOverlay.classList.add('active');
-        setTimeout(() => {
-            completeOverlay.classList.remove('active');
-            showDrillStage();
-        }, 1400);
-    }, 400);
+        completeOverlay.classList.remove('active');
+        showDrillStage();
+    }, 900);
 }
 
 function showDrillStage() {
     phase = 'drill';
     currentNavStage = 2;
     stageBake.dataset.mode = 'drill';
+    stageBake.classList.remove('tool-active');
     setNavStage(2);
     finalStage.classList.remove('visible');
     bambooPipe.style.left = '45%';
     bambooPipe.style.bottom = '60px';
     bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(0deg)';
     holesLayer.style.display = 'block';
-    holesLayer.querySelectorAll('.hole').forEach(hole => {
-        hole.classList.remove('drilled');
-        hole.classList.add('ink-mark');
-        hole.style.pointerEvents = 'none';
-    });
-    drilledCount = 0;
+    resetDrillHoles();
     drillChiselPickedUp = false;
     gongcheChars.innerHTML = '';
     gongchePanel.classList.remove('visible');
     scaleOverlay.classList.remove('visible');
-    mainText.innerText = '开孔工序开始';
-    subText.innerText = '点击白色按钮拿起凿子，再点击墨线标记开孔';
+    mainText.innerText = '最后两孔待开';
+    subText.innerText = '点击白色按钮拿起凿子，再完成最后两个孔位';
     completeOverlay.classList.remove('active');
-    chiselTool.style.display = 'none';
-    chiselHint.style.display = 'none';
     scaleOverlay.style.display = 'none';
     progressContainer.style.opacity = '0';
     progressBar.style.width = '0%';
     // 步骤3打孔阶段隐藏炉子
     furnace.classList.add('hidden');
-    // 显示凿子拾取按钮（统一白色圆钮）
+    // 仅显示右下角拾取按钮；凿子图片在点击按钮后才出现。
     drillPickupBtn.classList.add('visible');
     drillPickupBtn.classList.remove('picked-up');
     drillPickupHint.classList.add('visible');
-    drillChiselImg.classList.add('visible');
-    drillChiselImg.classList.remove('picked-up');
+    drillChiselImg.classList.remove('visible', 'picked-up');
 }
+
 
 function createChips(x, y) {
     const container = bambooContainer;
@@ -894,11 +795,13 @@ function addGongcheChar(note, name, tone) {
     });
 }
 
-function drillHole(hole) {
+function drillHole(hole, force = false) {
     if (phase !== 'drill' || hole.classList.contains('drilled')) return;
-    if (!drillChiselPickedUp) return;
+    if (!drillTargets.includes(hole)) return;
+    if (!force && !drillChiselPickedUp) return;
     initAudio();
     playDrillSound();
+    hole.classList.remove('target-near');
     hole.classList.remove('ink-mark');
     hole.classList.add('drilled');
     const rect = hole.getBoundingClientRect();
@@ -915,15 +818,16 @@ function drillHole(hole) {
     addGongcheChar(note, name, tone);
     mainText.innerText = `已开${name}，对应工尺谱「${note}」，${tone}音`;
     const remaining = TOTAL_HOLES - drilledCount;
-    subText.innerText = remaining > 0 ? `还差 ${remaining} 个孔位` : '七孔俱全，上应七星';
+    subText.innerText = remaining > 0 ? `还差 ${remaining} 个孔位` : '最后两孔已完成';
     if (drilledCount >= TOTAL_HOLES) {
         // 隐藏凿子拾取UI
+        stageBake.classList.remove('tool-active');
         drillPickupBtn.classList.remove('visible', 'picked-up');
         drillPickupHint.classList.remove('visible');
         drillChiselImg.classList.remove('visible', 'picked-up');
         setTimeout(() => {
             playCompleteSound();
-            completeOverlay.querySelector('.complete-text').innerText = '七孔俱全';
+            completeOverlay.querySelector('.complete-text').innerText = '开孔完成';
             completeOverlay.querySelector('.complete-sub').innerText = '笛开孔完成，进入最后试音步骤';
             completeOverlay.classList.add('active');
             setNavStage(3);
@@ -937,16 +841,15 @@ function showToneStage() {
     currentNavStage = 3;
     stageBake.classList.add('hidden');
     finalStage.classList.add('visible');
+    navDots.classList.add('visible');
     finalMembraneStage.classList.remove('hidden');
     finalPlayStage.classList.remove('visible');
     finalEndButtons.classList.remove('visible');
-    finalMainText.innerText = '笛膜为魂，采芦苇内膜，薄如蝉翼，透似轻纱';
+
     finalSubText.innerText = '请选择膜材，贴于膜孔之上';
     completeOverlay.classList.remove('active');
     progressContainer.style.opacity = '0';
     progressBar.style.width = '0%';
-    chiselTool.style.display = 'none';
-    chiselHint.style.display = 'none';
     // 隐藏打孔阶段的凿子拾取UI
     drillPickupBtn.classList.remove('visible', 'picked-up');
     drillPickupHint.classList.remove('visible');
@@ -959,6 +862,7 @@ function backToDrill() {
     currentNavStage = 2;
     phase = 'drill';
     stageBake.dataset.mode = 'drill';
+    stageBake.classList.remove('tool-active');
 
     // Hide final stage, show bake stage (which hosts drill UI)
     finalStage.classList.remove('visible');
@@ -966,7 +870,6 @@ function backToDrill() {
 
     // Show global elements
     navDots.classList.add('visible');
-    bgLayer.style.display = 'block';
     fireGlow.style.display = 'block';
     setNavStage(2);
 
@@ -979,37 +882,28 @@ function backToDrill() {
     // Hide bake-specific elements
     furnace.classList.add('hidden');
     furnace.style.transform = '';
-    swipeHint.classList.add('hidden');
-    swipeCounter.classList.remove('visible');
+    stopBakingHold();
     progressContainer.style.opacity = '0';
     progressBar.style.width = '0%';
-    chiselTool.style.display = 'none';
-    chiselHint.style.display = 'none';
     completeOverlay.classList.remove('active');
 
     // Show drill UI
     holesLayer.style.display = 'block';
-    holesLayer.querySelectorAll('.hole').forEach(hole => {
-        hole.classList.remove('drilled');
-        hole.classList.add('ink-mark');
-        hole.style.pointerEvents = 'none';
-    });
-    drilledCount = 0;
+    resetDrillHoles();
     drillChiselPickedUp = false;
     gongcheChars.innerHTML = '';
     gongchePanel.classList.remove('visible');
     scaleOverlay.classList.remove('visible');
     scaleOverlay.style.display = 'none';
 
-    mainText.innerText = '开孔工序开始';
-    subText.innerText = '点击白色按钮拿起凿子，再点击墨线标记开孔';
+    mainText.innerText = '最后两孔待开';
+    subText.innerText = '点击白色按钮拿起凿子，再完成最后两个孔位';
 
-    // 显示凿子拾取按钮（统一白色圆钮）
+    // 返回步骤 3 时恢复未拾取状态。
     drillPickupBtn.classList.add('visible');
     drillPickupBtn.classList.remove('picked-up');
     drillPickupHint.classList.add('visible');
-    drillChiselImg.classList.add('visible');
-    drillChiselImg.classList.remove('picked-up');
+    drillChiselImg.classList.remove('visible', 'picked-up');
 
     // Reset final stage internal state
     finalMembraneStage.classList.remove('hidden');
@@ -1040,23 +934,23 @@ let currentMembrane = null;
 let selectedMembrane = null;
 
 const noteFingerings = {
-    '1': { freq: 293.66, name: '低音5', holes: [true, true, true, false, false, false] },
-    '2': { freq: 329.63, name: '低音6', holes: [true, true, false, false, false, false] },
-    '3': { freq: 369.99, name: '低音7', holes: [true, false, false, false, false, false] },
-    '4': { freq: 392.00, name: '中音1', holes: [false, true, true, false, false, false] },
-    '5': { freq: 440.00, name: '中音2', holes: [true, true, true, true, true, true] },
-    '6': { freq: 493.88, name: '中音3', holes: [true, true, true, true, true, false] },
-    '7': { freq: 523.25, name: '中音4', holes: [true, true, true, true, false, false] }
+    '1': { freq: 293.66, name: '宫', holes: [true, true, true, false, false, false] },
+    '2': { freq: 329.63, name: '商', holes: [true, true, false, false, false, false] },
+    '3': { freq: 369.99, name: '角', holes: [true, false, false, false, false, false] },
+    '4': { freq: 392.00, name: '徵', holes: [false, true, true, false, false, false] },
+    '5': { freq: 440.00, name: '羽', holes: [true, true, true, true, true, true] },
+    '6': { freq: 493.88, name: '变宫', holes: [true, true, true, true, true, false] },
+    '7': { freq: 523.25, name: '变徵', holes: [true, true, true, true, false, false] }
 };
 
 const noteChars = {
-    '1': '5',
-    '2': '6',
-    '3': '7',
-    '4': '1',
-    '5': '2',
-    '6': '3',
-    '7': '4'
+    '1': '宫',
+    '2': '商',
+    '3': '角',
+    '4': '徵',
+    '5': '羽',
+    '6': '变宫',
+    '7': '变徵'
 };
 
 const finalMembraneStage = document.getElementById('final-membrane-stage');
@@ -1087,7 +981,7 @@ finalMembraneItems.forEach(item => {
         const name = item.querySelector('.membrane-name').textContent;
         const desc = item.dataset.desc;
         finalMainText.innerText = `已选${name}，音色${desc}`;
-        finalSubText.innerText = '点击确认贴膜，进入试音';
+        finalSubText.innerText = '选择完成，点击确认后使用数字键 1-7 听音';
     });
 });
 
@@ -1104,7 +998,7 @@ finalConfirmBtn.addEventListener('click', () => {
         finalPlayStage.classList.add('visible');
         const params = membraneTypes[currentMembrane];
         finalMainText.innerText = `已贴${params.name}，${params.name === '芦苇膜' ? '清亮' : params.name === '竹膜' ? '温润' : '浑厚'}之声待君品鉴`;
-        finalSubText.innerText = '按键盘数字键 1-7 吹奏音阶（筒音作5）';
+        finalSubText.innerText = '请按数字键 1-7 听音：宫、商、角、徵、羽、变宫、变徵';
         finalBambooPipe.classList.add('glowing');
     }, 400);
 });
@@ -1320,8 +1214,20 @@ finalArrowBtn.addEventListener('click', () => {
 // ============================================================
 
 const holes = holesLayer.querySelectorAll('.hole');
-const TOTAL_HOLES = 8;
+const drillTargets = Array.from(holes).slice(-2);
+const TOTAL_HOLES = drillTargets.length;
 let drilledCount = 0;
+
+function resetDrillHoles() {
+    holes.forEach(hole => {
+        const isTarget = drillTargets.includes(hole);
+        hole.classList.remove('target-near');
+        hole.classList.toggle('drilled', !isTarget);
+        hole.classList.toggle('ink-mark', isTarget);
+        hole.style.pointerEvents = 'none';
+    });
+    drilledCount = 0;
+}
 
 holes.forEach(hole => {
     hole.addEventListener('click', (e) => {
@@ -1335,55 +1241,68 @@ holes.forEach(hole => {
     });
 });
 
-// Drill pickup button — click to pick up chisel, then click holes to drill
-drillPickupBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (phase !== 'drill' || drillChiselPickedUp) return;
-    initAudio();
-    drillChiselPickedUp = true;
-    drillPickupBtn.classList.add('picked-up');
-    drillPickupHint.classList.remove('visible');
-    drillChiselImg.classList.add('picked-up');
-    // Enable hole clicks
-    holesLayer.querySelectorAll('.hole').forEach(hole => {
-        hole.style.pointerEvents = 'all';
-    });
-    mainText.innerText = '凿子已在手，点击墨线标记开孔';
-    subText.innerText = '逐一击打竹管上的标记孔位';
-});
-drillPickupBtn.addEventListener('touchend', (e) => {
+/*
+ * 步骤 3 凿子拾取与指针跟随
+ * --------------------------------------------------------------------------
+ * 统一使用 Pointer Events 支持鼠标、触控笔与触屏。拾取后只开放最后两个墨线
+ * 孔位；凿子图片设置 pointer-events:none，因此不会挡住孔位的点击事件。
+ */
+function pickUpDrillChisel(e) {
     e.preventDefault();
     e.stopPropagation();
     if (phase !== 'drill' || drillChiselPickedUp) return;
     initAudio();
     drillChiselPickedUp = true;
+    stageBake.classList.add('tool-active');
     drillPickupBtn.classList.add('picked-up');
     drillPickupHint.classList.remove('visible');
-    drillChiselImg.classList.add('picked-up');
-    holesLayer.querySelectorAll('.hole').forEach(hole => {
+    drillChiselImg.classList.add('visible', 'picked-up');
+    moveDrillChisel(e.clientX, e.clientY);
+
+    // 前六孔为完成态，仅最后两个目标孔接收点击。
+    drillTargets.forEach(hole => {
         hole.style.pointerEvents = 'all';
     });
-    mainText.innerText = '凿子已在手，点击墨线标记开孔';
-    subText.innerText = '逐一击打竹管上的标记孔位';
-});
+    mainText.innerText = '凿子已在手，完成最后两孔';
+    subText.innerText = '依次点击两个墨线标记';
+}
+
+function moveDrillChisel(x, y) {
+    if (!drillChiselPickedUp || phase !== 'drill') return;
+    drillChiselImg.style.left = `${x}px`;
+    drillChiselImg.style.top = `${y}px`;
+    updateDrillTargetGlow(x, y);
+}
+
+const DRILL_RECOGNITION_RADIUS = 58;
+
+function updateDrillTargetGlow(x, y) {
+    drillTargets.forEach(hole => {
+        if (hole.classList.contains('drilled')) {
+            hole.classList.remove('target-near');
+            return;
+        }
+
+        const rect = hole.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.hypot(x - centerX, y - centerY);
+        hole.classList.toggle('target-near', distance <= DRILL_RECOGNITION_RADIUS);
+    });
+}
+
+drillPickupBtn.addEventListener('pointerdown', pickUpDrillChisel);
+document.addEventListener('pointermove', e => moveDrillChisel(e.clientX, e.clientY));
 
 // ============================================================
 // === BAKE STAGE EVENT LISTENERS ===
 // ============================================================
 
-stageBake.addEventListener('mousedown', handleStart);
-stageBake.addEventListener('mousemove', handleMove);
-stageBake.addEventListener('mouseup', handleEnd);
-stageBake.addEventListener('mouseleave', handleEnd);
-stageBake.addEventListener('touchstart', handleStart, { passive: false });
-stageBake.addEventListener('touchmove', handleMove, { passive: false });
-stageBake.addEventListener('touchend', handleEnd);
-
-chiselTool.addEventListener('click', handleChiselClick);
-chiselTool.addEventListener('touchend', function(e) {
-    e.preventDefault();
-    handleChiselClick(e);
-});
+bakeHoldBtn.addEventListener('pointerdown', startBakingHold);
+bakeHoldBtn.addEventListener('pointerup', stopBakingHold);
+bakeHoldBtn.addEventListener('pointercancel', stopBakingHold);
+bakeHoldBtn.addEventListener('lostpointercapture', stopBakingHold);
+bakeHoldBtn.addEventListener('contextmenu', e => e.preventDefault());
 
 // ============================================================
 // === DYNAMIC KEYFRAMES ===
