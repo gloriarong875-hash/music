@@ -130,7 +130,8 @@
         <div class="progress-container" id="progress-container" aria-label="烘烤进度">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
-        <img class="furnace" src="笛部件assets/步骤2-炉.png" alt="炉" />
+        <!-- 步骤 2 直接点击炉子启动烘烤，不再使用额外白色按钮。 -->
+        <img class="furnace" src="笛部件assets/步骤2-炉.png" alt="点击炉子开始烘烤" role="button" tabindex="0" />
         <img id="bamboo-pipe" src="笛部件assets/步骤1-4笛身.png" alt="竹管">
         <div class="steam" id="steam">
             <div class="steam-particle" style="left: 22%; bottom: 28%;"></div>
@@ -140,10 +141,7 @@
         </div>
     </div>
 
-    <button class="bake-hold-btn" id="bakeHoldBtn" type="button" aria-label="长按烘烤竹管">
-        <span class="bake-hold-inner"></span>
-    </button>
-    <div class="bake-hold-hint" id="bakeHoldHint">长按白色圆钮烘烤</div>
+    <div class="bake-hold-hint" id="bakeHoldHint">点击炉子开始烘烤</div>
 
     <!--
         步骤 3 工具区：按钮固定在右下角。点击后按钮隐藏并显示凿子；
@@ -260,7 +258,6 @@
     <div class="stage-text sub" id="final-sub-text">选膜后使用数字键 1-7 听音</div>
 
     <div class="end-buttons" id="final-end-buttons">
-        <button class="end-btn restart" id="final-restart-btn" title="再次体验">再次<br>体验</button>
         <button class="end-btn arrow" id="final-arrow-btn" title="向下">↓</button>
     </div>
 </div>

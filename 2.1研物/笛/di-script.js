@@ -562,7 +562,6 @@ const bambooPipe = document.getElementById('bamboo-pipe');
 const bambooContainer = document.getElementById('bamboo-container');
 const progressContainer = document.getElementById('progress-container');
 const progressBar = document.getElementById('progress-bar');
-const bakeHoldBtn = document.getElementById('bakeHoldBtn');
 const bakeHoldHint = document.getElementById('bakeHoldHint');
 const steamEl = document.getElementById('steam');
 const mainText = document.getElementById('main-text');
@@ -619,7 +618,7 @@ function showBakeStage() {
     bambooPipe.classList.remove('baked', 'baking');
     bakeProgress = 0;
     progressBar.style.width = '0%';
-    bakeHoldBtn.classList.remove('hidden', 'holding');
+    bakeHoldHint.textContent = '点击炉子开始烘烤';
     bakeHoldHint.classList.remove('hidden');
     completeOverlay.classList.remove('active');
     holesLayer.style.display = 'none';
@@ -641,34 +640,36 @@ function showBakeStage() {
 }
 
 // ============================================================
-// === BAKE: Hold button to heat ===
+// === BAKE: Click furnace to start automatic heating ===
 // ============================================================
 
 let bakeProgress = 0;
 let bakeHoldFrame = null;
 let bakeHoldStartedAt = 0;
 let bakeProgressAtHoldStart = 0;
+let bakeRunning = false;
 const BAKE_HOLD_DURATION = 3000;
 let phase = 'bake';
 let bambooOffset = 0;
 
 function startBakingHold(e) {
-    if (phase !== 'bake' || bakeProgress >= 1) return;
-    e.preventDefault();
+    if (phase !== 'bake' || bakeProgress >= 1 || bakeRunning) return;
+    if (e) e.preventDefault();
     initAudio();
-    if (e.pointerId !== undefined) bakeHoldBtn.setPointerCapture(e.pointerId);
     bakeHoldStartedAt = performance.now();
     bakeProgressAtHoldStart = bakeProgress;
-    bakeHoldBtn.classList.add('holding');
+    bakeRunning = true;
+    furnace.classList.add('heating');
     bambooPipe.classList.add('baking');
     steamEl.classList.add('active');
+    progressContainer.classList.add('is-running');
     progressContainer.style.opacity = '1';
-    bakeHoldHint.textContent = '持续按住 · 正在烘烤';
+    bakeHoldHint.textContent = '炉火渐旺 · 正在烘烤';
     updateBakingHold();
 }
 
 function updateBakingHold(now = performance.now()) {
-    if (!bakeHoldBtn.classList.contains('holding') || phase !== 'bake') return;
+    if (!bakeRunning || phase !== 'bake') return;
     bakeProgress = Math.min(1, bakeProgressAtHoldStart + (now - bakeHoldStartedAt) / BAKE_HOLD_DURATION);
     progressBar.style.width = `${bakeProgress * 100}%`;
     if (bakeProgress >= 0.66) {
@@ -688,10 +689,12 @@ function updateBakingHold(now = performance.now()) {
 function stopBakingHold() {
     if (bakeHoldFrame) cancelAnimationFrame(bakeHoldFrame);
     bakeHoldFrame = null;
-    bakeHoldBtn.classList.remove('holding');
+    bakeRunning = false;
+    furnace.classList.remove('heating');
     bambooPipe.classList.remove('baking');
     steamEl.classList.remove('active');
-    if (phase === 'bake') bakeHoldHint.textContent = bakeProgress > 0 ? '继续长按完成烘烤' : '长按白色圆钮烘烤';
+    progressContainer.classList.remove('is-running');
+    if (phase === 'bake') bakeHoldHint.textContent = bakeProgress > 0 ? '烘烤暂停 · 点击炉子继续' : '点击炉子开始烘烤';
 }
 
 const furnace = document.querySelector('.furnace');
@@ -701,11 +704,10 @@ function finishBaking() {
     stopBakingHold();
     bambooPipe.classList.add('baked');
     progressContainer.style.opacity = '0';
-    bakeHoldBtn.classList.add('hidden');
     bakeHoldHint.classList.add('hidden');
     furnace.classList.add('hidden');
     bambooPipe.style.left = '45%';
-    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(0deg)';
+    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(20deg)';
     bambooPipe.style.bottom = '25%';
     mainText.innerText = '烘烤完成';
     subText.innerText = '竹管已去湿定型，准备进入开孔工序';
@@ -728,7 +730,7 @@ function showDrillStage() {
     finalStage.classList.remove('visible');
     bambooPipe.style.left = '45%';
     bambooPipe.style.bottom = '60px';
-    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(0deg)';
+    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(20deg)';
     holesLayer.style.display = 'block';
     resetDrillHoles();
     drillChiselPickedUp = false;
@@ -875,7 +877,7 @@ function backToDrill() {
 
     // Set bamboo to baked, centered position
     bambooPipe.classList.add('baked');
-    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(0deg)';
+    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(20deg)';
     bambooPipe.style.bottom = '25%';
     bambooPipe.style.animation = '';
 
@@ -963,7 +965,6 @@ const finalNoteName = document.getElementById('final-note-name');
 const finalBambooContainer = document.getElementById('final-bamboo-container');
 const finalBambooPipe = document.getElementById('final-bamboo-pipe');
 const finalEndButtons = document.getElementById('final-end-buttons');
-const finalRestartBtn = document.getElementById('final-restart-btn');
 const finalArrowBtn = document.getElementById('final-arrow-btn');
 const finalMainText = document.getElementById('final-main-text');
 const finalSubText = document.getElementById('final-sub-text');
@@ -1140,7 +1141,7 @@ function playFluteNote(key) {
     finalPlayCount++;
     if (finalPlayCount >= PLAY_TO_END && !finalEndButtons.classList.contains('visible')) {
         finalEndButtons.classList.add('visible');
-        finalSubText.innerText = '五音已备，可再次体验或向下浏览';
+        finalSubText.innerText = '五音已备，可向下浏览';
     }
 
     setTimeout(() => {
@@ -1199,10 +1200,6 @@ finalPlayHoles.forEach((hole, index) => {
         const key = String(index + 1);
         if (noteFingerings[key]) playFluteNote(key);
     });
-});
-
-finalRestartBtn.addEventListener('click', () => {
-    location.reload();
 });
 
 finalArrowBtn.addEventListener('click', () => {
@@ -1298,11 +1295,10 @@ document.addEventListener('pointermove', e => moveDrillChisel(e.clientX, e.clien
 // === BAKE STAGE EVENT LISTENERS ===
 // ============================================================
 
-bakeHoldBtn.addEventListener('pointerdown', startBakingHold);
-bakeHoldBtn.addEventListener('pointerup', stopBakingHold);
-bakeHoldBtn.addEventListener('pointercancel', stopBakingHold);
-bakeHoldBtn.addEventListener('lostpointercapture', stopBakingHold);
-bakeHoldBtn.addEventListener('contextmenu', e => e.preventDefault());
+furnace.addEventListener('click', startBakingHold);
+furnace.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') startBakingHold(e);
+});
 
 // ============================================================
 // === DYNAMIC KEYFRAMES ===

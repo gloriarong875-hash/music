@@ -69,6 +69,12 @@ position: absolute; will-change: transform, opacity;
 .layer.clickable:hover img { filter: brightness(1.2) drop-shadow(0 0 22px rgba(255,195,98,0.55)); }
 .layer.clickable.selected img { filter: brightness(1.3) drop-shadow(0 0 40px rgba(255,195,98,0.85)); }
 
+/* 前两种竹材为反例：悬停时灰化，避免与可选直竹的金色高亮混淆。 */
+.layer-xin.clickable:hover img,
+.layer-wai.clickable:hover img {
+filter: grayscale(1) brightness(.72) contrast(.9);
+}
+
 .layer.clickable.bad-shake {
 animation: layerShake 0.4s ease-in-out;
 }
@@ -301,7 +307,6 @@ display: none !important;
 
 #bake-stage[data-mode="drill"] .furnace,
 #bake-stage[data-mode="drill"] .steam,
-#bake-stage[data-mode="drill"] .bake-hold-btn,
 #bake-stage[data-mode="drill"] .bake-hold-hint,
 #bake-stage[data-mode="drill"] .progress-container {
 display: none !important;
@@ -395,47 +400,10 @@ animation: steamRise 2s ease-out infinite;
 100% { transform: translateY(-80px) scaleX(0.5); opacity: 0; }
 }
 
-.bake-hold-btn {
-position: absolute;
-left: 15%;
-top: 57%;
-transform: translate(-50%, -50%);
-width: 68px;
-height: 68px;
-padding: 0;
-border: 0;
-border-radius: 50%;
-background: transparent;
-cursor: pointer;
-touch-action: none;
-z-index: 15;
-}
-
-.bake-hold-inner {
-display: block;
-width: 100%;
-height: 100%;
-border-radius: 50%;
-background: rgba(255,255,255,.82);
-box-shadow: 0 0 35px 5px rgba(255,255,255,.28), inset 0 0 0 1px rgba(255,255,255,.9);
-transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-}
-
-.bake-hold-btn:hover .bake-hold-inner {
-background: rgba(255,255,255,.96);
-box-shadow: 0 0 50px 10px rgba(255,255,255,.42), 0 0 75px 14px rgba(255,195,98,.3);
-}
-
-.bake-hold-btn.holding .bake-hold-inner {
-transform: scale(.9);
-background: rgba(255,238,190,.96);
-box-shadow: 0 0 45px 12px rgba(255,195,98,.62), inset 0 0 0 2px rgba(255,255,255,.95);
-}
-
 .bake-hold-hint {
 position: absolute;
-left: 15%;
-top: calc(57% + 52px);
+left: 50%;
+top: calc(50% - 155px);
 transform: translateX(-50%);
 font-size: var(--type-sm);
 color: #d9c7a4;
@@ -457,15 +425,43 @@ background: rgba(255,255,255,0.05);
 border-radius: 99px;
 overflow: hidden;
 opacity: 1;
-transition: opacity 0.4s ease;
+transition: opacity 0.4s ease, box-shadow .35s ease;
 z-index: 8;
 }
 
+.progress-container.is-running {
+box-shadow: 0 0 10px rgba(201,169,110,.45), 0 0 24px rgba(201,169,110,.2);
+animation: bakeProgressPulse 1.15s ease-in-out infinite;
+}
+
 .progress-bar {
+position: relative;
 width: 0;
 height: 100%;
 background: linear-gradient(90deg, var(--gold), var(--gold-dim));
 transition: width 0.08s linear;
+overflow: hidden;
+}
+
+.progress-bar::after {
+content: '';
+position: absolute;
+inset: 0;
+width: 42%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent);
+transform: translateX(-160%);
+}
+
+.progress-container.is-running .progress-bar::after {
+animation: bakeProgressShine .8s linear infinite;
+}
+
+@keyframes bakeProgressShine {
+to { transform: translateX(340%); }
+}
+
+@keyframes bakeProgressPulse {
+50% { transform: translateX(-50%) scaleX(1.025); }
 }
 
 /*
@@ -575,6 +571,8 @@ height: auto;
 display: block;
 margin: 0;
 filter: brightness(0.95);
+cursor: pointer;
+transition: transform .3s ease, filter .3s ease, opacity .4s ease;
 }
 
 .furnace.hidden {
@@ -585,6 +583,17 @@ pointer-events: none;
 
 .furnace:hover {
 transform: translateX(-50%) scale(1.03);
+filter: brightness(1.08) drop-shadow(0 0 16px rgba(201,169,110,.28));
+}
+
+.furnace.heating {
+animation: furnaceHeating 1s ease-in-out infinite;
+filter: brightness(1.14) drop-shadow(0 0 22px rgba(201,169,110,.48));
+}
+
+@keyframes furnaceHeating {
+0%, 100% { transform: translateX(-50%) scale(1); }
+50% { transform: translateX(-50%) scale(1.025); }
 }
 
 .complete-overlay {
@@ -627,7 +636,8 @@ visibility: hidden;
 pointer-events: none;
 transition: opacity 0.6s ease, visibility 0.6s ease;
 z-index: 6;
-background: var(--bg);
+/* 保持透明，使步骤 1 的共用竹林背景完整显示到试音阶段。 */
+background: transparent;
 }
 
 .final-stage.visible {
@@ -1203,10 +1213,11 @@ margin-top: 8px;
 letter-spacing: 2px;
 }
 
-/* 试音阶段主文本：底部居中，显示指法提示 */
+/* 试音阶段主文本：放在笛身下方，避免遮挡孔位与数字键提示。 */
 #final-stage .stage-text {
 position: absolute;
-bottom: 15%;
+top: 66%;
+bottom: auto;
 width: 100%;
 text-align: center;
 font-size: 1.1rem;
@@ -1221,11 +1232,12 @@ text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 #final-stage .stage-text.sub {
 font-size: 0.9rem;
 color: var(--gold-dim);
-bottom: 11%;
+top: 72%;
+bottom: auto;
 letter-spacing: 2px;
 }
 
-/* 结束按钮组：底部居中，演奏五次后淡入显示 */
+/* 结束按钮组：仅保留向下按钮，演奏五次后淡入显示。 */
 #final-stage .end-buttons {
 position: absolute;
 bottom: 22%;
@@ -1263,15 +1275,6 @@ letter-spacing: 1px;
 border-color: var(--gold);
 box-shadow: 0 0 25px rgba(201, 169, 110, 0.4);
 transform: scale(1.1);
-}
-
-/* 重新开始按钮：小号文字，换行显示 */
-#final-stage .end-btn.restart {
-font-size: 12px;
-writing-mode: horizontal-tb;
-padding: 0 8px;
-text-align: center;
-line-height: 1.3;
 }
 
 /* 向下箭头按钮：大号字体显示箭头 */
@@ -1314,8 +1317,7 @@ gap: 8px;
 .bamboo-item { width: 28%; }
 .stage-text { top: 104px; }
 .stage-sub { top: 148px; }
-.bake-hold-btn,
-.bake-hold-hint { left: 16%; }
+.bake-hold-hint { top: calc(50% - 130px); }
 }
 
 @media (max-width: 768px) {
