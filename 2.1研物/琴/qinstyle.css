@@ -23,15 +23,15 @@
 }
 
 :root {
-    --bg: #88a993;
-    --text: #3b4942;
+    --bg: #CDC0DC;
+    --text: #443b49;
     --gold-shadow: #ffc362a6;
     --step-done: #b7a481;
     --step-pending: #98867a;
     --white-soft: #ffffffcc;
     --white-shadow: #ffffff40;
-    --steel: #766541;
-    --silk: #647e6d;
+    --steel: #56405b;
+    --silk: #544d58;
     /* 以下变量与 generalprocess.css 统一，确保页面间切换平滑 */
     --gold: #c9a96e;
     --gold-dim: #8a7a5a;
@@ -324,8 +324,8 @@ body, html {
     flex:1;
     padding:11px 18px;
     border:none;
-    background:#D6C481;
-    color:#361E19;
+    background:#54483d;
+    color:#f6eed7;
     font-family:FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif;
     font-size:18px;
     letter-spacing:4px;
