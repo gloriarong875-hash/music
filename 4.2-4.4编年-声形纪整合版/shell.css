@@ -1,12 +1,14 @@
 @font-face {
-  font-family: "FZLiShu";
-  src: url("/assets/fonts/fz-lishu.ttf") format("truetype");
+  font-family: "FZLiShuGBK";
+  src: url("/assets/fonts/fz-lishu-gbk.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
   font-display: swap;
 }
 
 :root {
   color-scheme: dark;
-  font-family: "FZLiShu", "STKaiti", "KaiTi", serif;
+  font-family: "FZLiShuGBK", "LiSu", serif;
   --paper: #e4cea0;
   --bronze: #88754f;
   --cinnabar: #853027;
@@ -81,8 +83,10 @@ button { font: inherit; }
   border-radius: 50%;
   color: #2f3030;
   background: var(--bronze);
-  font-family: "FZLiShu", serif !important;
+  font-family: "FZLiShuGBK", "LiSu", serif !important;
   font-weight: 400;
+  font-style: normal;
+  font-synthesis: none;
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
