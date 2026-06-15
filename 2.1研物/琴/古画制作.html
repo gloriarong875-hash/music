@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>琴韵千年——古琴制作</title>
+<style>
+:root {
+    --bg: #88a993;
+    --text: #3b4942;
+    --gold: #c9a96e;
+    --gold-shadow: #ffc362a6;
+    --step-done: #b7a481;
+    --step-pending: #98867a;
+    --white-soft: #ffffffcc;
+    --white-shadow: #ffffff40;
+    --steel: #766541;
+    --silk: #647e6d;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body, html {
+    width:100%; height:100%;
+    overflow:hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Alibaba PuHuiTi 3.0", "PingFang SC", "Noto Serif SC", "Microsoft YaHei", serif;
+    font-weight: 100;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+/* ── Top step indicator ── */
+.step-bar {
+    position:absolute;
+    top:63px; left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    gap:111px;
+    z-index:20;
+}
+
+.step-item {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    justify-content:flex-end;
+    height:28px;
+    cursor:pointer;
+    transition:all 0.5s ease;
+}
+
+.step-dot {
+    border-radius:50%;
+    transition:all 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.step-dot.active {
+    width:28px; height:28px;
+    background:var(--gold);
+    box-shadow:0 0 21.875px var(--gold-shadow);
+}
+
+.step-dot.done {
+    width:18px; height:18px;
+    background:var(--step-done);
+    box-shadow:0 0 17.5px rgba(255,255,255,0.5);
+}
+
+.step-dot.pending {
+    width:18px; height:18px;
+    background:var(--step-pending);
+}
+
+.step-label {
+    font-size:20px;
+    letter-spacing:4px;
+    color:var(--gold);
+    text-shadow:0 0 21.875px var(--gold-shadow);
+    opacity:0;
+    transform:translateY(4px);
+    transition:all 0.5s ease;
+    white-space:nowrap;
+}
+
+.step-item.active-step .step-label { opacity:1; transform:translateY(0); }
+
+/* ── Main stage panels ── */
+.stage {
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity 0.6s ease, visibility 0.6s ease;
+    overflow:hidden;
+}
+
+.stage.current {
+    opacity:1;
+    visibility:visible;
+    pointer-events:all;
+}
+
+/* ── Stage image ── */
+.stage-img {
+    max-width:65vw;
+    max-height:52vh;
+    object-fit:contain;
+    z-index:1;
+    filter:drop-shadow(0 8px 24px rgba(0,0,0,0.18));
+    transition:all 0.6s ease;
+}
+
+/* ── Stage text ── */
+.stage-desc {
+    position:absolute;
+    font-size:32px;
+    letter-spacing:3px;
+    z-index:2;
+    transition:all 0.6s ease;
+}
+
+/* ── Decorative circle ── */
+.decor-circle {
+    position:absolute;
+    width:62px; height:62px;
+    border-radius:50%;
+    background:var(--white-soft);
+    border:1px solid var(--white-soft);
+    box-shadow:0 0 8.75px 5px var(--white-shadow);
+    z-index:5;
+    pointer-events:none;
+    transition:all 0.5s ease;
+}
+
+/* ── Stage 1: 制胚 ── */
+#stage-0 .stage-desc { top:311px; right:160px; color:var(--text); }
+
+.wood-picker {
+    position:absolute;
+    bottom:18%;
+    display:flex;
+    gap:36px;
+    z-index:2;
+}
+
+.wood-option {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    padding:16px 28px;
+    border:1px solid rgba(59,73,66,0.15);
+    border-radius:4px;
+    background:rgba(255,255,255,0.12);
+    transition:all 0.4s ease;
+}
+
+.wood-option:hover {
+    background:rgba(255,255,255,0.25);
+    border-color:var(--text);
+    transform:translateY(-4px);
+}
+
+.wood-option.selected {
+    background:rgba(201,169,110,0.18);
+    border-color:var(--gold);
+    box-shadow:0 0 20px rgba(201,169,110,0.2);
+}
+
+.wood-option .wood-icon {
+    font-size:28px;
+    color:var(--gold);
+}
+
+.wood-option .wood-name {
+    font-size:16px;
+    color:var(--text);
+    letter-spacing:3px;
+}
+
+.wood-status {
+    font-size:13px;
+    color:var(--silk);
+    letter-spacing:1px;
+    opacity:0;
+    transition:opacity 0.4s;
+}
+
+.wood-option.selected .wood-status { opacity:1; }
+
+/* ── Stage 2: 髹漆 ── */
+#stage-1 .stage-desc {
+    top:auto; bottom:18%; left:50%; transform:translateX(-50%);
+    color:#000; font-size:28px; text-align:center;
+    max-width:80vw;
+}
+
+.lacquer-interact {
+    position:absolute;
+    inset:0;
+    z-index:3;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.lacquer-brush {
+    position:absolute;
+    width:60px; height:60px;
+    border-radius:50%;
+    border:1px solid var(--gold);
+    background:rgba(201,169,110,0.12);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    transition:all 0.15s ease;
+    z-index:4;
+    opacity:0;
+    box-shadow:0 0 21.875px var(--gold-shadow);
+}
+
+.lacquer-brush.visible { opacity:1; }
+
+.lacquer-brush svg { stroke:var(--gold); stroke-width:1.5; fill:none; width:32px; height:32px; }
+
+.lacquer-spark {
+    position:absolute;
+    width:3px; height:3px;
+    background:var(--gold);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:5;
+    animation:sparkPop 0.6s ease-out forwards;
+}
+
+@keyframes sparkPop {
+    0% { transform:scale(0); opacity:1; }
+    100% { transform:scale(3); opacity:0; }
+}
+
+.lacquer-progress-wrap {
+    position:absolute;
+    bottom:10%;
+    left:50%;
+    transform:translateX(-50%);
+    width:260px;
+    height:4px;
+    background:rgba(0,0,0,0.08);
+    border-radius:99px;
+    overflow:hidden;
+    z-index:4;
+    opacity:0;
+    transition:opacity 0.5s;
+}
+
+.lacquer-progress-wrap.visible { opacity:1; }
+
+.lacquer-progress-inner {
+    width:0%; height:100%;
+    background:var(--gold);
+    border-radius:99px;
+    transition:width 0.3s ease;
+    box-shadow:0 0 8px var(--gold-shadow);
+}
+
+/* ── Stage 3: 选弦 ── */
+#stage-2 .stage-desc:nth-of-type(1) { top:125px; left:96px; color:var(--text); font-size:32px; }
+
+.string-list {
+    position:absolute;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    z-index:2;
+}
+
+.string-opt {
+    font-family:"Alibaba PuHuiTi 3.0", "PingFang SC", serif;
+    font-weight:100;
+    cursor:pointer;
+    transition:all 0.4s ease;
+    letter-spacing:3px;
+    padding:4px 12px;
+    border-radius:4px;
+    border:1px solid transparent;
+}
+
+.string-opt:hover {
+    transform:translateX(6px);
+    border-color:rgba(201,169,110,0.4);
+    background:rgba(201,169,110,0.08);
+}
+
+.string-opt.selected {
+    border-color:var(--gold);
+    background:rgba(201,169,110,0.14);
+    box-shadow:0 0 16px rgba(201,169,110,0.18);
+}
+
+.string-opt.steel {
+    font-size:42px;
+    color:var(--steel);
+    text-shadow:0 0 21.875px var(--gold-shadow);
+}
+
+.string-opt.silk {
+    font-size:32px;
+    color:var(--silk);
+}
+
+.string-opt.nylon {
+    font-size:32px;
+    color:var(--silk);
+}
+
+/* ── Stage 4: 上弦 ── */
+#stage-3 .stage-desc {
+    top:14%; left:50%; transform:translateX(-50%);
+    color:var(--text); font-size:28px; text-align:center;
+}
+
+.tuning-hint {
+    position:absolute;
+    top:22%;
+    font-size:20px;
+    color:var(--silk);
+    letter-spacing:2px;
+    z-index:2;
+}
+
+.peg-area {
+    position:absolute;
+    display:flex;
+    gap:16px;
+    z-index:3;
+}
+
+.peg {
+    width:40px; height:40px;
+    border-radius:50%;
+    border:1px solid var(--step-pending);
+    background:rgba(255,255,255,0.1);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    color:var(--step-pending);
+    letter-spacing:1px;
+    transition:all 0.4s ease;
+    font-family:"Alibaba PuHuiTi 3.0", serif;
+    font-weight:100;
+}
+
+.peg:hover {
+    border-color:var(--gold);
+    color:var(--gold);
+    box-shadow:0 0 14px rgba(201,169,110,0.25);
+    transform:scale(1.1);
+}
+
+.peg.tuned {
+    border-color:var(--gold);
+    background:rgba(201,169,110,0.18);
+    color:var(--gold);
+    box-shadow:0 0 21.875px var(--gold-shadow);
+    pointer-events:none;
+}
+
+/* ── Navigation arrows ── */
+.nav-arrows {
+    position:absolute;
+    bottom:36px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:40px;
+    z-index:30;
+}
+
+.nav-arrow {
+    width:48px; height:48px;
+    border-radius:50%;
+    border:1px solid var(--step-pending);
+    background:rgba(255,255,255,0.08);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:all 0.4s ease;
+    color:var(--step-pending);
+    font-size:20px;
+}
+
+.nav-arrow:hover {
+    border-color:var(--gold);
+    color:var(--gold);
+    box-shadow:0 0 16px rgba(201,169,110,0.25);
+}
+
+.nav-arrow:active { transform:scale(0.95); }
+
+.nav-arrow.disabled {
+    opacity:0.25;
+    pointer-events:none;
+}
+
+/* ── Complete overlay ── */
+.complete-msg {
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:rgba(136,169,147,0.85);
+    backdrop-filter:blur(8px);
+    z-index:50;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.7s ease;
+}
+
+.complete-msg.visible { opacity:1; pointer-events:all; }
+
+.complete-msg .big {
+    font-size:48px;
+    color:var(--gold);
+    letter-spacing:10px;
+    text-shadow:0 0 21.875px var(--gold-shadow);
+}
+
+.complete-msg .sub {
+    font-size:24px;
+    color:var(--text);
+    letter-spacing:4px;
+    margin:16px 0 32px;
+}
+
+.complete-msg .btns {
+    display:flex;
+    gap:30px;
+}
+
+.complete-btn {
+    padding:10px 32px;
+    border:1px solid var(--gold);
+    background:transparent;
+    color:var(--gold);
+    font-family:inherit;
+    font-size:16px;
+    letter-spacing:4px;
+    cursor:pointer;
+    border-radius:4px;
+    transition:all 0.4s ease;
+}
+
+.complete-btn:hover {
+    background:var(--gold);
+    color:var(--bg);
+    box-shadow:0 0 24px rgba(201,169,110,0.35);
+}
+
+/* ── Responsive ── */
+@media (max-width:768px) {
+    .step-bar { gap:56px; top:40px; }
+    .step-label { font-size:14px; }
+    .stage-desc { font-size:22px !important; }
+    .stage-img { max-width:90vw; max-height:38vh; }
+    #stage-0 .stage-desc { right:20px; top:200px; font-size:20px !important; }
+    #stage-1 .stage-desc { font-size:18px !important; }
+    .string-opt.steel { font-size:28px; }
+    .string-opt.silk, .string-opt.nylon { font-size:22px; }
+    .nav-arrows { gap:24px; bottom:20px; }
+    .peg-area { gap:10px; }
+    .peg { width:30px; height:30px; font-size:11px; }
+    .wood-picker { gap:16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Step indicator ── -->
+<div class="step-bar" id="step-bar">
+    <div class="step-item active-step" data-step="0">
+        <div class="step-dot active"></div>
+        <div class="step-label">制胚</div>
+    </div>
+    <div class="step-item" data-step="1">
+        <div class="step-dot pending"></div>
+        <div class="step-label">髹漆</div>
+    </div>
+    <div class="step-item" data-step="2">
+        <div class="step-dot pending"></div>
+        <div class="step-label">选弦</div>
+    </div>
+    <div class="step-item" data-step="3">
+        <div class="step-dot pending"></div>
+        <div class="step-label">上弦</div>
+    </div>
+</div>
+
+<!-- ── Stage 1: 制胚 ── -->
+<div class="stage current" id="stage-0">
+    <img class="stage-img" src="琴部件assets/步骤1-制胚.png" alt="制胚">
+    <div class="stage-desc">开槽决定了古琴最终的音色</div>
+    <div class="wood-picker">
+        <div class="wood-option" id="wood-tong">
+            <div class="wood-icon">桐</div>
+            <div class="wood-name">桐木面</div>
+            <div class="wood-status">✓ 松透圆润</div>
+        </div>
+        <div class="wood-option" id="wood-zi">
+            <div class="wood-icon">梓</div>
+            <div class="wood-name">梓木底</div>
+            <div class="wood-status">✓ 坚实沉稳</div>
+        </div>
+    </div>
+    <div class="decor-circle" style="right:calc(50% - 720px + 928px); bottom:calc(50% - 450px + 900px - 627px - 62px);"></div>
+</div>
+
+<!-- ── Stage 2: 髹漆 ── -->
+<div class="stage" id="stage-1">
+    <img class="stage-img" src="琴部件assets/步骤2-髹漆.png" alt="髹漆">
+    <div class="stage-desc">麻布裹琴，加上含鹿角粉末的漆料</div>
+    <div class="lacquer-interact" id="lacquer-interact">
+        <div class="lacquer-brush" id="lacquer-brush">
+            <svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        </div>
+        <div class="lacquer-progress-wrap" id="lacquer-progress-wrap">
+            <div class="lacquer-progress-inner" id="lacquer-progress-inner"></div>
+        </div>
+    </div>
+    <div class="decor-circle" style="right:calc(50% - 720px + 928px); bottom:calc(50% - 450px + 900px - 627px - 62px);"></div>
+</div>
+
+<!-- ── Stage 3: 选弦 ── -->
+<div class="stage" id="stage-2">
+    <img class="stage-img" src="琴部件assets/步骤3-选弦.png" alt="选弦" style="opacity:0.75;">
+    <div class="stage-desc" style="top:125px; left:96px;">弦音清亮</div>
+    <div class="string-list" style="top:288px; left:400px;">
+        <div class="string-opt steel" data-string="steel">钢弦</div>
+        <div class="string-opt silk" data-string="silk">丝弦</div>
+        <div class="string-opt nylon" data-string="nylon">钢丝尼龙弦</div>
+    </div>
+    <div class="decor-circle" style="right:calc(50% - 720px + 928px); bottom:calc(50% - 450px + 900px - 627px - 62px);"></div>
+</div>
+
+<!-- ── Stage 4: 上弦 ── -->
+<div class="stage" id="stage-3">
+    <img class="stage-img" src="琴部件assets/步骤4-调音上弦.png" alt="调音上弦" style="max-height:45vh;">
+    <div class="stage-desc">调音上弦，七弦成韵</div>
+    <div class="tuning-hint" id="tuning-hint">点击琴轸调弦</div>
+    <div class="peg-area" id="peg-area" style="top:34%;">
+        <div class="peg" data-peg="0">一</div>
+        <div class="peg" data-peg="1">二</div>
+        <div class="peg" data-peg="2">三</div>
+        <div class="peg" data-peg="3">四</div>
+        <div class="peg" data-peg="4">五</div>
+        <div class="peg" data-peg="5">六</div>
+        <div class="peg" data-peg="6">七</div>
+    </div>
+    <div class="decor-circle" style="right:calc(50% - 720px + 928px); bottom:calc(50% - 450px + 900px - 627px - 62px);"></div>
+</div>
+
+<!-- ── Navigation ── -->
+<div class="nav-arrows">
+    <div class="nav-arrow disabled" id="nav-prev">←</div>
+    <div class="nav-arrow" id="nav-next">→</div>
+</div>
+
+<!-- ── Complete ── -->
+<div class="complete-msg" id="complete-msg">
+    <div class="big">琴成</div>
+    <div class="sub">七弦既备 · 千年琴韵</div>
+    <div class="btns">
+        <button class="complete-btn" id="btn-restart">再次体验</button>
+        <button class="complete-btn" id="btn-back">← 返回</button>
+    </div>
+</div>
+
+<script>
+// ── Audio ──
+const AC = window.AudioContext || window.webkitAudioContext;
+let ctx = null;
+function audio() { if(!ctx) ctx = new AC(); if(ctx.state==='suspended') ctx.resume(); }
+
+function tone(freq, type='sine', dur=0.5, vol=0.1) {
+    if(!ctx) return;
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type=type; o.frequency.value=freq;
+    const t=ctx.currentTime;
+    g.gain.setValueAtTime(vol,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t+dur);
+}
+function ding() { tone(660,'sine',0.2,0.08); }
+function completeJingle() {
+    [261.63,329.63,392,523.25].forEach((f,i)=>setTimeout(()=>tone(f,'sine',0.7,0.1),i*160));
+}
+
+// ── State ──
+let stage = 0;
+const TOTAL = 4;
+const stageEls = [0,1,2,3].map(i=>document.getElementById('stage-'+i));
+const stepItems = document.querySelectorAll('.step-item');
+const prevBtn = document.getElementById('nav-prev');
+const nextBtn = document.getElementById('nav-next');
+
+// ── Step dots ──
+function updateStepDots(idx) {
+    stepItems.forEach((item,i)=>{
+        const dot=item.querySelector('.step-dot');
+        item.classList.remove('active-step');
+        dot.className='step-dot';
+        if(i<idx) dot.classList.add('done');
+        else if(i===idx) { dot.classList.add('active'); item.classList.add('active-step'); }
+        else dot.classList.add('pending');
+    });
+}
+
+function goTo(idx) {
+    if(idx<0||idx>=TOTAL) return;
+    stage=idx;
+    stageEls.forEach((el,i)=>el.classList.toggle('current',i===idx));
+    updateStepDots(idx);
+    prevBtn.classList.toggle('disabled',idx===0);
+    nextBtn.classList.toggle('disabled',idx===TOTAL-1);
+    resetStage(idx);
+}
+
+// ── Stage reset ──
+function resetStage(i) {
+    switch(i){
+        case 0: resetEmbryo(); break;
+        case 1: resetLacquer(); break;
+        case 2: resetStrings(); break;
+        case 3: resetTuning(); break;
+    }
+}
+
+// ── Nav ──
+stepItems.forEach(item=>{
+    item.addEventListener('click',()=>{
+        const s=parseInt(item.dataset.step);
+        if(s<=stage||document.querySelector('.step-dot.done')||s===stage+1) goTo(s);
+    });
+});
+prevBtn.addEventListener('click',()=>goTo(stage-1));
+nextBtn.addEventListener('click',()=>goTo(stage+1));
+
+// ━━ Stage 1: 制胚 ━━
+let embryoPicked={tong:false,zi:false};
+function resetEmbryo(){
+    embryoPicked={tong:false,zi:false};
+    document.querySelectorAll('.wood-option').forEach(el=>el.classList.remove('selected'));
+}
+document.querySelectorAll('.wood-option').forEach(opt=>{
+    opt.addEventListener('click',()=>{
+        audio(); ding();
+        opt.classList.add('selected');
+        const w=opt.id==='wood-tong'?'tong':'zi';
+        embryoPicked[w]=true;
+        if(embryoPicked.tong&&embryoPicked.zi){
+            document.querySelector('#stage-0 .stage-desc').textContent='桐面梓底，琴胚初成';
+            setTimeout(()=>{ completeJingle(); goTo(1); },1000);
+        } else {
+            document.querySelector('#stage-0 .stage-desc').textContent=
+                embryoPicked.tong?'已选桐木面 — 再选梓木为底':'已选梓木底 — 再选桐木为面';
+        }
+    });
+});
+
+// ━━ Stage 2: 髹漆 ━━
+let lacquerDone=false, lacquerAmt=0;
+const LACQUER_NEED=6;
+const LACQUER_MSGS=['麻布裹琴，加上含鹿角粉末的漆料','鹿角霜入漆，第一道髹涂……','漆料渐润，再添一层','层层髹涂，漆面渐厚','漆色转深，光华微现','漆面如镜，音韵愈沉'];
+const lacquerInteract=document.getElementById('lacquer-interact');
+const lacquerBrush=document.getElementById('lacquer-brush');
+const lacquerProgressWrap=document.getElementById('lacquer-progress-wrap');
+const lacquerProgressInner=document.getElementById('lacquer-progress-inner');
+
+function resetLacquer(){
+    lacquerDone=false; lacquerAmt=0;
+    lacquerProgressInner.style.width='0%';
+    lacquerProgressWrap.classList.remove('visible');
+    lacquerBrush.classList.remove('visible');
+    document.querySelector('#stage-1 .stage-desc').textContent='麻布裹琴，加上含鹿角粉末的漆料';
+}
+
+lacquerInteract.addEventListener('mousemove',e=>{
+    if(lacquerDone) return;
+    const r=lacquerInteract.getBoundingClientRect();
+    lacquerBrush.style.left=(e.clientX-r.left-30)+'px';
+    lacquerBrush.style.top=(e.clientY-r.top-30)+'px';
+    lacquerBrush.classList.add('visible');
+});
+lacquerInteract.addEventListener('mouseleave',()=>lacquerBrush.classList.remove('visible'));
+
+let lacquerTouchActive=false;
+lacquerInteract.addEventListener('click',e=>{
+    if(lacquerDone||lacquerTouchActive) return;
+    audio();
+    const r=lacquerInteract.getBoundingClientRect();
+    const x=e.clientX-r.left, y=e.clientY-r.top;
+
+    // spark
+    const s=document.createElement('div');
+    s.className='lacquer-spark';
+    s.style.left=x+'px'; s.style.top=y+'px';
+    lacquerInteract.appendChild(s);
+    setTimeout(()=>s.remove(),600);
+
+    lacquerAmt++;
+    lacquerProgressWrap.classList.add('visible');
+    lacquerProgressInner.style.width=(lacquerAmt/LACQUER_NEED*100)+'%';
+    tone(280+lacquerAmt*40,'sine',0.2,0.06);
+
+    document.querySelector('#stage-1 .stage-desc').textContent=
+        LACQUER_MSGS[Math.min(lacquerAmt-1,LACQUER_NEED-1)];
+
+    if(lacquerAmt>=LACQUER_NEED){
+        lacquerDone=true;
+        lacquerBrush.classList.remove('visible');
+        setTimeout(()=>{ completeJingle(); goTo(2); },1200);
+    }
+});
+
+// touch support
+lacquerInteract.addEventListener('touchstart',()=>{ lacquerTouchActive=true; });
+lacquerInteract.addEventListener('touchmove',e=>{
+    if(lacquerDone) return;
+    e.preventDefault();
+    const r=lacquerInteract.getBoundingClientRect();
+    const t=e.touches[0];
+    lacquerBrush.style.left=(t.clientX-r.left-30)+'px';
+    lacquerBrush.style.top=(t.clientY-r.top-30)+'px';
+    lacquerBrush.classList.add('visible');
+},{passive:false});
+lacquerInteract.addEventListener('touchend',e=>{
+    if(lacquerDone) return;
+    audio();
+    const r=lacquerInteract.getBoundingClientRect();
+    const t=e.changedTouches[0];
+    const x=t.clientX-r.left, y=t.clientY-r.top;
+    const s=document.createElement('div');
+    s.className='lacquer-spark';
+    s.style.left=x+'px'; s.style.top=y+'px';
+    lacquerInteract.appendChild(s);
+    setTimeout(()=>s.remove(),600);
+    lacquerAmt++;
+    lacquerProgressWrap.classList.add('visible');
+    lacquerProgressInner.style.width=(lacquerAmt/LACQUER_NEED*100)+'%';
+    tone(280+lacquerAmt*40,'sine',0.2,0.06);
+    document.querySelector('#stage-1 .stage-desc').textContent=
+        LACQUER_MSGS[Math.min(lacquerAmt-1,LACQUER_NEED-1)];
+    if(lacquerAmt>=LACQUER_NEED){ lacquerDone=true; lacquerBrush.classList.remove('visible'); setTimeout(()=>{ completeJingle(); goTo(2); },1200); }
+    setTimeout(()=>{ lacquerTouchActive=false; },300);
+});
+
+// ━━ Stage 3: 选弦 ━━
+let stringPicked=null;
+function resetStrings(){
+    stringPicked=null;
+    document.querySelectorAll('.string-opt').forEach(el=>el.classList.remove('selected'));
+    document.querySelector('#stage-2 .stage-desc').textContent='弦音清亮';
+}
+document.querySelectorAll('.string-opt').forEach(opt=>{
+    opt.addEventListener('click',()=>{
+        if(stringPicked) return;
+        audio(); ding();
+        stringPicked=opt.dataset.string;
+        opt.classList.add('selected');
+        document.querySelector('#stage-2 .stage-desc').textContent=
+            stringPicked==='steel'?'钢弦之音，清亮悠长':
+            stringPicked==='silk'?'丝弦之韵，温润古朴':'尼龙钢弦，刚柔并济';
+        setTimeout(()=>{ completeJingle(); goTo(3); },1200);
+    });
+});
+
+// ━━ Stage 4: 上弦 ━━
+let tunedCount=0;
+const PEG_NOTES=['C','D','F','G','A','c','d'];
+const PEG_FREQS=[65.41,73.42,87.31,98,110,130.81,146.83];
+function resetTuning(){
+    tunedCount=0;
+    document.querySelectorAll('.peg').forEach(el=>el.classList.remove('tuned'));
+    document.getElementById('tuning-hint').textContent='点击琴轸调弦';
+    document.querySelector('#stage-3 .stage-desc').textContent='调音上弦，七弦成韵';
+}
+
+document.querySelectorAll('.peg').forEach(peg=>{
+    peg.addEventListener('click',()=>{
+        audio();
+        const i=parseInt(peg.dataset.peg);
+        if(peg.classList.contains('tuned')){ tone(PEG_FREQS[i]*2,'sine',0.6,0.1); return; }
+        peg.classList.add('tuned');
+        tone(PEG_FREQS[i]*2,'sine',0.6,0.1);
+        tunedCount++;
+        document.getElementById('tuning-hint').textContent=
+            PEG_NOTES[i]+'音已调 · '+PEG_FREQS[i].toFixed(1)+'Hz';
+        document.querySelector('#stage-3 .stage-desc').textContent=
+            '已调 '+tunedCount+'/7 弦';
+        if(tunedCount>=7){
+            document.getElementById('tuning-hint').textContent='七弦既调，可以弹矣';
+            setTimeout(()=>{
+                completeJingle();
+                document.getElementById('complete-msg').classList.add('visible');
+            },800);
+        }
+    });
+});
+
+// ── Complete overlay ──
+document.getElementById('btn-restart').addEventListener('click',()=>location.reload());
+document.getElementById('btn-back').addEventListener('click',()=>{
+    window.location.href='../../index.html?instrument=%E7%90%B4';
+});
+
+// ── Keyboard nav ──
+document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(stage+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') goTo(stage-1);
+});
+
+// ── Init ──
+goTo(0);
+</script>
+</body>
+</html>

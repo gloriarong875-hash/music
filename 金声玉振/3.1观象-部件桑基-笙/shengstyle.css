@@ -1,0 +1,626 @@
+@charset "UTF-8";
+
+/*
+  中文脚注（布局样式说明）
+  - 本文件控制结构图与桑基图的布局、轨道、节点与视觉样式。
+  - 若要调整左侧结构画布尺寸，请修改 `.core` 的 `width`/`height`；
+  - 若要调整轨道文字大小，请修改 `:root` 中的 `--type-h4`（已简化为四级）。
+*/
+
+html,
+body {
+  overflow: hidden;
+  background-color: #65734e;
+  background-image: url("笙部件assets/3.1背景图.png");
+  background-repeat: repeat;
+}
+:root {
+  --ambient-motion-cycle: 3s;
+}
+
+/* 页面整体样式说明：
+   - `.page` 为画布容器，控制背景与最外层尺寸。
+   - 修改 `--type-*` 或 `.core`、`.plane-view`、`.structure-piece` 可调整结构图大小与层级。
+*/
+
+.page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 720px;
+  overflow: hidden;
+  background-color: #65734e;
+  background-image: url("笙部件assets/3.1背景图.png");
+  background-repeat: repeat;
+  isolation: isolate;
+}
+
+
+.page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 28% 34%, rgba(201, 169, 110, .16), transparent 32%),
+    radial-gradient(circle at 76% 48%, rgba(79, 118, 141, .10), transparent 32%),
+    linear-gradient(to bottom, rgba(0, 0, 0, .10), rgba(0, 0, 0, .9));
+  pointer-events: none;
+}
+
+/* 布局区（左右两栏）说明：
+  - `.layout` 使用 CSS Grid 分栏，左区为结构展示，右区为桑基图。
+  - 调整 `grid-template-columns` 可改变左右宽度比例。
+*/
+
+.layout {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(500px, .98fr) minmax(560px, 1.02fr);
+  gap: clamp(16px, 2vw, 34px);
+  padding: clamp(18px, 2.2vw, 34px);
+}
+
+.left-pane,
+.right-pane {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.left-pane {
+  /* 允许轨道与零件溢出显示，避免被容器裁切 */
+  overflow: visible;
+}
+
+/* 左侧主体（结构展示）说明：
+   - `.stage` 控制内部放置与定位；`.core` 为结构画布的尺寸容器。
+   - 修改 `.core` 的 `width`/`height` 可直接改变结构整体尺寸。
+*/
+
+.left-pane::after {
+  content: "";
+  position: absolute;
+  top: 9%;
+  right: -1px;
+  width: 1px;
+  height: 82%;
+  background: linear-gradient(to bottom, transparent, rgba(239, 214, 125, .38), transparent);
+}
+
+.stage {
+  position: absolute;
+  inset: 104px 2% 2%;
+  display: grid;
+  place-items: center;
+  /* 允许内部旋转元素完整显示 */
+  overflow: visible;
+}
+
+.core {
+  position: relative;
+  width: min(92%, 720px);
+  height: min(76vh, 720px);
+  min-height: 560px;
+  /* 确保核心画布的溢出元素（轨道节点）可见 */
+  overflow: visible;
+}
+
+.orbit-shell {
+  position: absolute;
+  /* 调整轨道边界与位置：收紧轨道宽度并适度上移，配合父容器 overflow:visible，
+     让零件沿圆形轨迹运行且保持完整可见（不会被四周裁切）。 */
+  inset: 0 -4% 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* 轨道与节点说明：
+   - `.orbit-rings` 为装饰性同心环。
+   - `.orbit-node` 的 `--radius` 决定节点距中心的远近，`--angle` 决定角度。
+   - 调整节点内联样式中的 `--radius` 或这里对 `.orbit-node` 的 transform 可改变节点分布。 */
+
+.orbit-rings {
+  position: absolute;
+  /* 与 orbit-system 保持相同最大尺寸，确保绘制的圆环与实际旋转轨迹对齐 */
+  width: min(92%, 640px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 46%, rgba(201, 169, 110, .11) 47%, transparent 48%),
+    radial-gradient(circle, transparent 62%, rgba(156, 197, 193, .13) 63%, transparent 64%),
+    radial-gradient(circle, transparent 76%, rgba(239, 214, 125, .25) 77%, transparent 78%);
+  filter: drop-shadow(0 0 24px rgba(201, 169, 110, .12));
+}
+
+.orbit-rings::before,
+.orbit-rings::after {
+  content: "";
+  position: absolute;
+  inset: 11%;
+  border-radius: 50%;
+  border: 1px dashed rgba(239, 214, 125, .22);
+}
+
+.orbit-rings::after {
+  inset: 27%;
+  border-style: solid;
+  border-color: rgba(156, 197, 193, .13);
+}
+
+.orbit-system {
+  position: relative;
+  /* 限制轨道最大尺寸，确保节点在可视圆内运行 */
+  width: min(92%, 640px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: orbitSpin 58s linear infinite;
+  pointer-events: none;
+}
+
+.orbit-shell:hover .orbit-system,
+.orbit-shell:hover .orbit-inner {
+  animation-play-state: paused;
+}
+
+.orbit-node {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(106px, 8vw, 142px);
+  min-height: 74px;
+  /* 把节点中心定位到轨道圆心，并围绕圆心旋转：
+     - 先平移 (-50%,-50%) 将元素自身中心置于父容器中心；
+     - 再按角度旋转并沿 X 轴平移半径距离；
+     - 最后 counter-rotate 保持内部标签正向。 */
+  transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--radius)) rotate(var(--angle-back));
+  transform-origin: 50% 50%;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+  /* 节点内部样式说明：
+   - `.orbit-inner` 为每个节点的标签与缩略图容器。
+   - `.orbit-label` 使用 var(--type-h4) 控制文字大小，可在 :root 调整变量。 */
+
+.orbit-inner {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 9px;
+  border: 1px solid rgba(239, 214, 125, .24);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(6, 7, 6, .72), rgba(54, 30, 25, .28));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .32), inset 0 0 14px rgba(255, 244, 201, .04);
+  backdrop-filter: blur(2px);
+  animation: orbitCounter 58s linear infinite;
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+
+.orbit-node:hover .orbit-inner,
+.orbit-node.is-hot .orbit-inner {
+  border-color: rgba(239, 214, 125, .88);
+  box-shadow: 0 0 26px rgba(239, 214, 125, .26), inset 0 0 18px rgba(255, 244, 201, .08);
+  transform: scale(1.04);
+}
+
+.orbit-inner img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(239, 214, 125, .28));
+}
+
+.orbit-label {
+  color: var(--color-paper);
+  font-size: var(--type-h4);
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.plane-view {
+  position: absolute;
+  left: 55%;
+  top: 46%;
+  z-index: 6;
+  display: block;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  filter: drop-shadow(0 0 28px rgba(221, 199, 137, .42)) drop-shadow(0 18px 26px rgba(0, 0, 0, .46));
+  user-select: none;
+}
+
+.structure-piece {
+  position: absolute;
+  left: 48%;
+  top: 50%;
+  z-index: 6;
+  display: block;
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  filter: drop-shadow(0 0 28px rgba(221, 199, 137, .42)) drop-shadow(0 18px 26px rgba(0, 0, 0, .46));
+  user-select: none;
+}
+
+/* 平面图（主视图） -  */
+.plane-view {
+  height: 100%;
+  transform: translate(-50%, -50%) scale(1.1);
+  opacity: 1;
+  transform-origin: 50% 50%;
+  animation: shengPlaneJitter 1.25s steps(2, end) infinite;
+  transition: opacity 1s ease, transform 1.2s cubic-bezier(.2, .78, .2, 1), filter 1.1s ease;
+}
+
+body.is-expanded .plane-view {
+  opacity: 0;
+  animation: none;
+  transform: translate(-50%, -50%) scale(1.1);
+  filter: drop-shadow(0 0 28px rgba(221, 199, 137, .42)) drop-shadow(0 18px 26px rgba(0, 0, 0, .46));
+  pointer-events: none;
+}
+
+
+/* 结构件（分解件） - 缩小并顺时针旋转30度，初始隐藏，通过 body.is-expanded 控制进入动画 */
+.structure-piece {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(var(--enter-y)) scale(.48) rotate(var(--enter-rotate, 0deg));
+  transition:
+    opacity 1.4s ease var(--delay),
+    transform 2.6s cubic-bezier(.16, 1.22, .28, 1) var(--delay),
+    filter .24s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+body.is-expanded .structure-piece {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateY(0) scale(.92) rotate(0deg);
+  animation: shengStructureSlowJitter var(--ambient-motion-cycle) ease-in-out calc(var(--delay) + 2.8s) infinite;
+}
+
+
+.structure-piece:hover,
+.structure-piece.is-hot {
+  filter: drop-shadow(0 0 34px rgba(239, 214, 125, .74)) drop-shadow(0 18px 26px rgba(0, 0, 0, .46));
+}
+
+
+/* 结构件个别位置与尺寸（由上到下排列：1..4）
+   - 按用户要求从上到下排列：笙苗(1) -> 笙孔(2) -> 笙斗(3) -> 笙嘴(4)
+*/
+.piece-miao {
+  /* 1：靠上 */
+  top: 25%;
+  width: min(36%, 220px);
+  --enter-y: -120px;
+  --delay: .12s;
+}
+
+/* 说明（笙苗 - 1号）
+   - 位置：通过 `top`（百分比或 px）控制上下位置；可额外使用 `left` 调整左右。
+   - 大小：通过 `width` 控制；`min()`/`max()` 写法可适应响应式。
+   - 动画入场：`--enter-y` 控制初始 Y 位移（负值从上方入场），`--delay` 控制延迟。
+   示例：将 `top: 18%` 调为 `top: 14%` 可上移；将 `width: min(36%,220px)` 改为 `width: min(42%,260px)` 可放大。
+*/
+
+.piece-kong {
+  /* 2：次上 */
+  top: 66%;
+  width: min(28%, 170px);
+  --enter-y: -80px;
+  --delay: .3s;
+}
+
+/* 说明（笙孔 - 2号）
+   - 常修改项：`top`、`left`、`width`。
+   - 若与 1 号重叠，可适当增大 `top` 值或缩小 `width`。
+   示例：`top:36%` -> `top:32%` 上移，或 `width: min(24%,150px)` 缩小。
+*/
+
+.piece-dou {
+  /* 3：次下 */
+  top: 86%;
+  width: min(30%, 180px);
+  --enter-y: 30px;
+  --delay: .6s;
+}
+
+/* 说明（笙斗 - 3号）
+   - `top` 值控制纵向排序，`left` 可控制横向偏移。
+   - 如果需要从上到下更均匀排列，可使用等距百分比（例如 20%, 40%, 60%, 80%）。
+*/
+
+.piece-zui {
+  /* 4：最下 */
+  left: 72%;
+  top: 88%;
+  width: min(30%, 180px);
+  --enter-y: 90px;
+  --delay: .9s;
+}
+
+/* 说明（笙嘴 - 4号）
+   - 默认放在右侧（`left: 61%`），可更改为 `left:50%` 居中显示。
+   - 若需要更加精确的位置控制，配合 `transform: translateX(...)` 使用可实现像素级微调。
+*/
+
+.stack-index {
+  position: absolute;
+  z-index: 7;
+  left: 21%;
+  top: 11%;
+  height: 71%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0;
+  transition: opacity .8s ease .7s;
+  pointer-events: none;
+}
+
+body.is-expanded .stack-index {
+  opacity: .9;
+}
+
+/* 隐藏页面左侧的序号（01,02,03,04）——结构展示不需要这些标记 */
+.stack-index { display: none !important; }
+
+.stack-index span {
+  position: relative;
+  min-width: 54px;
+  color: rgba(238, 231, 203, .74);
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+
+.stack-index span::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 34px;
+  width: 54px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(239, 214, 125, .74), transparent);
+}
+
+.part-info {
+  position: fixed;
+  z-index: 9999;
+  left: 4%;
+  bottom: 4%;
+  width: min(62%, 410px);
+  padding: 18px 20px 18px 22px;
+  border-left: 1px solid rgba(239, 214, 125, .7);
+  background: linear-gradient(90deg, rgba(5, 6, 5, .72), rgba(5, 6, 5, .12));
+  box-shadow: 0 0 28px rgba(0, 0, 0, .26);
+  backdrop-filter: blur(4px);
+}
+
+.part-info h4 {
+  margin-bottom: 7px;
+}
+
+.part-info h3 {
+  margin-bottom: 8px;
+}
+
+.right-pane {
+  padding-left: clamp(10px, 1.2vw, 22px);
+  overflow: visible;
+}
+
+.right-pane .panel-head {
+  min-height: 88px;
+}
+
+.chart-wrap {
+  position: absolute;
+  /* 上 右 下 左 */
+  inset: 60px -30px -10px -5px;
+  min-height: 0;
+  border-top: none;
+  background:
+    transparent;
+  overflow: visible;
+}
+
+
+#sankey-chart {
+  width: calc(100% + 50px);
+  height: calc(100% + 20px);
+  min-height: 560px;
+  margin-left: -24px;
+  margin-top: -10px;
+  animation: sankeySoftFlicker var(--ambient-motion-cycle) ease-in-out infinite;
+}
+
+.fallback-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  font-family: var(--font-display);
+}
+
+.fallback-link {
+  fill: none;
+  stroke-linecap: round;
+  opacity: .46;
+  mix-blend-mode: screen;
+}
+
+.fallback-link:hover {
+  opacity: .82;
+}
+
+.fallback-node rect {
+  rx: 4;
+  filter: drop-shadow(0 0 5px rgba(239, 214, 125, .18));
+}
+
+.fallback-node text {
+  fill: var(--color-paper);
+  font-size: 13px;
+  letter-spacing: 1px;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbitCounter {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes shengPlaneJitter {
+  0%, 100% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1.1) rotate(0deg);
+  }
+  20% {
+    transform: translate(-50%, -50%) translate(3px, -2px) scale(1.1) rotate(.45deg);
+  }
+  40% {
+    transform: translate(-50%, -50%) translate(-2px, 2px) scale(1.1) rotate(-.35deg);
+  }
+  60% {
+    transform: translate(-50%, -50%) translate(2px, 1px) scale(1.1) rotate(.25deg);
+  }
+  80% {
+    transform: translate(-50%, -50%) translate(-3px, -1px) scale(1.1) rotate(-.45deg);
+  }
+}
+
+@keyframes shengStructureSlowJitter {
+  0%, 100% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(.92) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(-50%, -50%) translate(1.4px, -1.8px) scale(.922) rotate(.16deg);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translate(-1.2px, 1.2px) scale(.919) rotate(-.12deg);
+  }
+
+  75% {
+    transform: translate(-50%, -50%) translate(.8px, .6px) scale(.921) rotate(.08deg);
+  }
+}
+
+@keyframes sankeySoftFlicker {
+  0%, 100% {
+    opacity: .965;
+    filter: brightness(1) drop-shadow(0 0 0 rgba(239, 214, 125, 0));
+  }
+
+  50% {
+    opacity: 1;
+    filter: brightness(1.025) drop-shadow(0 0 10px rgba(239, 214, 125, .08));
+  }
+}
+
+
+@media (max-width: 1180px) {
+  html,
+  body {
+    overflow: auto;
+  }
+
+  .page {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .layout {
+    min-height: 100vh;
+    grid-template-columns: 1fr;
+  }
+
+  .left-pane {
+    min-height: 760px;
+  }
+
+  .left-pane::after {
+    display: none;
+  }
+
+  .right-pane {
+    min-height: 720px;
+    padding-left: 0;
+  }
+
+  .chart-wrap {
+    inset: 92px 0 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .layout {
+    padding: 18px 14px 28px;
+  }
+
+  .panel-head {
+    min-height: 110px;
+  }
+
+  .stage {
+    inset: 116px 0 2%;
+  }
+
+  .core {
+    width: 100%;
+    min-height: 570px;
+  }
+
+  .part-info {
+    width: 92%;
+    left: 4%;
+    bottom: 0;
+  }
+
+  .orbit-node {
+    width: 104px;
+  }
+
+  .orbit-inner {
+    grid-template-columns: 38px 1fr;
+  }
+
+  .orbit-inner img {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+
+  .plane-view {
+    opacity: 0;
+  }
+
+  .structure-piece,
+  body.is-expanded .structure-piece {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
