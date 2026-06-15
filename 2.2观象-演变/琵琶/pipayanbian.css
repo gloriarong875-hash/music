@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 /* ============================================================================ */
-/* === 鼓历史演变界面样式表 === */
+/* === 琵琶历史演变界面样式表 === */
 /* === 主题：黑色背景 + bg.png 背景图 + 纹理时期标题 === */
 /* === 标题/副标题依照 ../../generalcomponent.css H1/H2 规范 === */
 /* ============================================================================ */
@@ -698,4 +698,23 @@ bottom: 48px;
 .ref-text {
     font-size: 10px;
 }
+}
+
+
+/* Excel 原稿较长时保持文字完整可读，不改变模板主体布局。 */
+.desc-block {
+max-height: 45vh;
+overflow-y: auto;
+padding-right: 12px;
+scrollbar-width: thin;
+scrollbar-color: rgba(201, 169, 110, 0.55) transparent;
+}
+
+.desc-block::-webkit-scrollbar {
+width: 5px;
+}
+
+.desc-block::-webkit-scrollbar-thumb {
+background: rgba(201, 169, 110, 0.55);
+border-radius: 999px;
 }

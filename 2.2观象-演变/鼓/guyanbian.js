@@ -1,7 +1,7 @@
 /**
  * ============================================================================
  * === 鼓历史演变页面交互脚本 ===
- * === 功能：三时期滚轮翻页 + 入场自动演变 ===
+ * === 功能：四时期滚轮翻页 + 入场自动演变 ===
  * === 滚轮向上 → 上一时期；滚轮向下 → 下一时期 ===
  * === 键盘 ↑← → 上一页；↓→ PageDown → 下一页 ===
  * === 每个时期进入后，标题先放大展示，再自动展开图文内容 ===
@@ -12,11 +12,12 @@
 'use strict';
 
 /* ========== 场景配置 ========== */
-var SCENES = ['yuangu', 'shangzhou', 'hantang'];  // 三个时期ID
+var SCENES = ['yuangu', 'shangzhou', 'hantang', 'songyuan'];  // 四个时期ID
 var SCENE_LABELS = {
     yuangu: '远古·起源 — Ancient · Origin',
     shangzhou: '商周·青铜鼓 — ShangZhou · Bronze Drum',
-    hantang: '汉唐·繁荣 — HanTang · Flourishing'
+    hantang: '汉唐·繁荣 — HanTang · Flourishing',
+    songyuan: '宋元·民间鼓乐 — SongYuan · Folk Drum'
 };
 
 // 状态变量
