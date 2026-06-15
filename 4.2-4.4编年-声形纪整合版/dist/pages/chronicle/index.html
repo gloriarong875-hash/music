@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>笙 · 大事纪</title>
+  <link rel="stylesheet" crossorigin href="/assets/chronicle-BA-sGEP6.css">
+</head>
+<body>
+  <canvas id="inkCanvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" aria-hidden="true"></header>
+
+  <main class="chronicle-layout">
+    <aside class="timeline" aria-label="历史时间轴">
+      <svg class="timeline__curve" viewBox="0 0 180 760" preserveAspectRatio="none" aria-hidden="true">
+        <path class="timeline__shadow" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780"/>
+        <path class="timeline__line" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780"/>
+        <path class="timeline__progress" id="timelineProgress" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780" pathLength="1"/>
+      </svg>
+
+      <div class="timeline__items" id="timelineItems"></div>
+    </aside>
+
+    <div class="archive-scroll" id="archiveScroll" tabindex="0">
+      <div id="timelineContent"></div>
+    </div>
+  </main>
+
+  <script src="./timeline-data.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
