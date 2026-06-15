@@ -1,0 +1,1356 @@
+/*
+ * 竹笛制作页视觉说明
+ * --------------------------------------------------------------------------
+ * 本文件按“全流程背景、择竹视差、全局导航、汗青/开孔共用舞台、试音舞台、响应式”组织。
+ * generalprocess.css 提供通用颜色、字体层级和圆点导航基础样式；本文件只覆盖
+ * 竹笛页面特有的素材位置、交互反馈和步骤间显隐。步骤 2、3 共用 #bake-stage，
+ * 必须通过 data-mode 选择器隔离控件，避免两个步骤的元素同时出现。步骤 2
+ * 只有长按烘烤；步骤 3 的工具按钮固定在右下角，拾取后的本地 PNG 使用 fixed
+ * 定位跟随指针，不参与舞台排版，也不会改变竹管和孔位的位置。
+ *
+ * 布局与维护约定：
+ * 1. --gold、--type-lg 等通用变量来自 generalprocess.css，本文件不重复定义。
+ * 2. #bg-layer 是步骤 1-4 唯一背景；背景图、暗色遮罩都在该选择器中调整。
+ * 3. #bake-stage[data-mode="bake"] 只显示炉子、竹管、蒸汽、进度条和长按按钮。
+ * 4. #bake-stage[data-mode="drill"] 隐藏烘烤控件，显示孔位、拾取按钮和凿子游标。
+ * 5. 跟随工具使用 fixed 坐标，JavaScript 写入的 clientX/clientY 可直接映射到视口。
+ * 6. 响应式规则集中在文件末尾，桌面布局修改后应同步检查 768px 以下覆盖项。
+ */
+
+:root {
+--bg: #1a1a1a;
+--bg-dark: #282828;
+--text: #fff;
+--text-gold: #c9a96e;
+--accent-warm: #98867a;
+--hole-size: 18px;
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body, html {
+width: 100%;
+height: 100%;
+overflow: hidden;
+background: url('笛部件assets/背景图.png') center/cover no-repeat, radial-gradient(circle at top, rgba(255,255,255,0.05), transparent 25%), var(--bg);
+color: var(--text);
+font-family: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", "PingFang SC", serif;
+user-select: none;
+-webkit-user-select: none;
+}
+
+/* ======================================== */
+/* === STAGE 1: PARALLAX BAMBOO SELECTION === */
+/* ======================================== */
+
+.parallax-scene {
+position: relative; width: 100vw; height: 100vh; overflow: hidden;
+opacity: 0; animation: fadeIn 0.8s ease 0.1s forwards;
+z-index: 1;
+}
+.parallax-scene.hidden {
+opacity: 0; visibility: hidden; pointer-events: none;
+}
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* Image Layers (no CSS transitions — JS driven) */
+.layer {
+position: absolute; will-change: transform, opacity;
+}
+.layer img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* Clickable — glow only */
+.layer.clickable { pointer-events: auto; cursor: pointer; }
+.layer.clickable img { transition: filter 0.4s ease; }
+.layer.clickable:hover img { filter: brightness(1.2) drop-shadow(0 0 22px rgba(255,195,98,0.55)); }
+.layer.clickable.selected img { filter: brightness(1.3) drop-shadow(0 0 40px rgba(255,195,98,0.85)); }
+
+/* 前两种竹材为反例：悬停时灰化，避免与可选直竹的金色高亮混淆。 */
+.layer-xin.clickable:hover img,
+.layer-wai.clickable:hover img {
+filter: grayscale(1) brightness(.72) contrast(.9);
+}
+
+.layer.clickable.bad-shake {
+animation: layerShake 0.4s ease-in-out;
+}
+@keyframes layerShake {
+0%, 100% { transform: translate(var(--sx), var(--sy)); }
+25% { transform: translate(calc(var(--sx) - 8px), var(--sy)); }
+75% { transform: translate(calc(var(--sx) + 8px), var(--sy)); }
+}
+
+.layer-xin { z-index: 3; }
+.layer-zhi { z-index: 4; }
+.layer-wai { z-index: 2; }
+
+/*
+ * 竹材近图指导
+ * --------------------------------------------------------------------------
+ * JavaScript 根据图片实时边界写入 left/top，并按距离吸附点的远近写入 opacity。
+ * data-guide-side="left/right" 决定文字从定位点向哪侧展开；--guide-gap 控制
+ * 文字与竹材之间的距离。这里只处理视觉，不参与点击。
+ */
+.bamboo-guide {
+--guide-gap: clamp(18px, 2.4vw, 38px);
+position: fixed;
+z-index: 8;
+width: min(300px, 28vw);
+padding: 14px 18px;
+pointer-events: none;
+opacity: 0;
+transform: translateY(-50%) translateY(14px);
+transition: opacity 0.28s ease, transform 0.42s ease;
+color: rgba(255,255,255,.92);
+text-shadow: 0 2px 12px rgba(0,0,0,.85);
+}
+
+.bamboo-guide[data-guide-side="right"] {
+transform: translate(var(--guide-gap), -50%) translateY(14px);
+text-align: left;
+}
+
+.bamboo-guide[data-guide-side="left"] {
+transform: translate(calc(-100% - var(--guide-gap)), -50%) translateY(14px);
+text-align: right;
+}
+
+.bamboo-guide.is-near[data-guide-side="right"] {
+transform: translate(var(--guide-gap), -50%);
+}
+
+.bamboo-guide.is-near[data-guide-side="left"] {
+transform: translate(calc(-100% - var(--guide-gap)), -50%);
+}
+
+.guide-name {
+font-size: clamp(22px, 2.2vw, 34px);
+color: #f2d7a0;
+letter-spacing: 4px;
+margin-bottom: 8px;
+}
+
+.guide-rule {
+font-size: clamp(14px, 1.15vw, 17px);
+line-height: 1.75;
+letter-spacing: 1px;
+}
+
+.guide-result {
+margin-top: 7px;
+font-size: clamp(13px, 1vw, 15px);
+color: #d7bd89;
+letter-spacing: 1.5px;
+}
+
+/* Scroll Hint — positioning only; .hint from generalprocess.css provides styling */
+.scroll-hint {
+position: fixed; bottom: 20px; left: 50%;
+transform: translateX(-50%);
+}
+
+/* Step Indicator Dots (parallax sub-steps) */
+.step-indicator {
+position: fixed;
+top: clamp(50px, 6vh, 60px); left: 50%;
+transform: translateX(-50%); z-index: 105;
+display: flex; align-items: center;
+gap: clamp(32px, 6vw, 90px); pointer-events: none;
+transition: opacity 0.4s ease;
+}
+.step-label-group { display: flex; align-items: center; gap: 10px; }
+.step-label-text {
+color: var(--text-gold);
+font-size: clamp(14px, 1.2vw, 18px); font-weight: 100;
+text-shadow: 0 0 18px rgba(255,195,98,0.55);
+letter-spacing: 2px;
+}
+.step-gold-dot {
+width: 22px; height: 22px; border-radius: 50%;
+background: var(--text-gold);
+box-shadow: 0 0 18px rgba(255,195,98,0.55); flex-shrink: 0;
+}
+.step-dots { display: flex; gap: clamp(32px, 6vw, 90px); }
+.step-dot {
+width: 14px; height: 14px; border-radius: 50%;
+background: var(--accent-warm);
+box-shadow: 0 0 14px rgba(255,255,255,0.4);
+transition: all 0.5s ease;
+pointer-events: auto; cursor: pointer;
+}
+.step-dot.active {
+background: #fff; transform: scale(1.4);
+box-shadow: 0 0 24px rgba(255,255,255,0.85);
+}
+
+/* ======================================== */
+/* === GLOBAL ELEMENTS === */
+/* ======================================== */
+
+#bg-layer {
+position: fixed;
+inset: 0;
+z-index: 0;
+background: url('笛部件assets/背景图.png') center/cover no-repeat;
+pointer-events: none;
+transform-origin: center;
+transition: transform 0.2s ease-out;
+display: block;
+}
+
+/* 共用暗色遮罩沿用步骤 1 的色调，保证竹材和后续工具在同一视觉环境中。 */
+#bg-layer::after {
+content: '';
+position: absolute;
+inset: 0;
+background: rgba(50,66,69,0.77);
+mix-blend-mode: multiply;
+}
+
+.fire-glow {
+position: absolute;
+bottom: 12%;
+left: 50%;
+transform: translateX(-50%);
+width: 420px;
+height: 140px;
+background: radial-gradient(ellipse at center, rgba(201, 169, 110, 0.18) 0%, transparent 65%);
+border-radius: 50%;
+animation: firePulse 3.5s ease-in-out infinite;
+pointer-events: none;
+opacity: 0;
+display: none;
+}
+
+@keyframes firePulse {
+0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
+50% { opacity: 0.75; transform: translateX(-50%) scale(1.08); }
+}
+
+/*
+ * 全流程四步导航
+ * 步骤 1 与步骤 4 也必须显示，因此基础状态保持可见；visible 类仍用于兼容
+ * 原有步骤切换代码。z-index 高于 final-stage，确保试音页面不会遮住进度圆点。
+ */
+.nav-dots {
+position: fixed;
+opacity: 1;
+transition: opacity 0.4s ease;
+z-index: 50;
+}
+.nav-dots.visible { opacity: 1; }
+
+/* 步骤 1 的视差吸附点只作为内部反馈，避免与四步导航重复占据顶部空间。 */
+.step-indicator { display: none; }
+
+/* ======================================== */
+/* === STAGE 2-3: BAKE / DRILL === */
+/* ======================================== */
+
+.stage-panel {
+position: absolute;
+inset: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 20px;
+transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.hidden {
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+}
+
+.stage-text {
+position: absolute;
+top: clamp(108px, 14vh, 145px);
+width: 100%;
+text-align: center;
+font-size: var(--type-lg);
+letter-spacing: 2px;
+color: rgba(255,255,255,.92);
+z-index: 2;
+text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+}
+
+.stage-sub {
+position: absolute;
+top: clamp(154px, 21vh, 205px);
+width: 100%;
+text-align: center;
+font-size: var(--type-sm);
+color: #d9c7a4;
+letter-spacing: 1.5px;
+z-index: 2;
+opacity: 0.9;
+font-family: "LiSu", "隶书", "Microsoft YaHei", "PingFang SC", serif;
+text-shadow: 0 2px 8px #000;
+}
+
+/* The bake and drilling interactions share one canvas. Keep their controls
+   mutually exclusive so step 2 cannot leak into step 3 (or vice versa). */
+#bake-stage[data-mode="bake"] .drill-pickup-btn,
+#bake-stage[data-mode="bake"] .drill-pickup-hint,
+#bake-stage[data-mode="bake"] .drill-chisel-img,
+#bake-stage[data-mode="bake"] .holes-layer,
+#bake-stage[data-mode="bake"] .gongche-panel,
+#bake-stage[data-mode="bake"] .scale-overlay {
+display: none !important;
+}
+
+#bake-stage[data-mode="drill"] .furnace,
+#bake-stage[data-mode="drill"] .steam,
+#bake-stage[data-mode="drill"] .bake-hold-hint,
+#bake-stage[data-mode="drill"] .progress-container {
+display: none !important;
+}
+
+.bamboo-container {
+position: relative;
+width: auto;
+max-width: 320px;
+height: 520px;
+display: flex;
+align-items: flex-end;
+justify-content: center;
+margin-top: 4%;
+z-index: 2;
+cursor: default;
+}
+
+#bake-stage[data-mode="bake"] .bamboo-container {
+position: absolute;
+left: 50%;
+top: 52%;
+transform: translate(-50%, -50%);
+margin-top: 0;
+}
+
+#bake-stage[data-mode="drill"] .bamboo-container {
+position: relative;
+left: auto;
+top: auto;
+transform: none;
+margin-top: 4%;
+}
+
+/* 凿子图片跟随鼠标，但保留系统指针，便于准确判断落点。 */
+#bake-stage[data-mode="drill"].tool-active,
+#bake-stage[data-mode="drill"].tool-active .hole {
+cursor: default;
+}
+
+#bamboo-pipe {
+width: auto;
+height: 320px;
+max-height: 320px;
+object-fit: contain;
+position: absolute;
+bottom: 70px;
+left: 45%;
+transform: translateX(-50%) translateY(var(--bamboo-offset, 0px)) scale(0.78);
+z-index: 5;
+filter: sepia(0.35) brightness(0.9);
+transition: all 0.5s ease;
+}
+
+#bamboo-pipe.baking {
+filter: sepia(0.6) brightness(1.05) saturate(1.2);
+transform: translateX(-50%) translateY(var(--bamboo-offset, 0px)) scale(0.82);
+}
+
+#bamboo-pipe.baked {
+filter: sepia(1) brightness(0.68) contrast(1.05);
+transform: translateX(-50%) translateY(0) scale(0.85) rotate(0deg);
+}
+
+
+.steam {
+position: absolute;
+width: 100%;
+height: 100%;
+pointer-events: none;
+opacity: 0;
+transition: opacity 0.5s;
+z-index: 4;
+}
+
+.steam.active {
+opacity: 1;
+}
+
+.steam-particle {
+position: absolute;
+width: 3px;
+height: 30px;
+background: linear-gradient(to top, rgba(201, 169, 110, 0.35), transparent);
+border-radius: 50%;
+animation: steamRise 2s ease-out infinite;
+}
+
+@keyframes steamRise {
+0% { transform: translateY(0) scaleX(1); opacity: 0.6; }
+100% { transform: translateY(-80px) scaleX(0.5); opacity: 0; }
+}
+
+.bake-hold-hint {
+position: absolute;
+left: 50%;
+top: calc(50% - 155px);
+transform: translateX(-50%);
+font-size: var(--type-sm);
+color: #d9c7a4;
+letter-spacing: 2px;
+white-space: nowrap;
+text-shadow: 0 2px 8px #000;
+z-index: 15;
+pointer-events: none;
+}
+
+.progress-container {
+position: absolute;
+top: 82px;
+left: 50%;
+transform: translateX(-50%);
+width: min(260px, 82%);
+height: 8px;
+background: rgba(255,255,255,0.05);
+border-radius: 99px;
+overflow: hidden;
+opacity: 1;
+transition: opacity 0.4s ease, box-shadow .35s ease;
+z-index: 8;
+}
+
+.progress-container.is-running {
+box-shadow: 0 0 10px rgba(201,169,110,.45), 0 0 24px rgba(201,169,110,.2);
+animation: bakeProgressPulse 1.15s ease-in-out infinite;
+}
+
+.progress-bar {
+position: relative;
+width: 0;
+height: 100%;
+background: linear-gradient(90deg, var(--gold), var(--gold-dim));
+transition: width 0.08s linear;
+overflow: hidden;
+}
+
+.progress-bar::after {
+content: '';
+position: absolute;
+inset: 0;
+width: 42%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent);
+transform: translateX(-160%);
+}
+
+.progress-container.is-running .progress-bar::after {
+animation: bakeProgressShine .8s linear infinite;
+}
+
+@keyframes bakeProgressShine {
+to { transform: translateX(340%); }
+}
+
+@keyframes bakeProgressPulse {
+50% { transform: translateX(-50%) scaleX(1.025); }
+}
+
+/*
+ * 步骤 3 工具拾取按钮
+ * fixed 定位确保按钮始终锚定视口右下角；picked-up 后按钮淡出，由跟随指针的
+ * 本地凿子图片接管视觉反馈。
+ */
+.drill-pickup-btn {
+    position: fixed;
+    right: clamp(28px, 5vw, 72px);
+    bottom: clamp(34px, 7vh, 76px);
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    z-index: 25;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.drill-pickup-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+.drill-pickup-inner {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 35px 5px rgba(255,255,255,0.25),
+                inset 0 0 0 1px rgba(255,255,255,0.8);
+    transition: all 0.35s ease;
+}
+.drill-pickup-btn:hover .drill-pickup-inner {
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 0 50px 10px rgba(255,255,255,0.45),
+                0 0 80px 15px rgba(255,195,98,0.4),
+                inset 0 0 0 1px rgba(255,255,255,0.95);
+    transform: scale(1.18);
+}
+.drill-pickup-btn.picked-up .drill-pickup-inner {
+    background: rgba(201,169,110,0.7);
+    box-shadow: 0 0 30px 8px rgba(201,169,110,0.5),
+                inset 0 0 0 2px rgba(201,169,110,0.9);
+}
+.drill-pickup-btn.picked-up {
+    opacity: 0;
+    transform: scale(.75);
+    pointer-events: none;
+}
+
+.drill-pickup-hint {
+    position: fixed;
+    right: clamp(18px, 4vw, 62px);
+    bottom: clamp(112px, 16vh, 154px);
+    font-size: var(--type-sm);
+    color: var(--gold);
+    letter-spacing: 2px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 25;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.drill-pickup-hint.visible {
+    opacity: 0.82;
+}
+
+.drill-chisel-img {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translate(-18%, -82%) rotate(-42deg);
+    transform-origin: 18% 82%;
+    width: clamp(120px, 13vw, 190px);
+    height: auto;
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    will-change: left, top;
+    mix-blend-mode: screen;
+    filter: contrast(1.25) drop-shadow(0 0 10px rgba(201,169,110,.5));
+}
+.drill-chisel-img.visible {
+    opacity: .9;
+    visibility: visible;
+}
+.drill-chisel-img.picked-up {
+    opacity: 1;
+    visibility: visible;
+    filter:  contrast(1.35) drop-shadow(0 0 18px rgba(201,169,110,.8));
+    pointer-events: none;
+}
+/* 炉子 */
+.furnace {
+position: absolute;
+bottom: -288px; /* 纵向位置 */
+left: 50%;
+transform: translateX(-50%);
+width: 720px;
+max-width: 720vw;
+max-height: 660px;
+height: auto;
+display: block;
+margin: 0;
+filter: brightness(0.95);
+cursor: pointer;
+transition: transform .3s ease, filter .3s ease, opacity .4s ease;
+}
+
+.furnace.hidden {
+opacity: 0;
+transform: scale(0.8);
+pointer-events: none;
+}
+
+.furnace:hover {
+transform: translateX(-50%) scale(1.03);
+filter: brightness(1.08) drop-shadow(0 0 16px rgba(201,169,110,.28));
+}
+
+.furnace.heating {
+animation: furnaceHeating 1s ease-in-out infinite;
+filter: brightness(1.14) drop-shadow(0 0 22px rgba(201,169,110,.48));
+}
+
+@keyframes furnaceHeating {
+0%, 100% { transform: translateX(-50%) scale(1); }
+50% { transform: translateX(-50%) scale(1.025); }
+}
+
+.complete-overlay {
+position: absolute;
+inset: 0;
+background: rgba(26, 26, 26, 0.9);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.8s ease;
+z-index: 20;
+}
+
+.complete-overlay.active {
+opacity: 1;
+pointer-events: all;
+}
+
+.complete-text {
+font-size: 2rem;
+color: var(--gold);
+letter-spacing: 8px;
+margin-bottom: 18px;
+}
+
+.complete-sub {
+font-size: 1rem;
+color: #b8b8b8;
+letter-spacing: 2px;
+}
+
+.final-stage {
+position: absolute;
+inset: 0;
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+transition: opacity 0.6s ease, visibility 0.6s ease;
+z-index: 6;
+/* 保持透明，使步骤 1 的共用竹林背景完整显示到试音阶段。 */
+background: transparent;
+}
+
+.final-stage.visible {
+opacity: 1;
+visibility: visible;
+pointer-events: all;
+}
+
+.final-stage iframe {
+width: 100%;
+height: 100%;
+border: 0;
+display: block;
+background: var(--bg);
+}
+
+.holes-layer {
+position: absolute;
+inset: 0;
+pointer-events: auto;
+z-index: 12;
+}
+
+.hole {
+position: absolute;
+width: var(--hole-size);
+height: var(--hole-size);
+border-radius: 50%;
+cursor: pointer;
+pointer-events: all;
+transition: all 0.3s ease;
+transform: translate(-50%, -50%);
+}
+
+.hole.ink-mark {
+border: 2px dashed rgba(60, 50, 40, 0.8);
+background: rgba(40, 35, 30, 0.4);
+box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+}
+
+.hole.ink-mark:hover {
+border-color: var(--gold-dim);
+background: rgba(201, 169, 110, 0.15);
+box-shadow: 0 0 12px rgba(201, 169, 110, 0.3), inset 0 0 4px rgba(0,0,0,0.5);
+}
+
+/* 凿子进入孔位识别范围时给出比普通悬停更醒目的反馈。 */
+.hole.ink-mark.target-near {
+border-color: #fff1bd;
+background: rgba(201, 169, 110, 0.38);
+box-shadow:
+0 0 12px rgba(255, 241, 189, 0.95),
+0 0 28px rgba(201, 169, 110, 0.72),
+inset 0 0 7px rgba(255, 246, 210, 0.45);
+transform: translate(-50%, -50%) scale(1.3);
+}
+
+.hole.drilled {
+background: radial-gradient(circle at 30% 30%, #2a1f15 0%, #1a120a 40%, #3d2818 70%, #5a3a20 100%);
+border: 1px solid #4a3020;
+box-shadow: inset 0 0 8px rgba(0,0,0,0.8), 0 0 6px rgba(90, 58, 32, 0.6);
+}
+
+.hole-label {
+position: absolute;
+font-size: 11px;
+color: var(--gold-dim);
+letter-spacing: 1px;
+transform: translateX(-50%);
+pointer-events: none;
+opacity: 0.8;
+}
+
+#bake-stage .hole-1 { left: 26%; top: 56%; }
+#bake-stage .hole-2 { left: 34%; top: 56%; }
+#bake-stage .hole-3 { left: 42%; top: 56%; }
+#bake-stage .hole-4 { left: 50%; top: 56%; }
+#bake-stage .hole-5 { left: 58%; top: 56%; }
+#bake-stage .hole-6 { left: 66%; top: 56%; }
+#bake-stage .hole-7 { left: 74%; top: 56%; }
+#bake-stage .hole-8 { left: 82%; top: 56%; }
+
+#bake-stage .label-1 { left: 26%; top: 64%; }
+#bake-stage .label-2 { left: 34%; top: 64%; }
+#bake-stage .label-3 { left: 42%; top: 64%; }
+#bake-stage .label-4 { left: 50%; top: 64%; }
+#bake-stage .label-5 { left: 58%; top: 64%; }
+#bake-stage .label-6 { left: 66%; top: 64%; }
+#bake-stage .label-7 { left: 74%; top: 64%; }
+#bake-stage .label-8 { left: 82%; top: 64%; }
+
+#final-stage .hole-1 { left: 12%; top: 48%; }
+#final-stage .hole-2 { left: 22%; top: 48%; }
+#final-stage .hole-3 { left: 38%; top: 48%; }
+#final-stage .hole-4 { left: 48%; top: 48%; }
+#final-stage .hole-5 { left: 58%; top: 48%; }
+#final-stage .hole-6 { left: 68%; top: 48%; }
+#final-stage .hole-7 { left: 78%; top: 48%; }
+#final-stage .hole-8 { left: 88%; top: 48%; }
+
+.scale-overlay {
+position: absolute;
+top: 5%;
+left: 50%;
+transform: translateX(-50%) translateY(-20px);
+width: 80%;
+max-width: 700px;
+padding: 20px 30px;
+background: rgba(26, 26, 26, 0.85);
+border: 1px solid var(--gold-dim);
+border-radius: 4px;
+opacity: 0;
+pointer-events: none;
+transition: all 0.6s ease;
+z-index: 8;
+}
+
+.scale-overlay.visible {
+opacity: 1;
+transform: translateX(-50%) translateY(0);
+}
+
+.scale-title {
+font-size: 14px;
+color: var(--gold);
+letter-spacing: 4px;
+text-align: center;
+margin-bottom: 12px;
+}
+
+.scale-content {
+display: flex;
+justify-content: space-around;
+align-items: center;
+}
+
+.scale-item {
+text-align: center;
+}
+
+.scale-note {
+font-size: 24px;
+color: var(--gold);
+font-family: "Noto Serif SC", serif;
+}
+
+.scale-name {
+font-size: 11px;
+color: #888;
+margin-top: 4px;
+letter-spacing: 1px;
+}
+
+.scale-line {
+width: 1px;
+height: 30px;
+background: var(--gold-dim);
+opacity: 0.5;
+}
+
+.gongche-panel {
+position: absolute;
+right: 3%;
+top: 50%;
+transform: translateY(-50%);
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 6px;
+opacity: 0;
+transition: opacity 0.8s ease;
+z-index: 12;
+pointer-events: none;
+}
+
+.gongche-panel.visible {
+opacity: 1;
+pointer-events: auto;
+}
+
+.gongche-title {
+font-size: 12px;
+color: var(--gold-dim);
+letter-spacing: 4px;
+writing-mode: vertical-rl;
+text-orientation: upright;
+margin-bottom: 15px;
+border-bottom: 1px solid var(--gold-dim);
+padding-bottom: 10px;
+}
+
+.gongche-item {
+position: relative;
+display: flex;
+flex-direction: column;
+align-items: center;
+cursor: pointer;
+}
+
+.gongche-char {
+font-size: 22px;
+color: var(--gold);
+font-family: "Noto Serif SC", serif;
+writing-mode: vertical-rl;
+text-orientation: upright;
+opacity: 0;
+transform: translateY(10px);
+transition: all 0.5s ease;
+padding: 4px 0;
+position: relative;
+}
+
+.gongche-char.visible {
+opacity: 1;
+transform: translateY(0);
+}
+
+.chip-particle {
+position: absolute;
+width: 4px;
+height: 4px;
+background: var(--gold);
+border-radius: 50%;
+pointer-events: none;
+z-index: 20;
+}
+
+@keyframes chipFly {
+0% { transform: translate(0, 0) scale(1); opacity: 1; }
+100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+.sound-wave {
+position: absolute;
+border: 2px solid var(--gold);
+border-radius: 50%;
+pointer-events: none;
+z-index: 15;
+opacity: 0;
+}
+
+@keyframes waveExpand {
+0% { width: var(--hole-size); height: var(--hole-size); opacity: 0.8; }
+100% { width: 80px; height: 80px; opacity: 0; }
+}
+
+/* ======================================== */
+/* === FINAL STAGE (4-试音) === */
+/* ======================================== */
+
+#final-stage {
+position: absolute;
+inset: 0;
+overflow: hidden;
+pointer-events: none;
+z-index: 12;
+}
+
+#final-stage.visible {
+pointer-events: all;
+}
+
+#final-stage .membrane-stage,
+#final-stage .play-stage {
+position: absolute;
+inset: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+transition: opacity 0.8s ease, transform 0.8s ease;
+z-index: 5;
+}
+
+#final-stage .membrane-stage.hidden {
+opacity: 0;
+pointer-events: none;
+transform: scale(0.95);
+}
+
+#final-stage .membrane-title {
+position: absolute;
+top: 18%;
+font-size: 1.3rem;
+color: var(--gold);
+letter-spacing: 4px;
+text-align: center;
+}
+
+#final-stage .membrane-sub {
+position: absolute;
+top: 23%;
+font-size: 0.9rem;
+color: var(--gold-dim);
+letter-spacing: 2px;
+}
+
+#final-stage .membrane-options {
+display: flex;
+gap: 60px;
+margin-top: -5%;
+}
+
+#final-stage .membrane-item {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 15px;
+cursor: pointer;
+transition: all 0.4s ease;
+padding: 20px;
+border-radius: 8px;
+border: 2px solid transparent;
+}
+
+#final-stage .membrane-item:hover {
+border-color: var(--gold-dim);
+background: rgba(201, 169, 110, 0.05);
+transform: translateY(-5px);
+}
+
+#final-stage .membrane-item.selected {
+border-color: var(--gold);
+background: rgba(201, 169, 110, 0.1);
+box-shadow: 0 0 30px rgba(201, 169, 110, 0.2);
+}
+
+#final-stage .membrane-icon {
+width: clamp(120px, 12vw, 180px);
+height: clamp(120px, 12vw, 180px);
+border-radius: 50%;
+border: 2px solid var(--gold-dim);
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+background: rgba(255,255,255,.04);
+transition: all 0.4s ease;
+}
+
+/* 膜材素材为纵向纹理图，使用 cover 居中裁切，完整填满圆形选择区。 */
+#final-stage .membrane-icon img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+object-position: center;
+display: block;
+transition: transform .4s ease, filter .4s ease;
+}
+
+#final-stage .membrane-item:hover .membrane-icon,
+#final-stage .membrane-item.selected .membrane-icon {
+border-color: var(--gold);
+box-shadow: 0 0 20px rgba(201, 169, 110, 0.3);
+}
+
+#final-stage .membrane-item:hover .membrane-icon img,
+#final-stage .membrane-item.selected .membrane-icon img {
+transform: scale(1.06);
+filter: brightness(1.08);
+}
+
+#final-stage .membrane-name {
+font-size: 16px;
+color: var(--gold);
+letter-spacing: 2px;
+}
+
+/* 膜材描述：小号灰色文字说明音色 */
+#final-stage .membrane-desc {
+font-size: 12px;
+color: #888;
+letter-spacing: 1px;
+}
+
+/* 确认贴膜按钮：底部居中，选中膜材后淡入显示 */
+#final-stage .confirm-btn {
+position: absolute;
+bottom: 20%;
+padding: 12px 40px;
+background: transparent;
+border: 2px solid var(--gold-dim);
+color: var(--gold-dim);
+font-size: 14px;
+letter-spacing: 4px;
+cursor: pointer;
+border-radius: 4px;
+transition: all 0.4s ease;
+opacity: 0;
+pointer-events: none;
+}
+
+#final-stage .confirm-btn.visible {
+opacity: 1;
+pointer-events: all;
+}
+
+#final-stage .confirm-btn:hover {
+border-color: var(--gold);
+color: var(--gold);
+box-shadow: 0 0 20px rgba(201, 169, 110, 0.3);
+}
+
+/* 演奏舞台：初始缩小透明，visible 时恢复正常 */
+#final-stage .play-stage {
+opacity: 0;
+pointer-events: none;
+transform: scale(1.05);
+}
+
+#final-stage .play-stage.visible {
+opacity: 1;
+pointer-events: all;
+transform: scale(1);
+}
+
+/* 试音阶段竹管容器：水平居中，承载竹管和孔位 */
+#final-stage .bamboo-container {
+position: relative;
+width: 70%;
+max-width: 900px;
+height: 200px;
+display: flex;
+align-items: center;
+justify-content: center;
+margin-top: -1%;
+}
+
+/* 试音阶段竹管图片：sepia 滤镜，glowing 时发光脉冲 */
+#final-stage #final-bamboo-pipe {
+width: 100%;
+height: auto;
+max-height: 2500px;
+object-fit: contain;
+position: relative;
+z-index: 5;
+filter: sepia(0.8) brightness(0.85) contrast(1.1);
+transition: filter 0.5s ease;
+}
+
+#final-stage #final-bamboo-pipe.glowing {
+filter: sepia(0.6) brightness(1.0) contrast(1.1);
+animation: pipeGlow 3s ease-in-out infinite;
+}
+
+/* 试音阶段孔位图层：绝对定位覆盖竹管 */
+#final-stage .holes-layer {
+position: absolute;
+width: 100%;
+height: 100%;
+top: 15%;
+left: 0;
+z-index: 10;
+pointer-events: none;
+}
+
+/* 试音阶段孔位基础样式：圆形，无交互 */
+#final-stage .hole {
+position: absolute;
+width: var(--hole-size);
+height: var(--hole-size);
+border-radius: 50%;
+transform: translate(-50%, -50%);
+pointer-events: none;
+transition: all 0.15s ease;
+}
+
+/* 试音阶段已钻孔位：深色渐变 */
+#final-stage .hole.drilled {
+background: radial-gradient(circle at 30% 30%, #2a1f15 0%, #1a120a 40%, #3d2818 70%, #5a3a20 100%);
+border: 1px solid #4a3020;
+box-shadow: inset 0 0 8px rgba(0,0,0,0.8), 0 0 6px rgba(90, 58, 32, 0.6);
+}
+
+/* 试音阶段手指按住的孔位：金色发光效果 */
+#final-stage .hole.active {
+box-shadow:
+inset 0 0 8px rgba(153, 136, 62, 0.8),
+0 0 15px rgba(201, 169, 110, 0.8),
+0 0 30px rgba(201, 169, 110, 1);
+border-color: var(--gold);
+border: 1px solid rgba(196, 139, 34, 0.3);
+border-radius: 50%;
+pointer-events: none;
+}
+
+/* 试音阶段贴膜孔位：浅色半透明覆盖 */
+#final-stage .hole.membrane-covered {
+background: url('笛部件assets/背景图.png') center/cover no-repeat;radial-gradient(circle at 30% 30%, rgba(232, 213, 168, 0.3) 0%, rgba(201, 169, 110, 0.15) 50%, transparent 100%);
+box-shadow:
+inset 0 0 8px rgba(0,0,0,0.6),
+0 0 8px rgba(201, 169, 110, 0.3);
+}
+
+/* 贴膜振动效果：贴膜时从膜孔向外扩散的波纹 */
+#final-stage .vibration {
+position: absolute;
+
+z-index: 8;
+opacity: 0;
+}
+
+@keyframes vibrate {
+0% { width: var(--hole-size); height: var(--hole-size); opacity: 0.6; }
+100% { width: 50px; height: 50px; opacity: 0; }
+}
+
+/* 试音声波扩散圈：演奏时从孔位向外扩散 */
+#final-stage .sound-wave {
+position: absolute;
+border: 2px solid var(--gold);
+border-radius: 50%;
+pointer-events: none;
+z-index: 15;
+opacity: 0;
+}
+
+@keyframes finalWaveExpand {
+0% { width: var(--hole-size); height: var(--hole-size); opacity: 0.8; }
+100% { width: 100px; height: 100px; opacity: 0; }
+}
+
+/* 试音阶段键盘提示位置：1-7 数字键对应七个音孔 */
+#final-stage .hint-1 { left: 38%; top: 62%; }
+#final-stage .hint-2 { left: 48%; top: 62%; }
+#final-stage .hint-3 { left: 58%; top: 62%; }
+#final-stage .hint-4 { left: 68%; top: 62%; }
+#final-stage .hint-5 { left: 78%; top: 62%; }
+#final-stage .hint-6 { left: 88%; top: 62%; }
+#final-stage .hint-7 { left: 12%; top: 62%; }
+
+/* 键盘提示文字：小号金色半透明，active 时放大高亮 */
+#final-stage .key-hint {
+position: absolute;
+font-size: 10px;
+color: var(--gold-dim);
+transform: translate(-50%, -50%);
+pointer-events: none;
+opacity: 0.6;
+transition: all 0.2s;
+}
+
+#final-stage .key-hint.active {
+color: var(--gold);
+opacity: 1;
+font-size: 14px;
+text-shadow: 0 0 10px rgba(201, 169, 110, 0.5);
+}
+
+/* 音符显示面板：顶部居中，大号工尺谱字符，visible 时淡入 */
+#final-stage .note-display {
+position: absolute;
+top: 18%;
+font-size: 3rem;
+color: var(--gold);
+letter-spacing: 4px;
+font-family: "Noto Serif SC", serif;
+opacity: 0;
+transition: all 0.3s ease;
+text-shadow: 0 0 20px rgba(201, 169, 110, 0.3);
+}
+
+#final-stage .note-display.visible {
+opacity: 1;
+}
+
+/* 音符名称：音符字符下方的小字说明 */
+#final-stage .note-name {
+font-size: 1rem;
+color: var(--gold-dim);
+text-align: center;
+margin-top: 8px;
+letter-spacing: 2px;
+}
+
+/* 试音阶段主文本：放在笛身下方，避免遮挡孔位与数字键提示。 */
+#final-stage .stage-text {
+position: absolute;
+top: 66%;
+bottom: auto;
+width: 100%;
+text-align: center;
+font-size: 1.1rem;
+letter-spacing: 3px;
+color: var(--gold);
+opacity: 0.9;
+transition: all 0.5s ease;
+text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* 试音阶段副标题：主文本下方，更小字号 */
+#final-stage .stage-text.sub {
+font-size: 0.9rem;
+color: var(--gold-dim);
+top: 72%;
+bottom: auto;
+letter-spacing: 2px;
+}
+
+/* 结束按钮组：仅保留向下按钮，演奏五次后淡入显示。 */
+#final-stage .end-buttons {
+position: absolute;
+bottom: 22%;
+display: flex;
+gap: 40px;
+opacity: 0;
+pointer-events: none;
+transition: all 0.8s ease;
+z-index: 15;
+}
+
+#final-stage .end-buttons.visible {
+opacity: 1;
+pointer-events: all;
+}
+
+/* 结束按钮基础样式：圆形金色边框按钮 */
+#final-stage .end-btn {
+width: 60px;
+height: 60px;
+border-radius: 50%;
+border: 2px solid var(--gold-dim);
+background: transparent;
+color: var(--gold);
+font-size: 14px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.4s ease;
+letter-spacing: 1px;
+}
+
+#final-stage .end-btn:hover {
+border-color: var(--gold);
+box-shadow: 0 0 25px rgba(201, 169, 110, 0.4);
+transform: scale(1.1);
+}
+
+/* 向下箭头按钮：大号字体显示箭头 */
+#final-stage .end-btn.arrow {
+font-size: 24px;
+}
+
+/* ======================================== */
+/* === RESPONSIVE: 768px 以下移动端适配 === */
+/* ======================================== */
+
+@media (max-width: 768px) {
+/*
+ * 小屏竹材指导改为图片中心定位。
+ * JavaScript 在 768px 以下写入图片中心坐标，这里只负责居中展开和限制宽度。
+ */
+.bamboo-guide,
+.bamboo-guide[data-guide-side="left"],
+.bamboo-guide[data-guide-side="right"] {
+width: min(280px, 72vw);
+text-align: center;
+transform: translate(-50%, -50%) translateY(12px);
+}
+
+.bamboo-guide.is-near,
+.bamboo-guide.is-near[data-guide-side="left"],
+.bamboo-guide.is-near[data-guide-side="right"] {
+transform: translate(-50%, -50%);
+}
+
+/* 烘烤阶段竹管容器位置调整 */
+#bake-stage[data-mode="bake"] .bamboo-container {
+left: 36%;
+}
+
+.bamboo-selection {
+width: 94%;
+gap: 8px;
+}
+.bamboo-item { width: 28%; }
+.stage-text { top: 104px; }
+.stage-sub { top: 148px; }
+.bake-hold-hint { top: calc(50% - 130px); }
+}
+
+@media (max-width: 768px) {
+/* 烘烤阶段炉子位置调整 */
+#bake-stage[data-mode="bake"] .furnace {
+bottom: -28px;
+}
+
+/* 试音阶段膜材选项垂直排列 */
+#final-stage .membrane-options {
+gap: 30px;
+flex-direction: column;
+}
+
+/* 试音阶段膜材图标缩小 */
+#final-stage .membrane-icon {
+width: 96px;
+height: 96px;
+}
+
+/* 试音阶段竹管容器加宽 */
+#final-stage .bamboo-container {
+width: 95%;
+}
+
+/* 试音阶段孔位放大 */
+#final-stage .hole {
+width: 24px;
+height: 24px;
+}
+
+/* 试音阶段音符显示缩小 */
+#final-stage .note-display {
+font-size: 2rem;
+}
+}
