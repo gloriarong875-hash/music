@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>名画中的乐器</title>
+  <!--
+    中文脚注：本页代码结构说明
+    1. generalcomponent.css：放字体、标准色、标题层级、右上角切换按钮等通用规范。
+    2. shengstyle.css：放本页布局、背景底纹、黑色遮罩、图片位置、入场动画和响应式样式。
+    3. shengscript.js：放滚轮切屏、键盘切屏、上一页/下一页按钮逻辑。
+    4. 如果只想改文字，优先修改下方每个 section 里的 h2 和 h4。
+    5. 如果只想换图片，修改 img 的 src 路径，并确保图片放在“笙音画assets”文件夹中。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="shengstyle.css" />
+  <link rel="stylesheet" href="../site-nav/site-nav.css" />
+</head>
+<body>
+  <main class="page" aria-label="名画中的乐器">
+    <!-- 右上角圆形按钮：只负责切换上一屏/下一屏，具体交互在 shengscript.js 中。 -->
+    <nav class="cornerNav" aria-label="页面切换">
+      <button class="navBtn" id="prevScene" type="button" aria-label="上一页">‹</button>
+      <button class="navBtn" id="nextScene" type="button" aria-label="下一页">›</button>
+    </nav>
+
+    <!--
+      滚动容器：每个 .story-section 是一屏。
+      data-scene="0/1/2/3" 是场景序号，JS 会根据序号判断当前屏。
+      新增页面时复制一个 section，并把 data-scene 改成新的数字即可。
+    -->
+    <div class="scroll-shell" id="storyScroll">
+      <!-- 第 1 屏：总画页面。标题格式复刻 3.1 的 kicker + h1。 -->
+      <section class="story-section story-section--intro is-active" data-scene="0" aria-label="丹青无款，宫阙留音">
+        <header class="panel-head story-head">
+          <div>
+            <!-- 英文小标题：如需改英文主题，改这里。 -->
+            <h4 class="kicker">Instruments in Famous Paintings</h4>
+            <!-- 中文主标题：如需改页面主标题，改这里。 -->
+            <h1>名画中的乐器</h1>
+          </div>
+        </header>
+
+        <div class="story-layout story-layout--intro">
+          <figure class="art-frame art-frame--painting">
+            <!-- 首屏大画：入场动画和放大尺寸在 shengstyle.css 的 .art-frame--painting 中调整。 -->
+            <img src="笙音画assets/唐宫乐图.jpg" alt="唐人宫乐图" />
+          </figure>
+          <article class="text-block text-block--right">
+            <!-- h2 是每屏小标题，h4 是正文；正文首行缩进、白色、字号都在 CSS 的 .text-block h4 中。 -->
+            <h2>丹青无款，宫阙留音</h2>
+            <h4>《唐人宫乐图》是一件传为中国唐代的帛画作品，作者与确切创作年代不详，现藏于台北国立故宫博物院，并被列为中华民国国宝。画面描绘后宫女眷宴饮奏乐的场景：十位宫女围坐长方大案，有人饮茶行酒，有人吹弹乐器，为宴集助兴。仕女体态丰腴、面如满月，妆容接近唐代元和年间流行的“时式妆”，体现出唐代以丰腴为美的审美风尚。画幅无作者署名，风格上可见张萱、周昉一派仕女画传统的影响。</h4>
+          </article>
+        </div>
+      </section>
+
+      <!-- 第 2 屏：四件乐器局部。图片使用 PNG，不做 GIF。 -->
+      <section class="story-section" data-scene="1" aria-label="四乐并陈，宴中成韵">
+        <div class="story-layout story-layout--wide">
+          <article class="text-block text-block--lower-left">
+            <h2>四乐并陈，宴中成韵</h2>
+            <h4>画面上方四位宫女正在演奏乐器，自右向左依次为胡笳、琵琶、古筝与笙，形成吹奏与弹拨相结合的宫廷乐队。旁侧侍女中还有一人手执拍板击节相和，丰富了画面的音乐氛围，也展现出唐代宫廷宴饮中乐舞相伴的生活场景。</h4>
+          </article>
+          <figure class="art-frame art-frame--ensemble">
+            <img src="笙音画assets/宫乐图乐器.gif" alt="唐人宫乐图中的四位奏乐宫女" />
+          </figure>
+        </div>
+      </section>
+
+      <!-- 第 3 屏：笙局部。这里按需求保留 GIF。 -->
+      <section class="story-section" data-scene="2" aria-label="笙簧清响，凤音入画">
+        <div class="story-layout story-layout--split">
+          <figure class="art-frame art-frame--sheng">
+            <img src="笙音画assets/宫乐图笙.gif" alt="唐人宫乐图中的持笙宫女" />
+          </figure>
+          <article class="text-block text-block--center-right">
+            <h2>笙簧清响，凤音入画</h2>
+            <h4>笙位于画面左侧奏乐人物手中。持笙宫女侧身而坐，双手扶持笙斗与笙苗，口含吹嘴，呈现吹奏姿态。笙由多根笙苗与笙斗组成，音色清亮，常用于雅乐、燕乐与宫廷宴乐之中。在此画中，笙与胡笳、琵琶、古筝并置，既表现了唐代宴乐的多元音色，也强化了画面清雅、闲适的宫廷气氛。</h4>
+          </article>
+        </div>
+      </section>
+
+      <!-- 第 4 屏：宴饮仕女局部。此屏背景在 CSS 中单独换成满屏唐宫乐图。 -->
+      <section class="story-section" data-scene="3" aria-label="锦衣华席，唐风入席">
+        <div class="story-layout story-layout--split">
+          <figure class="art-frame art-frame--ladies">
+            <img src="笙音画assets/宫乐图女.png" alt="唐人宫乐图中的宴饮仕女" />
+          </figure>
+          <article class="text-block text-block--center-right">
+            <h2>锦衣华席，唐风入席</h2>
+            <h4>画中宴饮围绕壶门式大案展开，大案腿下有托泥，四角饰錾花铜包角，具有隋唐家具特征。仕女所坐月牙凳亦是唐代新兴家具，凳面铺锦缎坐垫，雕饰华丽，显出宫廷用具的精致。画面还呈现烹茶法，茶汤盛入大钵，再以长柄勺入茶碗，适合宴会饮用。人物服饰多为宽袖上衣、斜披帛、高束长裙，发式有“堕马髻”、花冠与各式梳饰，展现唐代宫廷女性服饰与妆容的华美风尚。</h4>
+          </article>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <script src="shengscript.js"></script>
+  <script src="../site-nav/site-nav.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>名画中的鼓</title>
+  <!--
+    中文脚注：本页完全参考 2.2 笙的版式与交互。
+    1. generalcomponent.css：字体、标准色、标题层级、右上角切换按钮等通用规范。
+    2. drumstyle.css：本页布局、背景底纹、黑色遮罩、鼓画图片位置、入场动画和响应式样式。
+    3. drumscript.js：滚轮切屏、键盘切屏、上一页/下一页按钮逻辑。
+    4. 如果只想改文字，优先修改下方每个 section 里的 h2 和 h4。
+    5. 如果只想换图片，修改 img 的 src 路径，并确保图片放在“鼓音画assets”文件夹中。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="drumstyle.css" />
+  <link rel="stylesheet" href="../site-nav/site-nav.css" />
+</head>
+<body>
+  <main class="page" aria-label="名画中的鼓">
+    <!-- 右上角圆形按钮：只负责切换上一屏/下一屏，具体交互在 drumscript.js 中。 -->
+    <nav class="cornerNav" aria-label="页面切换">
+      <button class="navBtn" id="prevScene" type="button" aria-label="上一页">‹</button>
+      <button class="navBtn" id="nextScene" type="button" aria-label="下一页">›</button>
+    </nav>
+
+    <div class="scroll-shell" id="storyScroll">
+      <!-- 第 1 屏：《观舞仕女图》。 -->
+      <section class="story-section story-section--intro is-active" data-scene="0" aria-label="庭院乐舞，鼓点领身">
+        <header class="panel-head story-head">
+          <div>
+            <h4 class="kicker">Instruments in Famous Paintings</h4>
+            <h1>名画中的鼓</h1>
+          </div>
+        </header>
+
+        <div class="story-layout story-layout--intro">
+          <figure class="art-frame art-frame--painting">
+            <img src="鼓音画assets/观舞仕女图.jpg" alt="观舞仕女图" />
+          </figure>
+          <article class="text-block text-block--right">
+            <h2>庭院乐舞，鼓点领身</h2>
+            <h4>《观舞仕女图》中，庭院之内仕女衣袂翻飞，舞者旋身起势，旁侧乐伎以笙、笛、鼓、钹等相和，形成热烈而富节奏的乐舞场景。鼓在画中承担击节领舞的作用，将人物的动作、乐声与宴游气氛连接起来，展现古代歌舞相伴的娱乐生活。馆方现题为 Dancer and Musicians in a Garden，列为清代十八世纪作品，旧归周文矩。</h4>
+          </article>
+        </div>
+      </section>
+
+      <!-- 第 2 屏：《龙宿郊民图》。 -->
+      <section class="story-section" data-scene="1" aria-label="郊野赛会，鼓声聚众">
+        <div class="story-layout story-layout--wide">
+          <article class="text-block text-block--lower-left">
+            <h2>郊野赛会，鼓声聚众</h2>
+            <h4>《龙宿郊民图》传为五代南唐董源作品，现藏台北故宫博物院。画面以青绿山水展开郊野水滨景象，山峦浑圆、树木繁密，近处舟船相连，人物聚集水上，似在迎神、祈雨或举行民俗赛会。鼓声在此不只是伴奏，更像仪式与群体活动的节拍，强化了画面中热闹而庄重的民间气息。</h4>
+          </article>
+          <figure class="art-frame art-frame--drum-main">
+            <img src="鼓音画assets/龙宿郊民图.jpg" alt="龙宿郊民图" />
+          </figure>
+        </div>
+      </section>
+
+      <!-- 第 3 屏：《早秋夜泊图》。三页共用同一背景底纹。 -->
+      <section class="story-section" data-scene="2" aria-label="夜泊清娱，舟中有节">
+        <div class="story-layout story-layout--split">
+          <figure class="art-frame art-frame--drum-night">
+            <img src="鼓音画assets/早秋夜泊图.jpg" alt="早秋夜泊图" />
+          </figure>
+          <article class="text-block text-block--center-right">
+            <h2>夜泊清娱，舟中有节</h2>
+            <h4>《早秋夜泊图》为南宋册页，现藏美国克利夫兰艺术博物馆。画中月色朦胧，城墙、柳岸、远山与停泊的画舫层层展开，船中人物尚未入眠，乐声与夜景相映。画面中的鼓置于舟上，与琵琶等乐器共同暗示船中宴集或夜泊清娱，使静谧秋夜多了一层可听见的节奏感。</h4>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="drumscript.js"></script>
+  <script src="../site-nav/site-nav.js"></script>
+</body>
+</html>
+
