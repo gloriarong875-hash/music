@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>编年 - 中国古代器乐</title>
+  <link rel="stylesheet" href="./site-nav/site-nav.css" />
+  <style>
+    /*
+      字体说明：
+      直接读取当前文件夹里的“方正隶书_GBK.ttf”，页面导航和正文统一使用这个字体。
+    */
+    @font-face {
+      font-family: "FZLiShuLocal";
+      src: url("./方正隶书_GBK.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    /* 页面基础设置 */
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow: hidden;
+      background: #111;
+      font-family: "FZLiShuLocal", "LiSu", "Microsoft YaHei", serif;
+    }
+
+    /* 顶部导航，对应 Figma 里的浅灰色导航区域 */
+    .site-header {
+      position: relative;
+      z-index: 20;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      gap: clamp(58px, 8.8vw, 118px);
+      padding: 0 clamp(42px, 5vw, 76px);
+      background: #d7d7d7;
+    }
+
+    .nav-link {
+      color: #050505;
+      text-decoration: none;
+      font-size: clamp(28px, 2.35vw, 36px);
+      font-weight: 400;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    /* 主视觉：古画背景叠加暗色遮罩 */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      background-image:
+        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        url("./bg.jpg");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 46% 48%, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.34));
+    }
+
+    /*
+      页面内容布局：
+      左侧预留给圆形边栏，hover 展开时会把中间文字往右顶。
+    */
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      align-items: center;
+      transition: grid-template-columns 520ms ease;
+    }
+
+    .hero-inner:has(.circle-sidebar:hover),
+    .hero-inner:has(.circle-sidebar:focus-within),
+    .hero-inner.is-expanded {
+      grid-template-columns: min(430px, 34vw) minmax(0, 1fr);
+    }
+
+    /* 中间文案，字号比上一版更小一些 */
+    .intro {
+      max-width: 720px;
+      padding: 0 24px;
+      transform: translateY(-6px);
+      transition: transform 520ms ease;
+    }
+
+    .hero-inner:has(.circle-sidebar:hover) .intro,
+    .hero-inner:has(.circle-sidebar:focus-within) .intro,
+    .hero-inner.is-expanded .intro {
+      transform: translate(20px, -6px);
+    }
+
+    .intro h1 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(24px, 2.45vw, 34px);
+      font-weight: 400;
+      line-height: 1.45;
+      letter-spacing: 0;
+      text-shadow:
+        0 2px 2px rgba(0, 0, 0, 0.9),
+        0 0 10px rgba(0, 0, 0, 0.65);
+    }
+
+    .intro h4 {
+      margin: 10px 0 0;
+      color: #bc8b3bdb;
+      font-size: clamp(15px, 1.3vw, 20px);
+      font-weight: 400;
+      line-height: 1.3;
+      letter-spacing: 0.5px;
+      text-shadow:
+        0 2px 2px rgba(0, 0, 0, 0.9),
+        0 0 8px rgba(0, 0, 0, 0.6);
+    }
+
+    /*
+      左侧圆形边栏：
+      默认是图1那样的五个小灰点；鼠标移入后散开成图2那样的乐器圆形。
+    */
+    .circle-sidebar {
+      position: relative;
+      height: 100%;
+      min-height: 100vh;
+      overflow: visible;
+    }
+
+    .circle-wheel {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 260px;
+      height: 430px;
+      transform: translateY(-50%);
+      transform-origin: 90px 215px;
+      animation: wheelRotate 18s linear infinite;
+      transition: left 520ms ease, width 520ms ease, height 520ms ease;
+    }
+
+    .circle-sidebar:hover .circle-wheel,
+    .circle-sidebar:focus-within .circle-wheel,
+    .circle-sidebar.is-expanded .circle-wheel {
+      left: -110px;
+    }
+
+    .circle-sidebar:has(.instrument-card:hover) .circle-wheel,
+    .circle-sidebar:has(.instrument-card:focus-visible) .circle-wheel,
+    .circle-sidebar.is-paused .circle-wheel {
+      animation-play-state: paused;
+    }
+
+    /*
+      单个圆形框：
+      默认小圆点是正五边形五个顶点，展开后以同一圆心和半径散开成完整圆形。
+    */
+    .instrument-card {
+      position: absolute;
+      left: var(--small-x);
+      top: var(--small-y);
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(166, 166, 166, 0.6);
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      box-shadow:
+        0 0 0 1px rgba(255, 232, 178, 0),
+        0 0 0 0 rgba(224, 190, 112, 0);
+      transition:
+        left 520ms ease,
+        top 520ms ease,
+        width 520ms ease,
+        height 520ms ease,
+        transform 220ms ease,
+        background 360ms ease,
+        filter 220ms ease,
+        box-shadow 360ms ease;
+    }
+
+    .circle-sidebar:hover .instrument-card,
+    .circle-sidebar:focus-within .instrument-card,
+    .circle-sidebar.is-expanded .instrument-card {
+      left: var(--open-x);
+      top: var(--open-y);
+      width: 104px;
+      height: 104px;
+      background: #a6968e;
+      box-shadow:
+        0 0 0 1px rgba(255, 232, 178, 0.18),
+        0 0 28px 8px rgba(224, 190, 112, 0.55);
+    }
+
+    .instrument-card:hover,
+    .instrument-card:focus-visible {
+      outline: none;
+      transform: translate(-50%, -50%) scale(1.12);
+      filter: brightness(1.08);
+      box-shadow:
+        0 0 0 2px rgba(255, 232, 178, 0.4),
+        0 0 34px 10px rgba(236, 198, 108, 0.72);
+    }
+
+    .instrument-card img {
+      display: block;
+      width: 82%;
+      height: 82%;
+      object-fit: contain;
+      object-position: center;
+      --img-x: 0px;
+      --img-y: 0px;
+      opacity: 0;
+      pointer-events: none;
+      filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.28));
+      animation: imageKeepUpright 18s linear infinite reverse;
+      transition: opacity 260ms ease 150ms;
+    }
+
+    .circle-sidebar:has(.instrument-card:hover) .instrument-card img,
+    .circle-sidebar:has(.instrument-card:focus-visible) .instrument-card img,
+    .circle-sidebar.is-paused .instrument-card img {
+      animation-play-state: paused;
+    }
+
+    .circle-sidebar:hover .instrument-card img,
+    .circle-sidebar:focus-within .instrument-card img,
+    .circle-sidebar.is-expanded .instrument-card img {
+      opacity: 1;
+    }
+
+    /* 不同乐器比例不同，这里只微调图片尺寸，不移动圆形框本身 */
+    .instrument-card.guqin img,
+    .instrument-card.flute img {
+      width: 116%;
+      height: 116%;
+    }
+
+    .instrument-card.guqin img {
+      --img-x: 2px;
+      --img-y: 6px;
+    }
+
+    .instrument-card.paixiao img {
+      width: 72%;
+      height: 88%;
+      --img-x: -1px;
+      --img-y: -3px;
+    }
+
+    .instrument-card.drum img {
+      width: 90%;
+      height: 90%;
+      --img-y: -1px;
+    }
+
+    .instrument-card.xun img {
+      width: 86%;
+      height: 96%;
+      --img-y: 1px;
+    }
+
+    .instrument-card.flute img {
+      --img-x: 1px;
+      --img-y: 1px;
+    }
+
+    @keyframes wheelRotate {
+      from {
+        transform: translateY(-50%) rotate(0deg);
+      }
+      to {
+        transform: translateY(-50%) rotate(360deg);
+      }
+    }
+
+    @keyframes imageKeepUpright {
+      from {
+        transform: translate(var(--img-x), var(--img-y)) rotate(0deg);
+      }
+      to {
+        transform: translate(var(--img-x), var(--img-y)) rotate(360deg);
+      }
+    }
+
+    /* 给屏幕阅读器看的文字，视觉上隐藏 */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* 小屏适配，保持半圆边栏和文字不互相压住 */
+    @media (max-width: 760px) {
+      body {
+        overflow: auto;
+      }
+
+      .site-header {
+        height: 64px;
+        padding: 0 18px;
+        gap: 30px;
+        overflow-x: auto;
+      }
+
+      .nav-link {
+        font-size: 25px;
+      }
+
+      .hero,
+      .hero-inner,
+      .circle-sidebar {
+        min-height: 100vh;
+      }
+
+      .hero-inner {
+        grid-template-columns: 92px minmax(0, 1fr);
+      }
+
+      .hero-inner:has(.circle-sidebar:hover),
+      .hero-inner:has(.circle-sidebar:focus-within),
+      .hero-inner.is-expanded {
+        grid-template-columns: 190px minmax(0, 1fr);
+      }
+
+      .circle-wheel {
+        width: 190px;
+        height: 330px;
+      }
+
+      .instrument-card {
+        width: 24px;
+        height: 24px;
+      }
+
+      .circle-sidebar:hover .instrument-card,
+      .circle-sidebar:focus-within .instrument-card,
+      .circle-sidebar.is-expanded .instrument-card {
+        width: 74px;
+        height: 74px;
+      }
+
+      .intro {
+        padding-right: 16px;
+      }
+
+      .intro h1 {
+        font-size: 21px;
+      }
+    }
+  </style>
+</head>
+<body data-section="chronicle">
+  <main class="hero page">
+    <section class="hero-inner" aria-label="中国古代器乐编年页面">
+      <!-- 左侧圆形边栏：鼠标移入左侧区域后，小圆点散开并显示乐器 -->
+      <aside class="circle-sidebar" aria-label="器物圆形边栏">
+        <div class="circle-wheel">
+          <button
+            class="instrument-card guqin"
+            style="--small-x: 90px; --small-y: 183px; --open-x: 143px; --open-y: 51px;"
+            type="button"
+          >
+            <img src="./0a8e13ad-7ead-4696-a86a-c7e2d49b0099.png" alt="" />
+            <span class="sr-only">古琴</span>
+          </button>
+
+          <button
+            class="instrument-card paixiao"
+            style="--small-x: 120px; --small-y: 205px; --open-x: 262px; --open-y: 215px;"
+            type="button"
+          >
+            <img src="./instrument.png" alt="" />
+            <span class="sr-only">排箫</span>
+          </button>
+
+          <button
+            class="instrument-card drum"
+            style="--small-x: 109px; --small-y: 241px; --open-x: 143px; --open-y: 379px;"
+            type="button"
+          >
+            <img src="./d97ebee4-4262-494d-994a-b462e729360d.png" alt="" />
+            <span class="sr-only">鼓</span>
+          </button>
+
+          <button
+            class="instrument-card xun"
+            style="--small-x: 71px; --small-y: 241px; --open-x: -49px; --open-y: 316px;"
+            type="button"
+          >
+            <img src="./0de126f9-39ef-4cca-b973-e30a195c2116.png" alt="" />
+            <span class="sr-only">埙</span>
+          </button>
+
+          <button
+            class="instrument-card flute"
+            style="--small-x: 60px; --small-y: 205px; --open-x: -49px; --open-y: 114px;"
+            type="button"
+          >
+            <img src="./7272d2db-8caf-456a-90ee-878237bf668a.png" alt="" />
+            <span class="sr-only">横笛</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- 中间文字：左侧圆形边栏放大时，会被布局自然向右顶开 -->
+      <article class="intro">
+        <h1>依岁月为序，<br />溯其源流，观其兴替。</h1>
+        <h4>Following the order of years, trace its origins and transformations, and observe its rise and decline.</h4>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    /*
+      交互说明：
+      1. 鼠标进入左侧圆形边栏时，给边栏和外层布局添加展开类；
+      2. 鼠标离开后移除展开类，边栏恢复缩小；
+      3. 五个圆形会自动转动，鼠标停到某个圆形时暂停并轻微放大。
+    */
+    const circleSidebar = document.querySelector(".circle-sidebar");
+    const heroInner = document.querySelector(".hero-inner");
+    const instrumentCards = document.querySelectorAll(".instrument-card");
+
+    const expandSidebar = () => {
+      circleSidebar.classList.add("is-expanded");
+      heroInner.classList.add("is-expanded");
+    };
+
+    const collapseSidebar = () => {
+      circleSidebar.classList.remove("is-expanded");
+      heroInner.classList.remove("is-expanded");
+    };
+
+    circleSidebar.addEventListener("pointerenter", expandSidebar);
+    circleSidebar.addEventListener("pointerleave", collapseSidebar);
+    circleSidebar.addEventListener("focusin", expandSidebar);
+    circleSidebar.addEventListener("focusout", (event) => {
+      if (!circleSidebar.contains(event.relatedTarget)) {
+        collapseSidebar();
+      }
+    });
+
+    instrumentCards.forEach((card) => {
+      card.addEventListener("pointerenter", () => circleSidebar.classList.add("is-paused"));
+      card.addEventListener("pointerleave", () => circleSidebar.classList.remove("is-paused"));
+      card.addEventListener("focus", () => circleSidebar.classList.add("is-paused"));
+      card.addEventListener("blur", () => circleSidebar.classList.remove("is-paused"));
+    });
+
+    // 预览辅助：访问 index.html#open 时，页面会直接保持展开状态。
+    if (window.location.hash === "#open") {
+      expandSidebar();
+    }
+  </script>
+  <script src="./site-nav/site-nav.js"></script>
+</body>
+</html>

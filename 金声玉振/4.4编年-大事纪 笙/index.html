@@ -1,0 +1,50 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>笙 · 大事纪</title>
+  <link rel="stylesheet" href="generalcomponent.css">
+    <link rel="stylesheet" href="styles.css?v=20260616-19">
+  <link rel="stylesheet" href="../../site-nav/site-nav.css">
+</head>
+<body class="sheng-page">
+  <canvas id="inkCanvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" aria-hidden="true"></header>
+
+  <main class="chronicle-layout">
+    <nav class="page-switcher" id="pageSwitcher" aria-label="声形纪页面切换">
+      <button class="switch-item" type="button" data-page="sound" aria-label="切换到声页面">声</button>
+      <button class="switch-item" type="button" data-page="form" aria-label="切换到形页面">形</button>
+      <button class="switch-item active" type="button" data-page="chronicle" aria-label="切换到纪页面" aria-current="page">纪</button>
+    </nav>
+
+    <aside class="timeline" aria-label="历史时间轴">
+      <svg class="timeline__curve" viewBox="0 0 180 760" preserveAspectRatio="none" aria-hidden="true">
+        <path class="timeline__shadow" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780"/>
+        <path class="timeline__line" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780"/>
+        <path class="timeline__progress" id="timelineProgress" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780" pathLength="1"/>
+      </svg>
+
+      <div class="timeline__items" id="timelineItems"></div>
+    </aside>
+
+    <div class="archive-scroll" id="archiveScroll" tabindex="0">
+      <div id="timelineContent"></div>
+    </div>
+  </main>
+
+  <script src="timeline-data.js"></script>
+  <script src="hover-masks.js?v=20260616-19"></script>
+  <script src="script.js?v=20260616-19"></script>
+  <script src="../../site-nav/site-nav.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

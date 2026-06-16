@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>名画中的埙</title>
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="xunstyle.css" />
+</head>
+<body>
+  <main class="page xun-page" aria-label="名画中的埙">
+    <nav class="cornerNav" aria-label="页面切换">
+      <button class="navBtn" id="prevScene" type="button" aria-label="上一页">‹</button>
+      <button class="navBtn" id="nextScene" type="button" aria-label="下一页">›</button>
+    </nav>
+
+    <header class="panel-head story-head">
+      <div>
+        <h4 class="kicker">Instruments in Famous Paintings</h4>
+        <h1>名画中的埙</h1>
+      </div>
+    </header>
+
+    <div class="scroll-shell" id="storyScroll">
+      <section class="story-section story-section--overview is-active" data-scene="0" aria-label="群仙祝寿图全卷">
+        <div class="story-layout story-layout--overview">
+          <figure class="painting-stage" id="paintingStage">
+            <img src="埙音画assets/群仙祝寿图.jpg" alt="清代任熊群仙祝寿图" />
+            <button class="painting-hotspot" id="paintingHotspot" type="button" aria-label="放大查看画中的埙演奏者">
+              <span>点击查看埙</span>
+            </button>
+          </figure>
+
+          <article class="text-block text-block--overview">
+            <h2>云霞开寿域，群仙赴瑶池</h2>
+            <h4>《群仙祝寿图》为清代画家任熊所作。画面描绘众仙携寿桃、灵芝、如意等祥瑞之物前来祝寿的场景，人物衣纹劲健，设色明丽，充满吉祥喜庆的装饰意味。任熊为晚清重要人物画家，善以古拙奇崛的造型和流畅有力的线条表现人物神采。此图将神仙传说与祝寿寓意结合，既呈现仙境宴集的奇幻氛围，也寄托福寿绵长、吉庆安康的传统愿望。</h4>
+          </article>
+        </div>
+      </section>
+
+      <section class="story-section story-section--detail" data-scene="1" aria-label="群仙祝寿图埙演奏局部">
+        <div class="detail-backdrop" aria-hidden="true"></div>
+        <div class="story-layout story-layout--detail">
+          <button class="detail-image" id="detailImage" type="button" aria-label="返回群仙祝寿图全卷">
+            <img src="埙音画assets/放大图.png" alt="群仙祝寿图中的埙演奏者局部" />
+          </button>
+
+          <article class="text-block text-block--detail">
+            <h2>捧埙凝息，幽音入宴</h2>
+            <h4>画中女子双手捧埙，置于唇前吹奏，身姿端正，神情含蓄。埙音低回浑厚，带有土石般古朴幽远的气息，与画面中精致繁复的宫廷宴乐形成微妙对比。她的动作安静而专注，仿佛在热闹场景中引出一缕沉静古音，使画面更添雅致与神秘感。</h4>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="xunscript.js"></script>
+</body>
+</html>
+
