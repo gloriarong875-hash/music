@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>金声玉振 · 首页</title>
+  <!--
+    中文脚注（首页结构说明）
+    - page-hero：第一页，直接播放 1视频.mp4，播放结束后切换到 1切换背景图。
+    - page-instruments：第二页，十大乐器横向滑动，一屏显示五个，居中项放大。
+    - page-types-1 / page-types-2：第三、四页，各展示两个画作类型，hover 图片显示介绍。
+    - page-final：第五页，居中显示总结文字。
+  -->
+  <link rel="stylesheet" href="../site-nav/site-nav.css" />
+  <link rel="stylesheet" href="homestyle.css" />
+</head>
+<body class="home-ready">
+  <main class="home-shell" id="homeShell" aria-label="金声玉振首页">
+    <section class="home-section page-hero is-active" data-page="0" aria-label="首页第一屏">
+      <video class="hero-video" id="heroVideo" src="首页assets/1视频.mp4" muted playsinline preload="auto"></video>
+      <div class="hero-panorama" id="heroPanorama" aria-hidden="true"></div>
+      <div class="section-shade"></div>
+      <!-- 中文脚注：重播按钮位于 page1 左上角，样式在 homestyle.css 的 `.replay-video-btn` 中修改。 -->
+      <button class="replay-video-btn" id="replayVideoBtn" type="button">重播视频</button>
+      <div class="hero-title-stack" aria-label="标题">
+        <img src="首页assets/1标题1.png" alt="标题一" />
+        <img src="首页assets/1标题2.png" alt="标题二" />
+        <img src="首页assets/1标题3.png" alt="标题三" />
+        <img src="首页assets/1标题4.png" alt="标题四" />
+        <img src="首页assets/1标题5.png" alt="标题五" />
+      </div>
+    </section>
+
+    <section class="home-section page-instruments" data-page="1" aria-label="中国古代十大乐器">
+      <div class="section-bg"></div>
+      <div class="section-shade"></div>
+      <header class="section-head">
+        <h4>Ten Ancient Instruments</h4>
+        <h1>中国古代十大乐器</h1>
+      </header>
+      <div class="instrument-stage" id="instrumentStage">
+        <div class="instrument-track" id="instrumentTrack"></div>
+      </div>
+      <div class="instrument-copy" id="instrumentCopy"></div>
+    </section>
+
+    <section class="home-section type-page page-types-1" data-page="2" aria-label="乐器与传统绘画一">
+      <div class="section-shade"></div>
+      <header class="section-head">
+        <h4>Instrumental Music in Paintings</h4>
+        <h1>乐器与传统绘画</h1>
+      </header>
+      <div class="type-grid">
+        <article class="type-card" data-type="宫廷礼宴" data-painting="观舞仕女图">
+          <img src="首页assets/3宫廷礼宴-观舞仕女图.jpg" alt="宫廷礼宴" />
+          <h2>宫廷礼宴</h2>
+          <p>宫廷礼宴类画作主要呈现国家礼制、宫廷宴饮与贵族娱乐中的音乐场景。</p>
+        </article>
+        <article class="type-card" data-type="文人雅集" data-painting="松阴策杖图">
+          <img src="首页assets/3文人雅集-松阴策杖图.jpg" alt="文人雅集" />
+          <h2>文人雅集</h2>
+          <p>文人雅集类画作集中表现士人抚琴、听琴、携琴访友、林泉清赏等场景。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="home-section type-page page-types-2" data-page="3" aria-label="乐器与传统绘画二">
+      <div class="section-shade"></div>
+      <header class="section-head">
+        <h4>Instrumental Music in Paintings</h4>
+        <h1>乐器与传统绘画</h1>
+      </header>
+      <div class="type-grid">
+        <article class="type-card" data-type="民间世俗" data-painting="荷亭婴戏图">
+          <img src="首页assets/3民间世俗-荷亭婴戏图.jpg" alt="民间世俗" />
+          <h2>民间世俗</h2>
+          <p>民间世俗类画作关注日常生活、节庆娱乐、婚嫁仪式、百戏表演与市井活动中的音乐图像。</p>
+        </article>
+        <article class="type-card" data-type="宗教神话" data-painting="群仙祝寿图">
+          <img src="首页assets/3宗教神话-群仙祝寿图.jpg" alt="宗教神话" />
+          <h2>宗教神话</h2>
+          <p>宗教神话类画作多描绘仙佛供养、神仙聚会、洛神传说、钟馗出游等题材。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="home-section page-final" data-page="4" aria-label="总结">
+      <div class="section-shade"></div>
+      <div class="final-text">
+        <h4>Chronicle of Sound and Image</h4>
+        <p>随着历史演变，中国传统绘画中的乐器图像呈现出由礼制化、宫廷化向生活化、审美化扩展的趋势。</p>
+        <p>早期乐器多与祭祀、朝会、宫廷宴饮和宗教神话相联系，强调礼乐秩序、神圣空间与等级象征；至宋元以后，琴、笛、萧等乐器频繁进入山水、书斋、亭榭与雅集画面，成为文人修身养性、寄情林泉的重要符号；同时，鼓、笛、琵琶、二胡等也出现在婚嫁、节庆、百戏、宴游等民间场景中，展现音乐与日常生活的紧密关系。</p>
+      </div>
+    </section>
+  </main>
+
+  <aside class="type-float-card" id="typeFloatCard" aria-live="polite"></aside>
+
+  <script src="homescript.js"></script>
+  <script src="../site-nav/site-nav.js"></script>
+</body>
+</html>

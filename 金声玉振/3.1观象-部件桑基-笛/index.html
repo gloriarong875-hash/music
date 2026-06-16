@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>笛结构与物源桑基图</title>
+  <!--
+    中文脚注（页面说明）
+    - 此页面完全沿用 3.1 笙/鼓/埙/琴页的左右版式：左侧结构展示（`.left-pane`），右侧桑基图（`.right-pane`）。
+    - 笛的图片统一放在 `笛部件assets`；如果后续替换图片，只要保持文件名或同步修改下方 img 的 src。
+    - 部件介绍面板（`.part-info`）固定在视口左下，可在 `generalcomponent.css` 修改 `left`/`bottom`。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="distyle.css" />
+  <link rel="stylesheet" href="../site-nav/site-nav.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="layout" aria-label="笛结构与桑基图展示">
+      <div class="left-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Observing Phenomena</h4>
+            <h1>观象·结构</h1>
+          </div>
+        </header>
+
+        <nav class="cornerNav" aria-label="场景跳转">
+          <button class="navBtn" id="prevScene" type="button" aria-label="回到上一步">‹</button>
+          <button class="navBtn" id="nextScene" type="button" aria-label="直接下一步">›</button>
+        </nav>
+
+        <div class="stage">
+          <div class="core" aria-label="笛平面图到结构爆炸展示">
+            <div class="orbit-shell" aria-hidden="false">
+              <div class="orbit-rings"></div>
+              <div class="orbit-system">
+                <div class="orbit-node" data-part="笛身" style="--angle:-92deg;--angle-back:92deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笛部件assets/零件1-笛身.png" alt="笛身" />
+                    <span class="orbit-label">笛身</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="笛膜" style="--angle:28deg;--angle-back:-28deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笛部件assets/零件2-笛膜.png" alt="笛膜" />
+                    <span class="orbit-label">笛膜</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="镶头" style="--angle:150deg;--angle-back:-150deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="笛部件assets/零件3-镶头.png" alt="镶头" />
+                    <span class="orbit-label">镶头</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <img class="plane-view" src="笛部件assets/笛平面图1.png" alt="笛平面图" />
+            <img class="structure-piece piece-tou" data-part="镶头" src="笛部件assets/结构图1.png" alt="结构图1 笛头" />
+
+            <div class="stack-index" aria-hidden="true">
+              <span>01</span>
+              <span>02</span>
+              <span>03</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Data Visualization</h4>
+            <h1>观象·物源</h1>
+          </div>
+        </header>
+        <div class="chart-wrap">
+          <div id="sankey-chart" role="img" aria-label="笛部件到工艺、产地、材质与八音的桑基图"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 部件介绍面板：固定在屏幕左下，避免被结构图遮挡。通过 JS 在悬停时显示/隐藏。 -->
+    <aside class="part-info" aria-live="polite">
+      <h3 id="partTitle">笛身</h3>
+      <p id="partBody" class="part-body">笛身由竹管修治而成，是横吹气流与空气柱共鸣的主体。</p>
+    </aside>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="general.js"></script>
+  <script src="discript.js"></script>
+  <script src="../site-nav/site-nav.js"></script>
+</body>
+</html>
