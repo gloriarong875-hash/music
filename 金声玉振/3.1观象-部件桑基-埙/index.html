@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>埙结构与物源桑基图</title>
+  <!--
+    中文脚注（页面说明）
+    - 此页面完全沿用 3.1 笙/鼓页的左右版式：左侧结构展示（`.left-pane`），右侧桑基图（`.right-pane`）。
+    - 埙的图片统一放在 `埙部件assets`；如果后续替换图片，只要保持文件名或同步修改下方 img 的 src。
+    - 部件介绍面板（`.part-info`）固定在视口左下，具体样式在 `xunstyle.css` 与 `generalcomponent.css` 中。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="xunstyle.css" />
+  <link rel="stylesheet" href="../site-nav/site-nav.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="layout" aria-label="埙结构与桑基图展示">
+      <div class="left-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Observing Phenomena</h4>
+            <h1>观象·结构</h1>
+          </div>
+        </header>
+
+        <nav class="cornerNav" aria-label="场景跳转">
+          <button class="navBtn" id="prevScene" type="button" aria-label="回到上一步">‹</button>
+          <button class="navBtn" id="nextScene" type="button" aria-label="直接下一步">›</button>
+        </nav>
+
+        <div class="stage">
+          <div class="core" aria-label="埙平面图到结构分层展示">
+            <div class="orbit-shell" aria-hidden="false">
+              <div class="orbit-rings"></div>
+              <div class="orbit-system">
+                <div class="orbit-node" data-part="埙体" style="--angle:-86deg;--angle-back:86deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="埙部件assets/零件1-泥土.png" alt="埙体" />
+                    <span class="orbit-label">埙体</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="涂层" style="--angle:96deg;--angle-back:-96deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="埙部件assets/零件2-涂层.png" alt="涂层" />
+                    <span class="orbit-label">涂层</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <img class="plane-view" src="埙部件assets/埙平面图1.png" alt="埙平面图" />
+            <!-- 中文脚注：埙只有一张完整结构图，不像笙/鼓拆成多张结构件。这里保持“平面图 → 结构图”的切换动画。 -->
+            <img class="structure-piece piece-structure" data-part="埙体" src="埙部件assets/结构图.png" alt="埙完整结构图" />
+
+            <div class="stack-index" aria-hidden="true">
+              <span>01</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Data Visualization</h4>
+            <h1>观象·物源</h1>
+          </div>
+        </header>
+        <div class="chart-wrap">
+          <div id="sankey-chart" role="img" aria-label="埙部件到工艺、产地、材质与八音的桑基图"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 部件介绍面板：通过 xunscript.js 在悬停/点击部件时显示。 -->
+    <aside class="part-info" aria-live="polite">
+      <h3 id="partTitle">埙体</h3>
+      <p id="partBody" class="part-body">埙体由红泥或陶土捏塑、挖空并烧结成中空腔体，是埙形成低回音色的核心共鸣空间。</p>
+    </aside>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="general.js"></script>
+  <script src="xunscript.js"></script>
+  <script src="../site-nav/site-nav.js"></script>
+</body>
+</html>

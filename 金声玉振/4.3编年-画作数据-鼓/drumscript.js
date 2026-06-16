@@ -485,6 +485,9 @@ const LIGHTBOX_ZOOM_MIN = .6;
 const LIGHTBOX_ZOOM_MAX = 4;
 const LIGHTBOX_ZOOM_STEP = .16;
 let lightboxZoom = 1;
+let lightboxPanX = 0;
+let lightboxPanY = 0;
+const lightboxPan = { dragging: false, lastX: 0, lastY: 0 };
 
 function rgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -868,7 +871,7 @@ function renderGallery() {
     const work = works.find((item) => item.title === asset.title);
     const label = asset.label || asset.title;
     const meta = work ? `${work.dynasty}｜${work.author}｜${work.museum}` : "";
-    const intro = work ? work.intro : "暂无画作介绍。";
+    const intro = work ? work.intro : "暂无作品详情";
     const loading = index < 6 ? "eager" : "lazy";
 
     return `
@@ -890,7 +893,7 @@ function getAssetInfo(index) {
     work,
     label: asset.label || asset.title,
     meta: work ? `${work.dynasty}｜${work.author}｜${work.museum}` : "",
-    intro: work ? work.intro : "暂无画作介绍。"
+    intro: work ? work.intro : "暂无作品详情"
   };
 }
 
@@ -929,6 +932,7 @@ function ensureLightbox() {
       event.preventDefault();
       setLightboxZoom(lightboxZoom + (event.deltaY < 0 ? LIGHTBOX_ZOOM_STEP : -LIGHTBOX_ZOOM_STEP));
     }, { passive: false });
+    initLightboxPan(box.querySelector(".lightbox-image-wrap"));
     box.addEventListener("click", (event) => {
       if (event.target === box) closeLightbox();
     });
@@ -942,8 +946,48 @@ function ensureLightbox() {
 function setLightboxZoom(value) {
   /* 中文脚注：修改缩放上下限请调 LIGHTBOX_ZOOM_MIN / LIGHTBOX_ZOOM_MAX，当前允许 0.6 倍到 4 倍。 */
   lightboxZoom = Math.max(LIGHTBOX_ZOOM_MIN, Math.min(LIGHTBOX_ZOOM_MAX, value));
+  if (lightboxZoom <= 1) setLightboxPan(0, 0);
   const img = document.querySelector("#imageLightbox img");
   if (img) img.style.setProperty("--lightbox-zoom", lightboxZoom);
+}
+
+function setLightboxPan(x, y) {
+  /* 中文脚注：这里控制大图放大后的拖拽位移；想限制可拖动范围，可在这里给 x/y 加最大最小值。 */
+  lightboxPanX = x;
+  lightboxPanY = y;
+  const img = document.querySelector("#imageLightbox img");
+  if (!img) return;
+  img.style.setProperty("--lightbox-pan-x", `${lightboxPanX}px`);
+  img.style.setProperty("--lightbox-pan-y", `${lightboxPanY}px`);
+}
+
+function initLightboxPan(wrap) {
+  if (!wrap) return;
+  wrap.addEventListener("pointerdown", (event) => {
+    /* 中文脚注：只有滚轮放大后才启用拖拽，避免默认大小时图片被误拖偏。 */
+    if (lightboxZoom <= 1 || (event.pointerType === "mouse" && event.button !== 0)) return;
+    event.preventDefault();
+    lightboxPan.dragging = true;
+    lightboxPan.lastX = event.clientX;
+    lightboxPan.lastY = event.clientY;
+    wrap.classList.add("is-panning");
+    wrap.setPointerCapture(event.pointerId);
+  });
+  wrap.addEventListener("pointermove", (event) => {
+    if (!lightboxPan.dragging) return;
+    const dx = event.clientX - lightboxPan.lastX;
+    const dy = event.clientY - lightboxPan.lastY;
+    lightboxPan.lastX = event.clientX;
+    lightboxPan.lastY = event.clientY;
+    setLightboxPan(lightboxPanX + dx, lightboxPanY + dy);
+  });
+  const stopPan = (event) => {
+    lightboxPan.dragging = false;
+    wrap.classList.remove("is-panning");
+    if (event && wrap.hasPointerCapture(event.pointerId)) wrap.releasePointerCapture(event.pointerId);
+  };
+  wrap.addEventListener("pointerup", stopPan);
+  wrap.addEventListener("pointercancel", stopPan);
 }
 
 function showPaintingCard(index, event) {
@@ -972,6 +1016,7 @@ function openLightbox(index) {
   const box = ensureLightbox();
   const info = getAssetInfo(index);
   const img = box.querySelector("img");
+  setLightboxPan(0, 0);
   setLightboxZoom(1);
   img.src = `鼓画作assets/${info.asset.file}`;
   img.alt = info.label;
@@ -986,6 +1031,7 @@ function closeLightbox() {
   const box = document.getElementById("imageLightbox");
   if (!box) return;
   box.classList.remove("visible");
+  setLightboxPan(0, 0);
   setLightboxZoom(1);
   document.body.style.overflow = "";
 }
