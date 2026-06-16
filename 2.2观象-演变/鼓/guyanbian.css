@@ -311,21 +311,23 @@ transition: all 0.6s ease;
 .main-image-area {
 position: absolute;
 z-index: 10;
-right: 5.83%;
-top: 14.78%;
-width: clamp(260px, 35.83vw, 516px);
-max-height: 75vh;
+right: 5%;
+top: 16%;
+width: clamp(260px, 33vw, 500px);
+height: clamp(340px, 62vh, 590px);
 display: flex;
 align-items: center;
 justify-content: center;
-transition: right 0.6s ease, top 0.6s ease, width 0.6s ease;
+transition: right 0.6s ease, top 0.6s ease, width 0.6s ease, height 0.6s ease;
 }
 
 .main-image-area img,
 .main-image-area video {
-width: 100%;
-height: 100%;
-max-height: 75vh;
+display: block;
+width: auto;
+height: auto;
+max-width: 100%;
+max-height: 100%;
 object-fit: contain;
 filter: drop-shadow(0 8px 40px rgba(186, 144, 27, 0.2));
 transition: all 0.6s ease;
@@ -345,7 +347,8 @@ pointer-events: none;
 }
 
 .decor-image img {
-width: 80%;
+display: block;
+width: 100%;
 height: auto;
 object-fit: contain;
 filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4));
@@ -418,51 +421,108 @@ max-width: 320px;
 /* === 各时期图像独立尺寸调整 === */
 /* ================================================================ */
 
-/* 商周场景：主图放大，装饰图也较大 */
-#scene-shangzhou .main-image-area {
-right: 5%;
-top: 30%;
-width: clamp(320px, 42vw, 620px);
+/* 远古：竖幅演奏图靠右，陶鼓装饰落在正文左下。 */
+#scene-yuangu .main-image-area {
+right: 7%;
+top: 15%;
+width: clamp(250px, 50vw, 410px);
+height: clamp(390px, 66vh, 620px);
 }
-#scene-shangzhou .decor-image {
-left: 5%;
-top: 30%;
-width: clamp(80px, 16vw, 230px);
+#scene-yuangu .decor-image {
+left: 11%;
+top: 48%;
+width: clamp(100px, 10vw, 150px);
 }
-/* 商周 delay后状态：主图缩小右移，装饰图缩小下移 */
-#scene-shangzhou.evolved .main-image-area {
-right: 2%;
-top: 40%;
-width: clamp(200px, 30vw, 440px);
+#scene-yuangu.evolved .main-image-area {
+right: 8%;
+top: 15%;
+width: clamp(230px, 80vw, 400px);
+height: clamp(360px, 80vh, 600px);
 }
-#scene-shangzhou.evolved .decor-image {
-left: 10%;
-top: 40%;
-width: clamp(60px, 10vw, 150px);
+#scene-yuangu.evolved .decor-image {
+left:8%;
+top: 55%;
+width: clamp(80px, 40vw, 300px);
+transform: rotate(60deg);
 }
 
-/* 汉唐场景：主图和装饰图都较小 */
+/* 竖幅主图未占满容器高度，出处文字向上贴近图片底部。 */
+#scene-yuangu .ref-row {
+top: calc(100% - 8px);
+}
+
+/* 商周：方幅演奏图略大，青铜鼓装饰靠左下。 */
+#scene-shangzhou .main-image-area {
+right: 4%;
+top: 18%;
+width: clamp(310px, 36vw, 540px);
+height: clamp(350px, 58vh, 540px);
+}
+#scene-shangzhou .decor-image {
+left: 8%;
+top: 43%;
+width: clamp(120px, 13vw, 190px);
+}
+#scene-shangzhou.evolved .main-image-area {
+right: 5%;
+top: 30%;
+width: clamp(270px, 30vw, 600px);
+height: clamp(320px, 60vh, 800px);
+}
+#scene-shangzhou.evolved .decor-image {
+left:5%;
+top: 48%;
+width: clamp(90px, 40vw, 300px);
+}
+
+/* 汉唐：竖幅人物居右，横幅乐器图放低并压缩高度感。 */
 #scene-hantang .main-image-area {
 right: 8%;
-top: 18%;
-width: clamp(200px, 28vw, 400px);
+top: 15%;
+width: clamp(240px, 25vw, 380px);
+height: clamp(400px, 67vh, 630px);
 }
 #scene-hantang .decor-image {
-left: 18%;
-top: 34%;
-width: clamp(40px, 9vw, 130px);
+left: 8%;
+top: 52%;
+width: clamp(150px, 17vw, 250px);
+transform: rotate(-8deg);
 }
-/* 汉唐 hover 状态：进一步缩小 */
 #scene-hantang.evolved .main-image-area {
-right: 5%;
-top: 20%;
-height: 500px;
-width: clamp(200px, 28vw, 400px);
+right: 9%;
+top: 18%;
+width: clamp(220px, 23vw, 400px);
+height: clamp(370px, 63vh, 800px);
 }
 #scene-hantang.evolved .decor-image {
-left: 15%;
-top: 50%;
-width: clamp(30px, 5vw, 80px);
+left: 0%;
+top: 55%;
+width: clamp(125px, 30vw, 500px);
+transform: rotate(20deg);
+}
+
+/* 宋元：较小的竖幅主图适度放大，长形鼓器置于文字左侧。 */
+#scene-songyuan .main-image-area {
+right: 8%;
+top: 17%;
+width: clamp(250px, 27vw, 410px);
+height: clamp(390px, 65vh, 610px);
+}
+#scene-songyuan .decor-image {
+left: 13%;
+top: 42%;
+width: clamp(85px, 9vw, 135px);
+}
+#scene-songyuan.evolved .main-image-area {
+right: 9%;
+top: 20%;
+width: clamp(230px, 25vw, 380px);
+height: clamp(360px, 61vh, 570px);
+}
+#scene-songyuan.evolved .decor-image {
+left: 9%;
+top: 40%;
+width: clamp(70px, 20vw, 500px);
 }
 
 /* ================================================================ */
@@ -489,8 +549,9 @@ filter: blur(0);
 /* 主体演奏图进一步缩小+右移 */
 .scene.evolved .main-image-area {
 right: 6%;
-top: 23.44%;
+top: 20%;
 width: clamp(140px, 22vw, 340px);
+height: clamp(330px, 58vh, 550px);
 }
 
 /* 左侧装饰图缩小+下移+旋转+降低透明度 */
@@ -588,6 +649,32 @@ bottom: 48px;
     width: clamp(200px, 42vw, 380px);
     right: 5%;
     top: 16%;
+    height: clamp(300px, 55vh, 500px);
+}
+#scene-yuangu .main-image-area,
+#scene-shangzhou .main-image-area,
+#scene-hantang .main-image-area,
+#scene-songyuan .main-image-area,
+#scene-yuangu.evolved .main-image-area,
+#scene-shangzhou.evolved .main-image-area,
+#scene-hantang.evolved .main-image-area,
+#scene-songyuan.evolved .main-image-area {
+    right: 4%;
+    top: 17%;
+    width: clamp(210px, 38vw, 350px);
+    height: clamp(300px, 54vh, 480px);
+}
+#scene-yuangu .decor-image,
+#scene-shangzhou .decor-image,
+#scene-hantang .decor-image,
+#scene-songyuan .decor-image,
+#scene-yuangu.evolved .decor-image,
+#scene-shangzhou.evolved .decor-image,
+#scene-hantang.evolved .decor-image,
+#scene-songyuan.evolved .decor-image {
+    left: 6%;
+    top: 45%;
+    width: clamp(70px, 12vw, 120px);
 }
 .desc-block {
     max-width: 50vw;
@@ -667,16 +754,41 @@ bottom: 48px;
     top: 36%;
 }
 .main-image-area {
-    width: 55vw;
+    width: 42vw;
     right: 4%;
-    top: 26%;
-    max-height: 50vh;
+    top: 13%;
+    height: 33vh;
+}
+#scene-yuangu .main-image-area,
+#scene-shangzhou .main-image-area,
+#scene-hantang .main-image-area,
+#scene-songyuan .main-image-area,
+#scene-yuangu.evolved .main-image-area,
+#scene-shangzhou.evolved .main-image-area,
+#scene-hantang.evolved .main-image-area,
+#scene-songyuan.evolved .main-image-area {
+    right: 3%;
+    top: 13%;
+    width: 42vw;
+    height: 33vh;
 }
 .decor-image {
     width: clamp(50px, 10vw, 90px);
     left: 4%;
     top: 33%;
     opacity: 0.3;
+}
+#scene-yuangu .decor-image,
+#scene-shangzhou .decor-image,
+#scene-hantang .decor-image,
+#scene-songyuan .decor-image,
+#scene-yuangu.evolved .decor-image,
+#scene-shangzhou.evolved .decor-image,
+#scene-hantang.evolved .decor-image,
+#scene-songyuan.evolved .decor-image {
+    left: 4%;
+    top: 38%;
+    width: clamp(58px, 14vw, 90px);
 }
 .desc-block {
     max-width: 70vw;
