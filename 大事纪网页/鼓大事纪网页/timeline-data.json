@@ -1,0 +1,11 @@
+{
+  "instrument": "鼓",
+  "title": "鼓·大事纪",
+  "eras": [
+    {"id": "xian-qin-han", "name": "先秦汉", "range": "远古 — 220", "eventCount": 4},
+    {"id": "tang", "name": "唐", "range": "618 — 907", "eventCount": 1},
+    {"id": "song", "name": "宋", "range": "960 — 1279", "eventCount": 1},
+    {"id": "yuan", "name": "元", "range": "1271 — 1368", "eventCount": 1},
+    {"id": "ming", "name": "明", "range": "1368 — 1644", "eventCount": 1}
+  ]
+}

@@ -1,0 +1,236 @@
+@charset "UTF-8";
+
+/*
+  中文脚注：全站上边栏样式。
+  - 以后想改上边栏高度/厚度，调整 --site-topbar-height。
+  - 以后想改上边栏左右内边距，调整 --site-topbar-padding-x。
+  - 以后想改上边栏背景底纹，替换 site-nav/assets/topbar-texture.png。
+  - 上边栏所有字号、间距、位置都在本文件固定，不再继承各页面 h2 或变量，避免不同页面切换时抖动。
+  - 本文件会把普通 .page 页面和制作页 .app 一起下移并轻微缩放，保证各页导航与画幅逻辑一致。
+*/
+
+@font-face {
+  font-family: FZLiShu;
+  src: url("../2.2研物-音画故事-鼓/fonts/方正隶书简体.TTF") format("truetype");
+  font-display: swap;
+}
+
+:root {
+  /* 中文脚注：修改这里可以控制上边栏厚度；数值越小，上边栏越窄，页面可用高度越多。 */
+  --site-topbar-height: 44px;
+  /* 中文脚注：修改这里可以控制上边栏左右留白；数值越小，导航越靠左、整体占用越紧凑。 */
+  --site-topbar-padding-x: 36px;
+  --site-topbar-bg: #eee7cb;
+  --site-topbar-text: #69433A;
+  --site-topbar-active: #361E19;
+  /* 中文脚注：这个变量由 site-nav.js 根据屏幕高度自动更新，不建议手动改。 */
+  --site-page-scale: .95;
+  /* 中文脚注：这个变量由 site-nav.js 根据缩放比例自动更新，用来抵消整体缩放后的页面宽度。 */
+  --site-page-width: 105.263%;
+}
+
+body.has-site-topbar {
+  /* 中文脚注：这里不再使用 padding 推开页面，避免与各页面 100vh 高度叠加后导致底部溢出。 */
+  padding-top: 0 !important;
+  overflow: hidden !important;
+  /* 中文脚注：2.1 制作页原本 body 是 grid 居中布局；有上边栏后要改回普通块布局，避免页面被居中后右侧/底部露出黑边。 */
+  display: block !important;
+}
+
+body.has-site-topbar .page,
+body.has-site-topbar .app {
+  /* 中文脚注：这里控制“上边栏加入后”的页面整体位置和缩放。
+     margin-top 负责避开上边栏；scale 负责把原 100vh 页面轻微缩小到剩余画幅内。
+     想让页面内容整体更大/更小，优先修改 site-nav.js 里的 topbarHeight 或 scale 最小值。 */
+  margin-top: var(--site-topbar-height) !important;
+  height: 100vh !important;
+  min-height: 0 !important;
+  width: var(--site-page-width) !important;
+  transform: scale(var(--site-page-scale));
+  transform-origin: top left;
+}
+
+body.has-site-topbar .app {
+  /* 中文脚注：制作页使用 100vw 绝对舞台，不能整体 transform 缩放，否则右侧容易露出黑边。
+     这里改为“只避让上边栏并压缩高度”：横向始终 100vw，纵向使用剩余屏幕高度。 */
+  margin-top: var(--site-topbar-height) !important;
+  width: 100vw !important;
+  height: calc(100vh - var(--site-topbar-height)) !important;
+  min-height: 0 !important;
+  transform: none !important;
+}
+
+body.has-site-topbar .cornerNav {
+  /* 中文脚注：全站右上角“前进/后退”按钮位置统一参考 3.1 观象页面。
+     想整体调整位置，只改这里的 top/right；top 越大越往下，right 越大越靠左。 */
+  position: fixed !important;
+  z-index: 9990 !important;
+  top: 5.8% !important;
+  right: 5% !important;
+  display: flex !important;
+  gap: 16px !important;
+}
+
+body.has-site-topbar .navBtn {
+  /* 中文脚注：全站右上角“前进/后退”按钮大小统一参考 3.1 观象页面。 */
+  position: relative !important;
+  width: clamp(38px, 3vw, 58px) !important;
+  height: clamp(38px, 3vw, 58px) !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(229, 198, 132, .7) !important;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 241, 196, .9), rgba(180, 130, 62, .5) 58%, rgba(22, 17, 13, .38)) !important;
+  color: rgba(255, 246, 219, .95) !important;
+  font-size: clamp(22px, 1.7vw, 34px) !important;
+  line-height: 1 !important;
+  box-shadow: 0 0 18px rgba(217, 186, 114, .24), inset 0 0 10px rgba(255, 244, 201, .15) !important;
+  cursor: pointer !important;
+  transition: transform .22s ease, opacity .22s ease, filter .22s ease !important;
+}
+
+body.has-site-topbar .navBtn:hover {
+  transform: scale(1.08) !important;
+  filter: brightness(1.12) !important;
+}
+
+body.has-site-topbar .navBtn.disabled {
+  opacity: .34 !important;
+  pointer-events: none !important;
+}
+
+body.has-site-topbar .story-section {
+  /* 中文脚注：故事页面保持原来的 100vh 版式，由外层 .page 统一缩放，减少内部错位。 */
+  height: 100vh;
+  min-height: 100vh;
+}
+
+.site-topbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: var(--site-topbar-height);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--site-topbar-padding-x);
+  background-color: var(--site-topbar-bg);
+  /* 中文脚注：这里修改上边栏底纹。底纹来自 assets，黑色透明遮罩在 .site-topbar::before 中调整。 */
+  background-image: url("assets/topbar-texture.png");
+  background-repeat: repeat;
+  border-bottom: 1px solid #361E19;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.site-topbar::before {
+  /* 中文脚注：这里是上边栏黑色半透明遮罩。想更暗就调高 opacity，想更亮就调低 opacity。 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #000;
+  opacity: .1;
+  pointer-events: none;
+}
+
+.site-topbar__nav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  /* 中文脚注：这里控制“研物/观象/编年”之间的距离。 */
+  gap: 0;
+  height: 100%;
+}
+
+.site-topbar__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 26px;
+  box-sizing: border-box;
+  color: var(--site-topbar-text);
+  text-decoration: none;
+  outline: none;
+  opacity: .86;
+  transition: opacity .22s ease, transform .22s ease, color .22s ease;
+}
+
+.site-topbar__link + .site-topbar__link::before {
+  /* 中文脚注：这里是每个小标题之间的短竖线分栏；height 控制竖线长度，left 控制横向位置。 */
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 16px;
+  background: rgba(47, 59, 40, .45);
+  transform: translateY(-50%);
+}
+
+.site-topbar .site-topbar__link > h2 {
+  margin: 0 !important;
+  color: inherit !important;
+  font-family: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif !important;
+  /* 中文脚注：这里固定上边栏文字大小，不再读取各页面的 --type-h2，避免切换页面时字号变化。 */
+  font-size: 22px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+  letter-spacing: 6px !important;
+  text-shadow: 0 2px 8px rgba(255, 255, 255, .5) !important;
+  white-space: nowrap !important;
+}
+
+.site-topbar__link::after {
+  /* 中文脚注：这里明确去除 hover 下划线，只保留轻微放大。 */
+  content: none;
+}
+
+.site-topbar__link:hover,
+.site-topbar__link:focus-visible,
+.site-topbar__link.active {
+  color: var(--site-topbar-active);
+  opacity: 1;
+}
+
+.site-topbar__link:hover,
+.site-topbar__link:focus-visible {
+  /* 中文脚注：这里控制 hover 放大幅度，1.03 表示轻微放大。 */
+  transform: scale(1.03);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --site-topbar-height: 40px;
+    --site-topbar-padding-x: 18px;
+  }
+
+  .site-topbar__link {
+    padding: 0 16px;
+  }
+
+  .site-topbar .site-topbar__link > h2 {
+    font-size: 19px !important;
+    letter-spacing: 4px !important;
+  }
+
+  body.has-site-topbar .page,
+  body.has-site-topbar .app {
+    /* 中文脚注：窄屏仍然通过整体缩放适配剩余画幅，避免内部组件被强行挤压。 */
+    margin-top: var(--site-topbar-height) !important;
+    height: 100vh !important;
+    min-height: 0 !important;
+  }
+
+  body.has-site-topbar .app {
+    /* 中文脚注：窄屏制作页同样只压缩高度，保持横向满屏。 */
+    width: 100vw !important;
+    height: calc(100vh - var(--site-topbar-height)) !important;
+    transform: none !important;
+  }
+}

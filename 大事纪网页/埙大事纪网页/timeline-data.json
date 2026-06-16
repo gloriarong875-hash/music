@@ -1,0 +1,24 @@
+{
+  "instrument": "埙",
+  "title": "埙·大事纪",
+  "subtitle": "远古 · 礼乐 · 民间 · 传承",
+  "eraCount": 3,
+  "eventCount": 6,
+  "eras": [
+    {
+      "id": "xian-qin-han",
+      "name": "先秦汉",
+      "eventCount": 4
+    },
+    {
+      "id": "tang",
+      "name": "唐",
+      "eventCount": 1
+    },
+    {
+      "id": "qing",
+      "name": "清",
+      "eventCount": 1
+    }
+  ]
+}
