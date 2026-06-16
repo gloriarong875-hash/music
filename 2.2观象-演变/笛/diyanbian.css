@@ -507,14 +507,17 @@ transform: rotate(30deg);
 }
 
 /* 第 2、3 时期的左侧乐器图上移 30px。 */
-#scene-han.evolved .decor-image,
-#scene-suitang.evolved .decor-image {
+#scene-han.evolved .decor-image, {
 top: calc(65% - 30px);
+}
+
+#scene-suitang.evolved .decor-image {
+top: calc(50% - 30px);
 }
 
 /* 第 2 时期右图在当前基础上再上移 30px。 */
 #scene-han.evolved .main-image-area {
-top: calc(25% - 40px);
+top: calc(20% - 40px);
 }
 
 /* 第 3 时期右图保持原位置。 */
@@ -736,4 +739,37 @@ width: 5px;
 .desc-block::-webkit-scrollbar-thumb {
 background: rgba(201, 169, 110, 0.55);
 border-radius: 999px;
+}
+
+/* Delay 后：主标题、副标题、正文共用同一左边线。 */
+.scene {
+--evolved-copy-left: 25%;
+}
+
+.scene.evolved .scene-title,
+.scene.evolved .scene-subtitle {
+left: var(--evolved-copy-left);
+text-align: left;
+transform: translateY(-50%);
+}
+
+.scene.evolved .desc-block {
+left: var(--evolved-copy-left);
+text-align: left;
+}
+
+.scene.evolved .desc-block p {
+text-align: left;
+}
+
+@media (max-width: 900px) {
+    .scene {
+    --evolved-copy-left: 18%;
+    }
+}
+
+@media (max-width: 600px) {
+    .scene {
+    --evolved-copy-left: 14%;
+    }
 }
