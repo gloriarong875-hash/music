@@ -551,6 +551,11 @@ p,
   place-items: center;
   overflow: hidden;
   cursor: zoom-in;
+  touch-action: none;
+}
+
+.lightbox-image-wrap.is-panning {
+  cursor: grabbing;
 }
 
 .lightbox-image-wrap img {
@@ -560,7 +565,7 @@ p,
   object-fit: contain;
   border: 1px solid rgba(239, 214, 125, .28);
   background: rgba(8, 9, 8, .42);
-  transform: scale(var(--lightbox-zoom, 1));
+  transform: translate(var(--lightbox-pan-x, 0px), var(--lightbox-pan-y, 0px)) scale(var(--lightbox-zoom, 1));
   transform-origin: center center;
   transition: transform .12s ease;
   will-change: transform;
@@ -580,7 +585,8 @@ p,
 .lightbox-close {
   /* 中文脚注：关闭按钮恢复为旧版前进/后退按钮的圆形金色质感；调 width/height 可改变按钮大小。 */
   position: absolute;
-  top: 20px;
+  /* 中文脚注：4.3 大图关闭按钮位置；如果被上边栏遮挡，调大 top 就会继续往下。 */
+  top: 82px;
   right: 24px;
   width: 42px;
   height: 42px;
