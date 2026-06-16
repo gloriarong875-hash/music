@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>琴结构与物源桑基图</title>
+  <!--
+    中文脚注（页面说明）
+    - 本页完全参考 3.1 笙/鼓/埙：左侧为“平面图 → 结构图”的切换展示，右侧为“部件 → 工艺 → 产地 → 材质 → 八音”的桑基图。
+    - 琴的图片统一放在 `琴部件assets`；如果替换素材，保持文件名一致即可。
+    - 顶部边栏来自 `../site-nav/site-nav.css` 和 `../site-nav/site-nav.js`，所有页面共用。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="qinstyle.css" />
+  <link rel="stylesheet" href="../site-nav/site-nav.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="layout" aria-label="琴结构与桑基图展示">
+      <div class="left-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Observing Phenomena</h4>
+            <h1>观象·结构</h1>
+          </div>
+        </header>
+
+        <nav class="cornerNav" aria-label="场景跳转">
+          <button class="navBtn" id="prevScene" type="button" aria-label="回到上一步">‹</button>
+          <button class="navBtn" id="nextScene" type="button" aria-label="直接下一步">›</button>
+        </nav>
+
+        <div class="stage">
+          <div class="core" aria-label="琴平面图到结构爆炸展示">
+            <div class="orbit-shell" aria-hidden="false">
+              <div class="orbit-rings"></div>
+              <div class="orbit-system">
+                <div class="orbit-node" data-part="面板" style="--angle:-96deg;--angle-back:96deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="琴部件assets/零件3-面板.png" alt="面板" />
+                    <span class="orbit-label">面板</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="琴弦" style="--angle:-24deg;--angle-back:24deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="琴部件assets/零件2-琴弦.png" alt="琴弦" />
+                    <span class="orbit-label">琴弦</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="配件" style="--angle:42deg;--angle-back:-42deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="琴部件assets/零件1-配件.png" alt="配件" />
+                    <span class="orbit-label">配件</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="灰胎" style="--angle:118deg;--angle-back:-118deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="琴部件assets/零件4-灰胎.png" alt="灰胎" />
+                    <span class="orbit-label">灰胎</span>
+                  </div>
+                </div>
+                <div class="orbit-node" data-part="底板" style="--angle:196deg;--angle-back:-196deg;--radius:clamp(204px,18vw,294px);">
+                  <div class="orbit-inner">
+                    <img src="琴部件assets/零件5-底板.png" alt="底板" />
+                    <span class="orbit-label">底板</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <img class="plane-view" src="琴部件assets/琴平面图.png" alt="琴平面图" />
+            <img class="structure-piece piece-peijian" data-part="配件" src="琴部件assets/结构图1-配件.png" alt="结构图1 配件" />
+            <img class="structure-piece piece-xianmian" data-part="面板" src="琴部件assets/结构图2-琴弦&面板.png" alt="结构图2 琴弦与面板" />
+            <img class="structure-piece piece-diban-one" data-part="底板" src="琴部件assets/结构图3-底板1.png" alt="结构图3 底板" />
+            <img class="structure-piece piece-diban-two" data-part="底板" src="琴部件assets/结构图4-底板2.png" alt="结构图4 底板" />
+          </div>
+        </div>
+      </div>
+
+      <div class="right-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Data Visualization</h4>
+            <h1>观象·物源</h1>
+          </div>
+        </header>
+        <div class="chart-wrap">
+          <div id="sankey-chart" role="img" aria-label="琴部件到工艺、产地、材质与八音的桑基图"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 中文脚注：部件介绍面板固定在左下角，悬停/点击部件时显示；位置在 generalcomponent.css 的 `.part-info` 中调整。 -->
+    <aside class="part-info" aria-live="polite">
+      <h3 id="partTitle">面板</h3>
+      <p id="partBody" class="part-body">面板多取陈年杉木或桐木，承担琴腹共鸣与导音，是古琴“松透”声色的基础。</p>
+    </aside>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="general.js"></script>
+  <script src="qinscript.js"></script>
+  <script src="../site-nav/site-nav.js"></script>
+</body>
+</html>
