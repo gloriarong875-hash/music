@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 
 /* 全局变量与主题色定义。 */
 :root {
@@ -1370,4 +1370,255 @@ body.has-site-topbar {
   transform: var(--image-base-transform, none) !important;
   filter: var(--image-base-filter, none) !important;
   opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* ???????????????????????hover ???
+   ???????????????????? script.js ? fitTuning() ? fillX / fillY? */
+.story-entry::after {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+.story-entry.visual-left::after { left: 1% !important; right: auto !important; }
+.story-entry.visual-right::after { right: 1% !important; left: auto !important; }
+.artifact,
+.dizi-artifact,
+.drum-artifact,
+.qin-artifact,
+.xun-artifact,
+.relic-roundel {
+  position: relative !important;
+  display: block !important;
+  overflow: visible !important;
+  contain: none !important;
+  pointer-events: none !important;
+}
+.story-entry,
+.story-page,
+.page-body {
+  contain: none !important;
+}
+.artifact img {
+  position: absolute !important;
+  left: 50%;
+  top: 50%;
+  width: auto;
+  height: auto;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 0 !important;
+  object-fit: contain !important;
+  clip-path: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  pointer-events: auto !important;
+  transform-origin: center center !important;
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter, sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46))) !important;
+  transition: transform .34s cubic-bezier(.2,.72,.25,1), filter .34s ease, opacity .34s ease !important;
+  will-change: transform, filter, opacity;
+}
+.artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62)) !important;
+}
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter, sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46))) !important;
+}
+.artifact figcaption {
+  position: absolute !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 6 !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(320px, 78%);
+  padding: 5px 11px !important;
+  border-radius: 0 !important;
+  color: rgba(246,239,212,.78) !important;
+  background: rgba(12, 9, 6, .42) !important;
+  font-size: 9px !important;
+  line-height: 1.45 !important;
+  letter-spacing: 1px !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+.artifact figcaption::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: rgba(238,231,203,.72);
+}
+.artifact:has(figcaption:empty) figcaption {
+  display: none !important;
+}
+/* ????????????????????? */
+.sheng-page .page-heading {
+  display: flex !important;
+  align-items: end !important;
+  gap: 20px !important;
+  padding-left: 3% !important;
+}
+.sheng-page .page-heading::after {
+  display: block !important;
+  content: "" !important;
+  flex: 1 !important;
+  height: 5px !important;
+  margin: 0 0 9px 8px !important;
+  opacity: .42 !important;
+}
+.sheng-page .event-block::before {
+  display: none !important;
+}
+
+/* 本轮手动调参区：琴页面图片缩放、位置、亮度与 hover 高亮。 */
+body.qin-page .artifact.is-visible-hover img {
+  opacity: 1 !important;
+  filter: sepia(.02) saturate(1.08) contrast(1.08) brightness(1.13) drop-shadow(0 20px 28px rgba(0,0,0,.64)) !important;
+}
+/* 伯牙子期：普通态降亮度，并上移放大一些。 */
+body.qin-page .qin-boya { --fit-scale: 1.16; --fit-x: 0px; --fit-y: -26px; }
+body.qin-page .qin-boya img {
+  filter: sepia(.06) saturate(.9) contrast(.96) brightness(.78) drop-shadow(0 14px 18px rgba(0,0,0,.46)) !important;
+}
+body.qin-page .qin-boya.is-visible-hover img {
+  filter: sepia(.02) saturate(1.02) contrast(1.02) brightness(.94) drop-shadow(0 20px 26px rgba(0,0,0,.62)) !important;
+}
+/* 六张琴谱/画作：放大到当前约 1.5 倍，按画面稍作居中。 */
+body.qin-page .qin-tang-painting { --fit-scale: 1.5; --fit-x: 0px; --fit-y: 28px; }
+body.qin-page .qin-jianzipu { --fit-scale: 1.5; --fit-x: 0px; --fit-y: -6px; }
+body.qin-page .qin-huangying { --fit-scale: 1.5; --fit-x: 0px; --fit-y: -4px; }
+body.qin-page .qin-shilin { --fit-scale: 1.5; --fit-x: 0px; --fit-y: -4px; }
+body.qin-page .qin-shenqi { --fit-scale: 1.5; --fit-x: 0px; --fit-y: -6px; }
+body.qin-page .qin-ming-painting { --fit-scale: 1.5; --fit-x: 0px; --fit-y: 0px; }
+/* 严天池刻像：确保文字标签显示并贴随可见部分。 */
+body.qin-page .qin-yantianchi figcaption { display: flex !important; }
+/* 最终 hover 状态锁：鼠标离开图片可见部分后，高亮、放大和图片阴影同步消失。 */
+body.dizi-page .artifact:not(.is-visible-hover) img,
+body.dizi-page .artifact:not(.is-visible-hover):hover img,
+body.dizi-page .artifact:not(.is-visible-hover) img:hover,
+body.drum-page .artifact:not(.is-visible-hover) img,
+body.drum-page .artifact:not(.is-visible-hover):hover img,
+body.drum-page .artifact:not(.is-visible-hover) img:hover,
+body.qin-page .artifact:not(.is-visible-hover) img,
+body.qin-page .artifact:not(.is-visible-hover):hover img,
+body.qin-page .artifact:not(.is-visible-hover) img:hover,
+body.sheng-page .artifact:not(.is-visible-hover) img,
+body.sheng-page .artifact:not(.is-visible-hover):hover img,
+body.sheng-page .artifact:not(.is-visible-hover) img:hover,
+body.xun-page .artifact:not(.is-visible-hover) img,
+body.xun-page .artifact:not(.is-visible-hover):hover img,
+body.xun-page .artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter, sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46))) !important;
+}
+body.dizi-page .artifact.is-visible-hover img,
+body.drum-page .artifact.is-visible-hover img,
+body.qin-page .artifact.is-visible-hover img,
+body.sheng-page .artifact.is-visible-hover img,
+body.xun-page .artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62)) !important;
+}
+/* 终版 hover 同步复位：非可见像素 hover 时，放大、高亮、阴影全部回到普通态。 */
+body .artifact:not(.is-visible-hover) img,
+body .artifact:not(.is-visible-hover):hover img,
+body .artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter, none) !important;
+}
+body .artifact:not(.is-visible-hover)::before,
+body .artifact:not(.is-visible-hover):hover::before,
+body .artifact:not(.is-visible-hover)::after,
+body .artifact:not(.is-visible-hover):hover::after {
+  filter: none !important;
+  box-shadow: none !important;
+}
+body .artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62)) !important;
+}
+body .artifact img {
+  transition: transform .34s cubic-bezier(.2,.72,.25,1), filter .34s ease, opacity .34s ease !important;
+}
+/* 最新手动调参：琴谱图片降亮与缩小，标签不遮挡。 */
+body.qin-page .qin-huangying,
+body.qin-page .qin-shilin,
+body.qin-page .qin-shenqi {
+  --fit-scale: 1.35;
+}
+body.qin-page .qin-fuxi img,
+body.qin-page .qin-huangying img,
+body.qin-page .qin-shilin img,
+body.qin-page .qin-shenqi img {
+  filter: sepia(.08) saturate(.88) contrast(.96) brightness(.78) drop-shadow(0 14px 18px rgba(0,0,0,.42)) !important;
+}
+body.qin-page .qin-fuxi.is-visible-hover img,
+body.qin-page .qin-huangying.is-visible-hover img,
+body.qin-page .qin-shilin.is-visible-hover img,
+body.qin-page .qin-shenqi.is-visible-hover img {
+  filter: sepia(.03) saturate(1.02) contrast(1.03) brightness(.92) drop-shadow(0 20px 26px rgba(0,0,0,.58)) !important;
+}
+body.qin-page .qin-shilin figcaption {
+  max-width: 240px !important;
+  white-space: normal !important;
+}
+/* 终极普通态/hover 态分离：普通态滤镜由 CSS 变量声明，不再被 JS 的 hover 读取污染。 */
+body .artifact {
+  --image-base-opacity: .92;
+  --image-base-filter: sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46));
+}
+body .artifact:not(.is-visible-hover) img,
+body .artifact:not(.is-visible-hover):hover img,
+body .artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter) !important;
+}
+body .artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: var(--image-hover-filter, sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62))) !important;
+}
+
+/* 终极普通态变量：琴页偏亮图片。 */
+body.qin-page .qin-fuxi,
+body.qin-page .qin-boya,
+body.qin-page .qin-huangying,
+body.qin-page .qin-shilin,
+body.qin-page .qin-shenqi {
+  --image-base-filter: sepia(.08) saturate(.88) contrast(.96) brightness(.78) drop-shadow(0 14px 18px rgba(0,0,0,.42));
+  --image-hover-filter: sepia(.03) saturate(1.02) contrast(1.03) brightness(.92) drop-shadow(0 20px 26px rgba(0,0,0,.58));
+}
+
+/* 最终 hover 统一锁：移开可见像素后，同步恢复普通态滤镜、放大和阴影。 */
+body.qin-page .artifact {
+  --image-base-opacity: .92;
+  --image-base-filter: sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46));
+  --image-hover-filter: sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62));
+}
+body.qin-page .artifact:not(.is-visible-hover) img,
+body.qin-page .artifact:not(.is-visible-hover):hover img,
+body.qin-page .artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity) !important;
+  filter: var(--image-base-filter) !important;
+}
+body.qin-page .artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: var(--image-hover-filter) !important;
 }

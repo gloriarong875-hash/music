@@ -1,4 +1,4 @@
-// 页面状态与数据缓存。
+﻿// 页面状态与数据缓存。
 const state = {
   data: null,
   pages: [],
@@ -271,18 +271,8 @@ if (pageSwitcher) {
 }
 
 function installVisibleImageHover() {
-  const cache = new WeakMap();
   let activeArtifact = null;
-
-  function prepareImage(img) {
-    const artifact = img.closest(".artifact");
-    if (!artifact || cache.has(img)) return;
-    const computed = getComputedStyle(img);
-    artifact.style.setProperty("--image-base-transform", computed.transform === "none" ? "none" : computed.transform);
-    artifact.style.setProperty("--image-base-filter", computed.filter === "none" ? "none" : computed.filter);
-    artifact.style.setProperty("--image-base-opacity", computed.opacity || "1");
-    cache.set(img, { canvas: null, context: null, failed: false });
-  }
+  let rafId = 0;
 
   function maskForImage(img) {
     const masks = window.instrumentHoverMasks || {};
@@ -290,46 +280,152 @@ function installVisibleImageHover() {
     return masks[rawSrc] || masks[decodeURIComponent(rawSrc)] || null;
   }
 
+  function boundsForImage(img) {
+    const mask = maskForImage(img);
+    if (mask?.bounds) return mask.bounds;
+    return { x: 0, y: 0, w: img.naturalWidth || 1, h: img.naturalHeight || 1 };
+  }
+
+  function fitTuning(artifact, bounds) {
+    const aspect = bounds.w / Math.max(1, bounds.h);
+    const oneItem = artifact.closest(".page-body")?.classList.contains("count-1");
+    let fillX = oneItem ? 0.78 : 0.72;
+    let fillY = oneItem ? 0.78 : 0.72;
+    if (aspect > 2.2) { fillX = oneItem ? 0.92 : 0.88; fillY = oneItem ? 0.52 : 0.48; }
+    if (aspect < 0.55) { fillX = oneItem ? 0.58 : 0.52; fillY = oneItem ? 0.92 : 0.86; }
+    if (artifact.matches(".relic-roundel") || artifact.closest(".story-entry")?.matches(".drum-pottery, .drum-storyteller")) {
+      fillX += 0.04;
+      fillY += 0.04;
+    }
+    return { fillX, fillY };
+  }
+
+  function layoutCaption(artifact, visibleRect) {
+    const caption = artifact.querySelector("figcaption");
+    if (!caption) return;
+    if (!caption.textContent.trim()) {
+      caption.style.display = "none";
+      return;
+    }
+    caption.style.display = "flex";
+    caption.style.left = "0px";
+    caption.style.top = "0px";
+    const artRect = artifact.getBoundingClientRect();
+    const capRect = caption.getBoundingClientRect();
+    const gap = 8;
+    const pad = 4;
+
+    if (artifact.matches(".qin-tang-painting")) {
+      const rightLeft = visibleRect.left + visibleRect.width + 14;
+      const fallbackLeft = Math.max(pad, artRect.width - capRect.width - 10);
+      const left = rightLeft + capRect.width <= artRect.width - pad
+        ? rightLeft
+        : fallbackLeft;
+      const top = Math.max(
+        pad,
+        Math.min(
+          visibleRect.top + visibleRect.height * 0.76 - capRect.height / 2,
+          artRect.height - capRect.height - pad,
+        ),
+      );
+      caption.style.left = `${left}px`;
+      caption.style.top = `${top}px`;
+      return;
+    }
+
+    let left = visibleRect.left + visibleRect.width - capRect.width;
+    left = Math.max(pad, Math.min(left, artRect.width - capRect.width - pad));
+    let top = visibleRect.top + visibleRect.height + gap;
+
+    if (top + capRect.height > artRect.height - pad) {
+      const rightLeft = visibleRect.left + visibleRect.width + gap;
+      const leftLeft = visibleRect.left - capRect.width - gap;
+      if (rightLeft + capRect.width <= artRect.width - pad) {
+        left = rightLeft;
+      } else if (leftLeft >= pad) {
+        left = leftLeft;
+      } else {
+        left = Math.max(pad, Math.min(rightLeft, artRect.width - capRect.width - pad));
+      }
+      top = visibleRect.top + visibleRect.height / 2 - capRect.height / 2;
+    }
+
+    top = Math.max(pad, Math.min(top, artRect.height - capRect.height - pad));
+    caption.style.left = `${left}px`;
+    caption.style.top = `${top}px`;
+  }
+  function fitImage(img) {
+    if (!img.complete || !img.naturalWidth || !img.naturalHeight) return;
+    const artifact = img.closest(".artifact");
+    if (!artifact) return;
+    const rect = artifact.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const bounds = boundsForImage(img);
+    const tuning = fitTuning(artifact, bounds);
+    let scale = Math.min(
+      (rect.width * tuning.fillX) / Math.max(1, bounds.w),
+      (rect.height * tuning.fillY) / Math.max(1, bounds.h),
+    );
+    if (!Number.isFinite(scale) || scale <= 0) scale = 1;
+    const style = getComputedStyle(artifact);
+    const manualScale = parseFloat(style.getPropertyValue("--fit-scale")) || 1;
+    const manualX = parseFloat(style.getPropertyValue("--fit-x")) || 0;
+    const manualY = parseFloat(style.getPropertyValue("--fit-y")) || 0;
+    scale *= manualScale;
+    const imageW = img.naturalWidth * scale;
+    const imageH = img.naturalHeight * scale;
+    const visibleW = bounds.w * scale;
+    const visibleH = bounds.h * scale;
+    const imageCenterOffsetX = imageW / 2 - (bounds.x + bounds.w / 2) * scale;
+    const imageCenterOffsetY = imageH / 2 - (bounds.y + bounds.h / 2) * scale;
+
+    img.style.width = `${imageW}px`;
+    img.style.height = `${imageH}px`;
+    img.style.left = `calc(50% + ${imageCenterOffsetX + manualX}px)`;
+    img.style.top = `calc(50% + ${imageCenterOffsetY + manualY}px)`;
+    artifact.style.setProperty("--image-base-transform", "translate(-50%, -50%)");
+
+    const imageLeft = rect.width / 2 + imageCenterOffsetX + manualX - imageW / 2;
+    const imageTop = rect.height / 2 + imageCenterOffsetY + manualY - imageH / 2;
+    const visibleRect = {
+      left: imageLeft + bounds.x * scale,
+      top: imageTop + bounds.y * scale,
+      width: visibleW,
+      height: visibleH,
+    };
+    artifact.style.setProperty("--visible-left", `${visibleRect.left}px`);
+    artifact.style.setProperty("--visible-top", `${visibleRect.top}px`);
+    artifact.style.setProperty("--visible-width", `${visibleRect.width}px`);
+    artifact.style.setProperty("--visible-height", `${visibleRect.height}px`);
+    layoutCaption(artifact, visibleRect);
+  }
+
+  function fitAllImages() {
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      document.querySelectorAll(".artifact img").forEach(fitImage);
+    });
+  }
+
   function imagePoint(img, event) {
     if (!img.complete || !img.naturalWidth || !img.naturalHeight) return null;
     const rect = img.getBoundingClientRect();
     if (!rect.width || !rect.height) return null;
-
     const px = event.clientX - rect.left;
     const py = event.clientY - rect.top;
     if (px < 0 || py < 0 || px > rect.width || py > rect.height) return null;
-
-    const style = getComputedStyle(img);
-    const naturalRatio = img.naturalWidth / img.naturalHeight;
-    const boxRatio = rect.width / rect.height;
-    let drawWidth = rect.width;
-    let drawHeight = rect.height;
-
-    if (style.objectFit === "contain" || style.objectFit === "scale-down") {
-      if (naturalRatio > boxRatio) drawHeight = rect.width / naturalRatio;
-      else drawWidth = rect.height * naturalRatio;
-    } else if (style.objectFit === "cover") {
-      if (naturalRatio > boxRatio) drawWidth = rect.height * naturalRatio;
-      else drawHeight = rect.width / naturalRatio;
-    }
-
-    const offsetX = (rect.width - drawWidth) / 2;
-    const offsetY = (rect.height - drawHeight) / 2;
-    if (px < offsetX || py < offsetY || px > offsetX + drawWidth || py > offsetY + drawHeight) return null;
-
     return {
-      x: Math.max(0, Math.min(img.naturalWidth - 1, Math.floor((px - offsetX) / drawWidth * img.naturalWidth))),
-      y: Math.max(0, Math.min(img.naturalHeight - 1, Math.floor((py - offsetY) / drawHeight * img.naturalHeight))),
+      x: Math.max(0, Math.min(img.naturalWidth - 1, Math.floor(px / rect.width * img.naturalWidth))),
+      y: Math.max(0, Math.min(img.naturalHeight - 1, Math.floor(py / rect.height * img.naturalHeight))),
     };
   }
 
   function isVisibleImagePixel(img, event) {
     const point = imagePoint(img, event);
     if (!point) return false;
-
     const mask = maskForImage(img);
     if (!mask || !mask.rows || !mask.grid) return false;
-
     const gx = Math.max(0, Math.min(mask.grid - 1, Math.floor(point.x / img.naturalWidth * mask.grid)));
     const gy = Math.max(0, Math.min(mask.grid - 1, Math.floor(point.y / img.naturalHeight * mask.grid)));
     const row = mask.rows[gy] || "";
@@ -339,25 +435,49 @@ function installVisibleImageHover() {
   }
 
   function clearActive() {
-    if (activeArtifact) activeArtifact.classList.remove("is-visible-hover");
+    document.querySelectorAll(".artifact.is-visible-hover").forEach((artifact) => artifact.classList.remove("is-visible-hover"));
     activeArtifact = null;
   }
 
-  document.querySelectorAll(".artifact img").forEach(prepareImage);
+  document.querySelectorAll(".artifact img").forEach((img) => {
+    if (img.complete) fitImage(img);
+    else img.addEventListener("load", fitAllImages, { once: true });
+  });
+  fitAllImages();
+
   document.addEventListener("pointermove", (event) => {
     const img = event.target.closest?.(".artifact img");
     if (!img) {
       clearActive();
       return;
     }
-    prepareImage(img);
     const artifact = img.closest(".artifact");
-    const isVisiblePixel = isVisibleImagePixel(img, event);
+    if (artifact !== activeArtifact) clearActive();
+    fitImage(img);
+    const visible = isVisibleImagePixel(img, event);
     if (activeArtifact && activeArtifact !== artifact) activeArtifact.classList.remove("is-visible-hover");
-    artifact.classList.toggle("is-visible-hover", isVisiblePixel);
-    activeArtifact = isVisiblePixel ? artifact : null;
+    artifact.classList.toggle("is-visible-hover", visible);
+    activeArtifact = visible ? artifact : null;
   }, { passive: true });
+
+  document.addEventListener("pointerout", (event) => {
+    if (!activeArtifact) return;
+    const next = event.relatedTarget;
+    if (!next || !activeArtifact.contains(next)) clearActive();
+  });
   document.addEventListener("pointerleave", clearActive);
   window.addEventListener("blur", clearActive);
-  scroller.addEventListener("scroll", clearActive, { passive: true });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) clearActive(); });
+  window.addEventListener("resize", fitAllImages);
+  window.addEventListener("timeline-change", fitAllImages);
+  scroller.addEventListener("scroll", () => { clearActive(); fitAllImages(); }, { passive: true });
 }
+
+
+
+
+
+
+
+
+

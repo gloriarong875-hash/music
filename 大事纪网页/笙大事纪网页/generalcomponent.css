@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 
 /*
   中文脚注（文字层级说明）
@@ -34,8 +34,8 @@
   pointer-events: auto;
 }
 @font-face {
-  font-family: FZLiShu;
-  src: url("fonts/方正隶书简体.TTF") format("truetype");
+  font-family: "方正隶书_GBK";
+  src: url("../../fronts/方正隶书_GBK.ttf") format("truetype");
   font-display: swap;
 }
 
@@ -57,9 +57,9 @@
   --type-h3: 22px;
   --type-h4: 18px;
 
-  --font-display: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif;
+  --font-display: "方正隶书_GBK", "LiSu", "隶书", "Microsoft YaHei", serif;
   /* Use the local font for body as well so all text comes from project fonts */
-  --font-body: FZLiShu, "Microsoft YaHei", "PingFang SC", sans-serif;
+  --font-body: "方正隶书_GBK", "Microsoft YaHei", "PingFang SC", sans-serif;
 }
 
 * {
@@ -202,3 +202,5 @@ p,
 /* 部件介绍面板：提高层级并允许字号覆盖 */
 .part-info h3 { font-size: var(--type-h3); line-height: 1.18; }
 .part-info .part-body { font-size: var(--type-h4); line-height: 1.6; }
+
+
