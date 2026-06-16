@@ -418,51 +418,61 @@ max-width: 320px;
 /* === 各时期图像独立尺寸调整 === */
 /* ================================================================ */
 
-/* 商周场景：主图放大，装饰图也较大 */
-#scene-shangzhou .main-image-area {
-right: 5%;
-top: 30%;
-width: clamp(320px, 42vw, 620px);
+/* 早期：竖幅演奏图居右，古琴实物图作为左下弱装饰。 */
+#scene-zaoqi .main-image-area {
+right: 7%;
+top: 15%;
+width: clamp(230px, 28vw, 420px);
 }
-#scene-shangzhou .decor-image {
-left: 5%;
-top: 30%;
-width: clamp(80px, 16vw, 230px);
+#scene-zaoqi .decor-image {
+left: 9%;
+top: 47%;
+width: clamp(130px, 16vw, 230px);
 }
-/* 商周 delay后状态：主图缩小右移，装饰图缩小下移 */
-#scene-shangzhou.evolved .main-image-area {
-right: 2%;
-top: 40%;
-width: clamp(200px, 30vw, 440px);
+#scene-zaoqi.evolved .main-image-area {
+right: 7%;
+top: 18%;
+width: clamp(220px, 25vw, 380px);
 }
-#scene-shangzhou.evolved .decor-image {
-left: 10%;
-top: 40%;
-width: clamp(60px, 10vw, 150px);
+#scene-zaoqi.evolved .decor-image {
+left: 8%;
+top: 55%;
+width: clamp(140px, 18vw, 260px);
 }
 
-/* 汉唐场景：主图和装饰图都较小 */
-#scene-hantang .main-image-area {
-right: 8%;
+/* 战国、唐宋：横向古琴图放大后置于左下，避开标题与正文。 */
+#scene-zhanguo .main-image-area,
+#scene-tangsong .main-image-area {
+right: 7%;
+top: 15%;
+width: clamp(230px, 28vw, 420px);
+}
+#scene-zhanguo .decor-image,
+#scene-tangsong .decor-image {
+left: 5%;
+top: 54%;
+width: clamp(240px, 28vw, 430px);
+}
+#scene-zhanguo.evolved .main-image-area,
+#scene-tangsong.evolved .main-image-area {
+right: 7%;
 top: 18%;
-width: clamp(200px, 28vw, 400px);
+width: clamp(220px, 25vw, 380px);
 }
-#scene-hantang .decor-image {
-left: 18%;
-top: 34%;
-width: clamp(40px, 9vw, 130px);
+#scene-zhanguo.evolved .decor-image,
+#scene-tangsong.evolved .decor-image {
+left: 5%;
+top: 60%;
+width: clamp(260px, 31vw, 470px);
+opacity: 0.78;
+transform: rotate(20deg);
 }
-/* 汉唐 hover 状态：进一步缩小 */
-#scene-hantang.evolved .main-image-area {
-right: 5%;
-top: 20%;
-height: 500px;
-width: clamp(200px, 28vw, 400px);
-}
-#scene-hantang.evolved .decor-image {
-left: 15%;
-top: 50%;
-width: clamp(30px, 5vw, 80px);
+
+#scene-zhanguo .decor-image img,
+#scene-tangsong .decor-image img,
+#scene-zhanguo.evolved .decor-image img,
+#scene-tangsong.evolved .decor-image img {
+width: 100%;
 }
 
 /* ================================================================ */
@@ -589,6 +599,26 @@ bottom: 48px;
     right: 5%;
     top: 16%;
 }
+#scene-zaoqi .main-image-area,
+#scene-zhanguo .main-image-area,
+#scene-tangsong .main-image-area,
+#scene-zaoqi.evolved .main-image-area,
+#scene-zhanguo.evolved .main-image-area,
+#scene-tangsong.evolved .main-image-area {
+    right: 4%;
+    top: 17%;
+    width: clamp(200px, 36vw, 330px);
+}
+#scene-zaoqi .decor-image,
+#scene-zhanguo .decor-image,
+#scene-tangsong .decor-image,
+#scene-zaoqi.evolved .decor-image,
+#scene-zhanguo.evolved .decor-image,
+#scene-tangsong.evolved .decor-image {
+    left: 5%;
+    top: 58%;
+    width: clamp(150px, 28vw, 280px);
+}
 .desc-block {
     max-width: 50vw;
     left: 18%;
@@ -677,6 +707,28 @@ bottom: 48px;
     left: 4%;
     top: 33%;
     opacity: 0.3;
+}
+#scene-zaoqi .main-image-area,
+#scene-zhanguo .main-image-area,
+#scene-tangsong .main-image-area,
+#scene-zaoqi.evolved .main-image-area,
+#scene-zhanguo.evolved .main-image-area,
+#scene-tangsong.evolved .main-image-area {
+    right: 3%;
+    top: 22%;
+    width: 42vw;
+}
+#scene-zaoqi .decor-image,
+#scene-zhanguo .decor-image,
+#scene-tangsong .decor-image,
+#scene-zaoqi.evolved .decor-image,
+#scene-zhanguo.evolved .decor-image,
+#scene-tangsong.evolved .decor-image {
+    left: 5%;
+    top: 66%;
+    width: 42vw;
+    opacity: 0.5;
+    transform: rotate(-4deg);
 }
 .desc-block {
     max-width: 70vw;

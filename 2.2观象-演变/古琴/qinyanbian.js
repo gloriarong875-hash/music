@@ -4,12 +4,11 @@
 (function () {
 'use strict';
 
-var SCENES = ['zaoqi', 'zhanguo', 'tangsong', 'mingqing'];
+var SCENES = ['zaoqi', 'zhanguo', 'tangsong'];
 var SCENE_LABELS = {
     zaoqi: '早期·琴之初形',
     zhanguo: '战国·七弦定型',
-    tangsong: '唐宋·工艺精湛',
-    mingqing: '明清·文人雅器',
+    tangsong: '唐宋·形制统一',
 };
 var currentIndex = -1;
 var scenes = {};
