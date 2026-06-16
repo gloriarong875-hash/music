@@ -115,7 +115,7 @@ text-decoration-thickness: 2px;
 .panel-head {
 position: absolute;
 left: 4%;
-top: 90px;
+top: 42px;
 display: flex;
 align-items: flex-start;
 }
@@ -550,7 +550,7 @@ bottom: 48px;
 }
 .panel-head {
     left: 4%;
-    top: 72px;
+    top: 36px;
 }
 .panel-title {
     font-size: 24px;
@@ -615,7 +615,7 @@ bottom: 48px;
 }
 .panel-head {
     left: 5%;
-    top: 54px;
+    top: 28px;
 }
 .panel-title {
     font-size: 20px;

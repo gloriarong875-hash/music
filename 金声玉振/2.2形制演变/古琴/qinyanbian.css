@@ -115,7 +115,7 @@ text-decoration-thickness: 2px;
 .panel-head {
 position: absolute;
 left: 4%;
-top: 90px;
+top: 42px;
 display: flex;
 align-items: flex-start;
 }
@@ -445,7 +445,7 @@ width: clamp(140px, 18vw, 260px);
 #scene-tangsong .main-image-area {
 right: 7%;
 top: 15%;
-width: clamp(230px, 28vw, 420px);
+width: clamp(230px, 50vw, 500px);
 }
 #scene-zhanguo .decor-image,
 #scene-tangsong .decor-image {
@@ -453,11 +453,16 @@ left: 5%;
 top: 54%;
 width: clamp(240px, 28vw, 430px);
 }
-#scene-zhanguo.evolved .main-image-area,
+#scene-zhanguo.evolved .main-image-area{
+right: 5%;
+top: 15%;
+width: clamp(220px, 40vw, 450px);
+}
+
 #scene-tangsong.evolved .main-image-area {
-right: 7%;
-top: 18%;
-width: clamp(220px, 25vw, 380px);
+right: 5%;
+top: 12%;
+width: clamp(220px, 30vw, 350px);
 }
 #scene-zhanguo.evolved .decor-image,
 #scene-tangsong.evolved .decor-image {
@@ -561,7 +566,7 @@ bottom: 48px;
 }
 .panel-head {
     left: 4%;
-    top: 72px;
+    top: 36px;
 }
 .panel-title {
     font-size: 24px;
@@ -647,7 +652,7 @@ bottom: 48px;
 }
 .panel-head {
     left: 5%;
-    top: 54px;
+    top: 28px;
 }
 .panel-title {
     font-size: 20px;
