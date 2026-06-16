@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="金声玉振：埙的传统制作流程互动体验" />
+    <title>埙 · 制作体验</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="experience" aria-label="埙制作流程互动体验">
+      <div class="visual-depth" aria-hidden="true">
+        <div class="background-plane"></div>
+        <div class="ink-mist ink-mist-left"></div>
+        <div class="ink-mist ink-mist-right"></div>
+        <div class="paper-light"></div>
+      </div>
+      <div class="ambient ambient-left" aria-hidden="true"></div>
+      <div class="ambient ambient-right" aria-hidden="true"></div>
+      <button class="sound-toggle" type="button" aria-label="关闭交互声音" aria-pressed="false">
+        <span class="sound-toggle-mark" aria-hidden="true"></span>
+        <span class="sound-toggle-text">声</span>
+      </button>
+      <nav class="cornerNav" aria-label="制作步骤导航">
+        <button class="navBtn navPrev disabled" type="button" aria-label="查看上一步" disabled>‹</button>
+        <button class="navBtn navNext disabled" type="button" aria-label="查看下一步" disabled>›</button>
+      </nav>
+
+      <header class="process" aria-label="制作进度">
+        <ol class="process-list">
+          <li class="process-step is-current" data-step="0">
+            <span class="step-name">揉泥去浊</span>
+            <span class="step-dot" aria-current="step"></span>
+          </li>
+          <li class="process-step" data-step="1">
+            <span class="step-name">拉坯塑形</span>
+            <span class="step-dot"></span>
+          </li>
+          <li class="process-step" data-step="2">
+            <span class="step-name">开孔定音</span>
+            <span class="step-dot"></span>
+          </li>
+          <li class="process-step" data-step="3">
+            <span class="step-name">入窑烧制</span>
+            <span class="step-dot"></span>
+          </li>
+        </ol>
+      </header>
+
+      <section class="scene kneading-scene is-active" aria-label="揉泥去浊">
+        <aside class="step-copy step-copy-left">
+          <p class="step-quote">《说文》载：“埙，烧土也。”古法制泥，必求“泥纯如脂，气净无浊”。</p>
+          <p class="step-note">反复揉摔泥料，排尽气泡杂质，静置醒泥，令土质温润紧实，为制埙奠基。</p>
+        </aside>
+        <div class="clay-stage" aria-live="polite">
+          <div class="clay-glow" aria-hidden="true"></div>
+          <img class="clay-image" src="./assets/clay-1.png" alt="等待揉捏的陶土团" draggable="false" />
+          <img class="clay-image" src="./assets/clay-2.png" alt="" draggable="false" />
+          <img class="clay-image" src="./assets/clay-3.png" alt="" draggable="false" />
+          <img class="clay-image" src="./assets/clay-4.png" alt="" draggable="false" />
+        </div>
+
+        <button class="arrow-key arrow-left" type="button" aria-label="向左揉泥">
+          <span class="arrow-symbol" aria-hidden="true"></span>
+        </button>
+
+        <button class="arrow-key arrow-right" type="button" aria-label="向右揉泥">
+          <span class="arrow-symbol" aria-hidden="true"></span>
+        </button>
+
+        <div class="instruction">
+          <p class="instruction-text">按住键盘左右方向键揉泥去浊</p>
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="揉泥去浊进度"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span class="progress-fill"></span>
+            <span class="progress-shine" aria-hidden="true"></span>
+          </div>
+          <p class="progress-copy"><span id="progress-value">0</span>%</p>
+        </div>
+      </section>
+
+      <div class="knead-completion" role="status">
+        <p>揉泥完成、已充分排出气体</p>
+      </div>
+
+      <section class="scene throwing-scene" aria-label="拉坯塑形">
+        <aside class="step-copy step-copy-left throwing-copy">
+          <p class="step-quote">古埙“围五寸半，长三寸半”，形制法天地浑圆，取“坎音”之象，应十一月之气。</p>
+          <p class="step-note">踏轮旋塑器身，循古制造浑圆形制，壁厚匀整，凝土器初形。</p>
+        </aside>
+        <div class="throwing-stage">
+          <div class="throwing-assembly">
+            <img
+              class="pottery-wheel"
+              src="./assets/pottery-wheel.png"
+              alt="传统拉坯机"
+              draggable="false"
+            />
+            <div class="blank-stage" aria-live="polite">
+              <img class="blank-image" src="./assets/xun-blank-1.png" alt="初始埙坯" draggable="false" />
+              <img class="blank-image" src="./assets/xun-blank-2.png" alt="" draggable="false" />
+              <img class="blank-image" src="./assets/xun-blank-3.png" alt="" draggable="false" />
+              <img class="blank-image" src="./assets/xun-blank-4.png" alt="" draggable="false" />
+            </div>
+            <div class="wheel-motion-ring" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <div class="throwing-control">
+          <p class="throwing-hint">按住踏轮塑形</p>
+          <button class="throw-button" type="button" aria-label="按住踏轮进行拉坯">
+            <span class="pedal-mark" aria-hidden="true"></span>
+          </button>
+          <div
+            class="throwing-progress"
+            role="progressbar"
+            aria-label="拉坯塑形进度"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span class="throwing-progress-fill"></span>
+          </div>
+          <p class="throwing-count"><span id="throwing-value">0</span>%</p>
+        </div>
+
+        <p class="throwing-complete" role="status">坯体已成形</p>
+      </section>
+
+      <section class="scene hole-scene" aria-label="开孔定音">
+        <aside class="step-copy step-copy-left hole-copy">
+          <p class="step-quote">《棠湖埙谱》云：“开孔贵准，调音贵和。”古埙自一孔至六孔，历经千年方成七音之律。</p>
+          <p class="step-note">依古乐律度凿孔定位，校准音高，使宫商相和，声韵合规。</p>
+        </aside>
+        <div class="hole-stage" aria-live="polite">
+          <img
+            class="hole-xun hole-xun-before"
+            src="./assets/xun-before-hole-cropped.png"
+            alt="等待开孔的埙坯"
+            draggable="false"
+          />
+          <img
+            class="hole-xun hole-xun-after"
+            src="./assets/xun-after-hole-cropped.png"
+            alt=""
+            draggable="false"
+          />
+          <span class="hole-target" aria-hidden="true"></span>
+          <img
+            class="hole-tool"
+            src="./assets/hole-tool-cropped.png"
+            alt="开孔工具"
+            draggable="false"
+          />
+        </div>
+
+        <div class="hole-control">
+          <p class="hole-hint">点击开孔</p>
+          <button class="hole-button" type="button" aria-label="给埙坯开孔"></button>
+        </div>
+
+        <p class="hole-complete" role="status">开孔完成</p>
+      </section>
+
+      <section class="scene firing-scene" aria-label="入窑烧制">
+        <aside class="step-copy step-copy-left firing-copy">
+          <p class="step-quote">《白虎通》言：“埙坎音也，阳气于黄泉之下，默蒸而萌。”窑火即引阳化土，成发声之器。</p>
+          <p class="step-note">文火慢炼，火淬陶胎，去柔成器，终得古朴幽鸣之埙。</p>
+        </aside>
+        <div class="kiln-stage">
+          <img
+            class="kiln-image"
+            src="./assets/kiln-2-cropped.png"
+            alt="传统窑炉"
+            draggable="false"
+          />
+          <div class="kiln-fire" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="kiln-xun-stage" aria-live="polite">
+            <img
+              class="kiln-xun kiln-xun-raw"
+              src="./assets/kiln-xun-cropped.png"
+              alt="窑炉中的埙坯"
+              draggable="false"
+            />
+            <img
+              class="kiln-xun kiln-xun-fired"
+              src="./assets/finished-xun-cropped.png"
+              alt="烧制完成的埙"
+              draggable="false"
+            />
+          </div>
+          <div class="heat-haze" aria-hidden="true"></div>
+          <div
+            class="firing-progress"
+            role="progressbar"
+            aria-label="烧制进度"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span class="firing-progress-ink"></span>
+            <span class="firing-progress-flame" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="firing-control">
+          <p class="firing-hint">点击烧窑</p>
+          <button class="firing-button" type="button" aria-label="开始烧窑"></button>
+        </div>
+
+        <p class="firing-complete" role="status">烧制完成</p>
+
+        <div class="showcase" aria-label="成品埙展示">
+          <p class="showcase-title">埙</p>
+          <img
+            class="showcase-xun"
+            src="./assets/finished-xun-cropped.png"
+            alt="成品埙"
+            draggable="false"
+          />
+          <button class="showcase-figure-button" type="button" aria-label="播放一段埙声">
+            <img
+              class="showcase-figure"
+              src="./assets/xun-figure-cropped.png"
+              alt="吹埙人物"
+              draggable="false"
+            />
+            <span class="figure-sound-hint">点击听埙</span>
+          </button>
+          <p class="showcase-caption">埙属八音之土，源自先民劳作，音色浑朴悠远，传千载雅音。</p>
+        </div>
+
+        <div class="firing-wash" aria-hidden="true"></div>
+      </section>
+    </main>
+
+    <div
+      class="completion-modal"
+      id="resultModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="resultTitle"
+      aria-hidden="true"
+    >
+      <button class="completion-backdrop" type="button" aria-label="关闭完成卡片"></button>
+      <div class="completion-card" role="document">
+        <div class="completion-animation" aria-hidden="true">
+          <img src="./assets/xun-figure-cropped.png" alt="" draggable="false" />
+        </div>
+        <h2 id="resultTitle">埙制作流程体验完成</h2>
+        <p class="completion-text">土与火相和，古音自此而生。</p>
+        <div class="completion-actions">
+          <button id="playAgainBtn" class="completion-button" type="button">重新体验</button>
+          <button id="closeModalBtn" class="completion-button secondary" type="button">继续欣赏</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
