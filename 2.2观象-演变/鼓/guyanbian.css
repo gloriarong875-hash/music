@@ -811,3 +811,36 @@ bottom: 48px;
     font-size: 10px;
 }
 }
+
+/* Delay 后：主标题、副标题、正文共用同一左边线。 */
+.scene {
+--evolved-copy-left: 25%;
+}
+
+.scene.evolved .scene-title,
+.scene.evolved .scene-subtitle {
+left: var(--evolved-copy-left);
+text-align: left;
+transform: translateY(-50%);
+}
+
+.scene.evolved .desc-block {
+left: var(--evolved-copy-left);
+text-align: left;
+}
+
+.scene.evolved .desc-block p {
+text-align: left;
+}
+
+@media (max-width: 900px) {
+    .scene {
+    --evolved-copy-left: 18%;
+    }
+}
+
+@media (max-width: 600px) {
+    .scene {
+    --evolved-copy-left: 14%;
+    }
+}
