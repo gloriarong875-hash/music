@@ -32,15 +32,114 @@ const CHART_ROT_X_MIN = -1.18;
 const CHART_ROT_X_MAX = -0.08;
 
 const works = [
-  { id: "D019773", title: "宫乐图", material: "绢本", category: "宫廷礼宴", instruments: "琵琶、瑟、笙、萧", author: "唐人", dynasty: "唐", museum: "台北故宫博物院", period: "先秦汉唐", intro: "《宫乐图》为唐唐人作品，现藏台北故宫博物院。画面属宫廷礼宴题材，可见琵琶、瑟、笙、萧等乐器，适合作为相关乐器图像资料。" },
-  { id: "D016014", title: "诗经豳风图", material: "绢本", category: "民间世俗", instruments: "笙", author: "马和之", dynasty: "宋", museum: "大都会博物馆", period: "宋代", intro: "《诗经豳风图》为宋马和之作品，现藏大都会博物馆。画面属民间世俗题材，可见笙等乐器，适合作为相关乐器图像资料。" },
-  { id: "D016148", title: "琴棋书画图（四幅）", material: "绢本", category: "文人雅集", instruments: "古琴、琵琶、笛、笙、阮", author: "任仁发（传）", dynasty: "元", museum: "东京国立博物馆", period: "元代", intro: "《琴棋书画图（四幅）》为元任仁发（传）作品，现藏东京国立博物馆。画面属文人雅集题材，可见古琴、琵琶、笛、笙、阮等乐器，适合作为相关乐器图像资料。" },
-  { id: "D016582", title: "东山丝竹图", material: "绢本", category: "文人雅集", instruments: "琵琶、笙、笛、阮、鼓", author: "佚名", dynasty: "元", museum: "故宫博物院", period: "元代", intro: "《东山丝竹图》为元佚名作品，现藏故宫博物院。画面属文人雅集题材，可见琵琶、笙、笛、阮、鼓等乐器，适合作为相关乐器图像资料。" },
-  { id: "D004744", title: "万树园赐宴图", material: "绢本", category: "宫廷礼宴", instruments: "鼓、笛、笙、编钟", author: "郎世宁等", dynasty: "清", museum: "故宫博物院", period: "清代", intro: "《万树园赐宴图》为清郎世宁等作品，现藏故宫博物院。画面属宫廷礼宴题材，可见鼓、笛、笙、编钟等乐器，适合作为相关乐器图像资料。" },
-  { id: "D012541", title: "小楼吹笙图", material: "绢本", category: "宫廷礼宴", instruments: "笙", author: "禹之鼎", dynasty: "清", museum: "四川博物院", period: "清代", intro: "《小楼吹笙图》为清禹之鼎作品，现藏四川博物院。画面属宫廷礼宴题材，可见笙等乐器，适合作为相关乐器图像资料。" },
-  { id: "D019650", title: "汉宫图", material: "绢本", category: "宫廷礼宴", instruments: "琵琶、笙", author: "赵伯驹（传）", dynasty: "宋", museum: "台北故宫博物院", period: "宋代", intro: "《汉宫图》传为宋赵伯驹作，台北故宫藏。画中宫殿庭园繁复精细，宫女执法乐簇拥贵妇，呈现宫廷仪仗与宴乐氛围。" },
-  { id: "D016552", title: "鲁颂三篇", material: "绢本", category: "宫廷礼宴", instruments: "编钟、笙、琴、笛子、鼓", author: "马和之（传）/宋高宗书", dynasty: "宋", museum: "辽宁省博物馆", period: "宋代", intro: "《鲁颂三篇》为马和之《诗经图》系统作品，辽宁省博物馆藏。书画相间表现《诗经·鲁颂》诗意，可见礼乐仪式中的多种乐器。" },
-  { id: "D016553", title: "周颂清庙之什图", material: "绢本", category: "宫廷礼宴", instruments: "编钟、笙、琴、笛子、鼓", author: "马和之（传）", dynasty: "宋", museum: "辽宁省博物馆", period: "宋代", intro: "《周颂清庙之什图》传为马和之作，辽宁省博物馆藏。作品取材《诗经·周颂》，以十段书画表现宗庙祭祀与雅乐礼制。" }
+  {
+    "id": "D019773",
+    "title": "宫乐图",
+    "material": "绢本",
+    "category": "宫廷礼宴",
+    "instruments": "琵琶、瑟、笙、萧",
+    "author": "唐人",
+    "dynasty": "唐",
+    "museum": "台北故宫博物院",
+    "period": "先秦汉唐",
+    "intro": "《宫乐图》为唐唐人作品，现藏台北故宫博物院。画面属宫廷礼宴题材，可见琵琶、瑟、笙、萧等乐器，适合作为相关乐器图像资料。"
+  },
+  {
+    "id": "D016014",
+    "title": "诗经豳风图",
+    "material": "绢本",
+    "category": "民间世俗",
+    "instruments": "笙",
+    "author": "马和之",
+    "dynasty": "宋",
+    "museum": "大都会博物馆",
+    "period": "宋代",
+    "intro": "《诗经豳风图》为宋马和之作品，现藏大都会博物馆。画面属民间世俗题材，可见笙等乐器，适合作为相关乐器图像资料。"
+  },
+  {
+    "id": "D016148",
+    "title": "琴棋书画图（四幅）",
+    "material": "绢本",
+    "category": "文人雅集",
+    "instruments": "古琴、琵琶、笛、笙、阮",
+    "author": "任仁发（传）",
+    "dynasty": "元",
+    "museum": "东京国立博物馆",
+    "period": "元代",
+    "intro": "《琴棋书画图（四幅）》为元任仁发（传）作品，现藏东京国立博物馆。画面属文人雅集题材，可见古琴、琵琶、笛、笙、阮等乐器，适合作为相关乐器图像资料。"
+  },
+  {
+    "id": "D016582",
+    "title": "东山丝竹图",
+    "material": "绢本",
+    "category": "文人雅集",
+    "instruments": "琵琶、笙、笛、阮、鼓",
+    "author": "佚名",
+    "dynasty": "元",
+    "museum": "故宫博物院",
+    "period": "元代",
+    "intro": "《东山丝竹图》为元佚名作品，现藏故宫博物院。画面属文人雅集题材，可见琵琶、笙、笛、阮、鼓等乐器，适合作为相关乐器图像资料。"
+  },
+  {
+    "id": "D004744",
+    "title": "万树园赐宴图",
+    "material": "绢本",
+    "category": "宫廷礼宴",
+    "instruments": "鼓、笛、笙、编钟",
+    "author": "郎世宁等",
+    "dynasty": "清",
+    "museum": "故宫博物院",
+    "period": "清代",
+    "intro": "《万树园赐宴图》为清郎世宁等作品，现藏故宫博物院。画面属宫廷礼宴题材，可见鼓、笛、笙、编钟等乐器，适合作为相关乐器图像资料。"
+  },
+  {
+    "id": "D012541",
+    "title": "小楼吹笙图",
+    "material": "绢本",
+    "category": "宫廷礼宴",
+    "instruments": "笙",
+    "author": "禹之鼎",
+    "dynasty": "清",
+    "museum": "四川博物院",
+    "period": "清代",
+    "intro": "《小楼吹笙图》为清禹之鼎作品，现藏四川博物院。画面属宫廷礼宴题材，可见笙等乐器，适合作为相关乐器图像资料。"
+  },
+  {
+    "id": "D019650",
+    "title": "汉宫图",
+    "material": "绢本",
+    "category": "宫廷礼宴",
+    "instruments": "琵琶、笙",
+    "author": "赵伯驹（传）",
+    "dynasty": "宋",
+    "museum": "台北故宫博物院",
+    "period": "宋代",
+    "intro": "《汉宫图》传为宋赵伯驹作，台北故宫藏。画中宫殿庭园繁复精细，宫女执法乐簇拥贵妇，呈现宫廷仪仗与宴乐氛围。"
+  },
+  {
+    "id": "D016552",
+    "title": "鲁颂三篇",
+    "material": "绢本",
+    "category": "宫廷礼宴",
+    "instruments": "编钟、笙、琴、笛子、鼓",
+    "author": "马和之（传）/宋高宗书",
+    "dynasty": "宋",
+    "museum": "辽宁省博物馆",
+    "period": "宋代",
+    "intro": "《鲁颂三篇》为马和之《诗经图》系统作品，辽宁省博物馆藏。书画相间表现《诗经·鲁颂》诗意，可见礼乐仪式中的多种乐器。"
+  },
+  {
+    "id": "D016553",
+    "title": "周颂清庙之什图",
+    "material": "绢本",
+    "category": "宫廷礼宴",
+    "instruments": "编钟、笙、琴、笛子、鼓",
+    "author": "马和之（传）",
+    "dynasty": "宋",
+    "museum": "辽宁省博物馆",
+    "period": "宋代",
+    "intro": "《周颂清庙之什图》传为马和之作，辽宁省博物馆藏。作品取材《诗经·周颂》，以十段书画表现宗庙祭祀与雅乐礼制。"
+  }
 ];
 
 const assets = [
@@ -70,6 +169,9 @@ const LIGHTBOX_ZOOM_MIN = .6;
 const LIGHTBOX_ZOOM_MAX = 4;
 const LIGHTBOX_ZOOM_STEP = .16;
 let lightboxZoom = 1;
+let lightboxPanX = 0;
+let lightboxPanY = 0;
+const lightboxPan = { dragging: false, lastX: 0, lastY: 0 };
 
 function rgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -453,7 +555,7 @@ function renderGallery() {
     const work = works.find((item) => item.title === asset.title);
     const label = asset.label || asset.title;
     const meta = work ? `${work.dynasty}｜${work.author}｜${work.museum}` : "";
-    const intro = work ? work.intro : "暂无画作介绍。";
+    const intro = work ? work.intro : "暂无作品详情";
     const loading = index < 6 ? "eager" : "lazy";
 
     return `
@@ -475,7 +577,7 @@ function getAssetInfo(index) {
     work,
     label: asset.label || asset.title,
     meta: work ? `${work.dynasty}｜${work.author}｜${work.museum}` : "",
-    intro: work ? work.intro : "暂无画作介绍。"
+    intro: work ? work.intro : "暂无作品详情"
   };
 }
 
@@ -514,6 +616,7 @@ function ensureLightbox() {
       event.preventDefault();
       setLightboxZoom(lightboxZoom + (event.deltaY < 0 ? LIGHTBOX_ZOOM_STEP : -LIGHTBOX_ZOOM_STEP));
     }, { passive: false });
+    initLightboxPan(box.querySelector(".lightbox-image-wrap"));
     box.addEventListener("click", (event) => {
       if (event.target === box) closeLightbox();
     });
@@ -527,8 +630,48 @@ function ensureLightbox() {
 function setLightboxZoom(value) {
   /* 中文脚注：修改缩放上下限请调 LIGHTBOX_ZOOM_MIN / LIGHTBOX_ZOOM_MAX，当前允许 0.6 倍到 4 倍。 */
   lightboxZoom = Math.max(LIGHTBOX_ZOOM_MIN, Math.min(LIGHTBOX_ZOOM_MAX, value));
+  if (lightboxZoom <= 1) setLightboxPan(0, 0);
   const img = document.querySelector("#imageLightbox img");
   if (img) img.style.setProperty("--lightbox-zoom", lightboxZoom);
+}
+
+function setLightboxPan(x, y) {
+  /* 中文脚注：这里控制大图放大后的拖拽位移；想限制可拖动范围，可在这里给 x/y 加最大最小值。 */
+  lightboxPanX = x;
+  lightboxPanY = y;
+  const img = document.querySelector("#imageLightbox img");
+  if (!img) return;
+  img.style.setProperty("--lightbox-pan-x", `${lightboxPanX}px`);
+  img.style.setProperty("--lightbox-pan-y", `${lightboxPanY}px`);
+}
+
+function initLightboxPan(wrap) {
+  if (!wrap) return;
+  wrap.addEventListener("pointerdown", (event) => {
+    /* 中文脚注：只有滚轮放大后才启用拖拽，避免默认大小时图片被误拖偏。 */
+    if (lightboxZoom <= 1 || (event.pointerType === "mouse" && event.button !== 0)) return;
+    event.preventDefault();
+    lightboxPan.dragging = true;
+    lightboxPan.lastX = event.clientX;
+    lightboxPan.lastY = event.clientY;
+    wrap.classList.add("is-panning");
+    wrap.setPointerCapture(event.pointerId);
+  });
+  wrap.addEventListener("pointermove", (event) => {
+    if (!lightboxPan.dragging) return;
+    const dx = event.clientX - lightboxPan.lastX;
+    const dy = event.clientY - lightboxPan.lastY;
+    lightboxPan.lastX = event.clientX;
+    lightboxPan.lastY = event.clientY;
+    setLightboxPan(lightboxPanX + dx, lightboxPanY + dy);
+  });
+  const stopPan = (event) => {
+    lightboxPan.dragging = false;
+    wrap.classList.remove("is-panning");
+    if (event && wrap.hasPointerCapture(event.pointerId)) wrap.releasePointerCapture(event.pointerId);
+  };
+  wrap.addEventListener("pointerup", stopPan);
+  wrap.addEventListener("pointercancel", stopPan);
 }
 
 function showPaintingCard(index, event) {
@@ -557,6 +700,7 @@ function openLightbox(index) {
   const box = ensureLightbox();
   const info = getAssetInfo(index);
   const img = box.querySelector("img");
+  setLightboxPan(0, 0);
   setLightboxZoom(1);
   img.src = `笙画作assets/${info.asset.file}`;
   img.alt = info.label;
@@ -571,6 +715,7 @@ function closeLightbox() {
   const box = document.getElementById("imageLightbox");
   if (!box) return;
   box.classList.remove("visible");
+  setLightboxPan(0, 0);
   setLightboxZoom(1);
   document.body.style.overflow = "";
 }

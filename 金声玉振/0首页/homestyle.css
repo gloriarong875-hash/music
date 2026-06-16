@@ -1,0 +1,820 @@
+@charset "UTF-8";
+
+/*
+  中文脚注（首页样式总览）
+  - 修改全页主色：优先调整 :root 中的 --home-bg / --home-gold / --home-paper。
+  - 修改每页黑色遮罩深浅：调整 `.section-shade` 的 background 透明度。
+  - 首页不用 `.page` 类，避免被全站上边栏的 `.page` 缩放规则影响。
+*/
+
+@font-face {
+  font-family: FZLiShu;
+  src: url("../fonts/方正隶书简体.TTF") format("truetype");
+  font-display: swap;
+}
+
+:root {
+  --home-bg: #10130d;
+  --home-gold: #efd67d;
+  --home-gold-deep: #c9a96e;
+  --home-paper: #eee7cb;
+  --home-ink: #050605;
+  --home-font: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif;
+  /* 中文脚注：page1 右侧标题图片的位置和大小在这里改。 */
+  --hero-title-right: clamp(22px, 4vw, 70px);
+  --hero-title-top: 11vh;
+  --hero-title-height: 76vh;
+  --hero-title-width: min(19vw, 260px);
+  --hero-title-item-height: 13vh;
+  --hero-title-gap: 10px;
+  /*
+    中文脚注：page1 标题 1-5 单独微调区。
+    - top 控制单张标题图距离屏幕顶部的位置。
+    - right 控制单张标题图距离屏幕右侧的位置。
+    - width / height 控制单张标题图大小。
+    - 第 5 张素材是横长图，所以默认 width 更宽、height 更矮。
+  */
+  --hero-title-1-top: 11vh;
+  --hero-title-1-right: clamp(20px, 2vw, 60px);
+  --hero-title-1-width: min(28vw, 450px);
+  --hero-title-1-height: 28vh;
+  --hero-title-2-top: 34vh;
+  --hero-title-2-right: clamp(12px, 0vw, 0px);
+  --hero-title-2-width: min(25vw, 440px);
+  --hero-title-2-height: 25vh;
+  --hero-title-3-top: 50vh;
+  --hero-title-3-right: clamp(22px, 4vw, 70px);
+  --hero-title-3-width: min(23vw, 430px);
+  --hero-title-3-height: 23vh;
+  --hero-title-4-top: 65vh;
+  --hero-title-4-right: clamp(14px, 2vw, 10px);
+  --hero-title-4-width: min(28vw, 450px);
+  --hero-title-4-height: 28vh;
+  --hero-title-5-top: 90vh;
+  --hero-title-5-right: clamp(16px, 3vw, 45px);
+  --hero-title-5-width: min(18vw, 180px);
+  --hero-title-5-height: 4vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--home-bg);
+  color: var(--home-paper);
+  font-family: var(--home-font);
+}
+
+.site-topbar {
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: clamp(34px, 3vw, 58px);
+  letter-spacing: .24em;
+  line-height: 1.08;
+  color: var(--home-paper);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, .72);
+}
+
+h2 {
+  font-size: clamp(24px, 2.1vw, 40px);
+  letter-spacing: .22em;
+  color: var(--home-gold);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, .72);
+}
+
+h3 {
+  font-size: clamp(16px, 1vw, 20px);
+  letter-spacing: .08em;
+  line-height: 1.72;
+  color: rgba(238, 231, 203, .88);
+  text-shadow: 0 3px 14px rgba(0, 0, 0, .56);
+}
+
+h4 {
+  color: var(--home-gold-deep);
+  font-size: clamp(15px, 1vw, 18px);
+  letter-spacing: .32em;
+  line-height: 1.45;
+}
+
+p {
+  color: rgba(238, 231, 203, .88);
+  font-size: clamp(16px, 1.05vw, 20px);
+  letter-spacing: .08em;
+  line-height: 1.78;
+}
+
+.home-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1.4s ease, transform 1.4s ease;
+}
+
+body.home-ready .home-shell {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.home-section {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6%);
+  transition: opacity 1s ease, visibility 1s ease, transform 1s ease;
+}
+
+.home-section.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.section-shade {
+  /*
+    中文脚注：每页低不透明度黑色遮罩。
+    - 想更暗就把 rgba 最后的 .34 / .70 调大。
+    - 想更亮就调小。
+  */
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 26% 28%, rgba(239, 214, 125, .08), transparent 28%),
+    linear-gradient(to bottom, rgba(0, 0, 0, .34), rgba(0, 0, 0, .70));
+  pointer-events: none;
+}
+
+.page-hero .section-shade {
+  /*
+    中文脚注：page1 播放视频时不显示黑色遮罩。
+    - 视频结束后 page1 会自动添加 `.video-ended`，遮罩再渐显。
+    - 如果想让视频阶段也有遮罩，把 opacity 改成 1。
+  */
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.page-hero.video-ended .section-shade {
+  opacity: 1;
+}
+
+.section-head {
+  position: absolute;
+  z-index: 5;
+  left: clamp(42px, 4vw, 82px);
+  top: clamp(78px, 9vh, 128px);
+}
+
+.section-head h4 {
+  margin-bottom: 10px;
+}
+
+/* Page 1 */
+.hero-video,
+.hero-panorama {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-video {
+  z-index: 1;
+  object-fit: cover;
+  opacity: 1;
+  transition: opacity 2.2s ease;
+}
+
+.page-hero.video-ended .hero-video {
+  opacity: 0;
+}
+
+.hero-panorama {
+  /*
+    中文脚注：第一页视频结束后的长图背景。
+    - 背景图会自动从右往左循环轮播，不再由鼠标滚轮控制。
+    - 修改 animation 的 32s 可以调整轮播速度，数值越大越慢。
+    - background-size: auto 100% 保证高度铺满，不会上下缩放。
+  */
+  z-index: 0;
+  background-image: url("首页assets/1切换背景图.jpg");
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position: 100% center;
+  opacity: 0;
+  animation: heroPanoramaDrift 32s linear infinite;
+  transition: opacity 2.2s ease;
+}
+
+.page-hero.video-ended .hero-panorama {
+  opacity: 1;
+}
+
+.hero-title-stack {
+  /*
+    中文脚注：标题 1-5 的外层容器。
+    - 单张标题的位置和大小不要在这里改。
+    - 请到 :root 的 `--hero-title-1-top/right/width/height` 等变量逐张修改。
+  */
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-title-stack img {
+  /*
+    中文脚注：page1 标题 1-5 的单张图片大小。
+    - 每张图的 width / height / top / right 已在下面 nth-child 单独绑定。
+    - object-position: right center 保证五张图都贴右侧对齐。
+  */
+  position: absolute;
+  object-fit: contain;
+  object-position: right center;
+  opacity: 0;
+  transform: translateX(28px);
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, .55));
+  animation: titleFadeIn 1.1s ease forwards;
+}
+
+.hero-title-stack img:nth-child(1) { animation-delay: 3.55s; }
+.hero-title-stack img:nth-child(2) { animation-delay: 4.05s; }
+.hero-title-stack img:nth-child(3) { animation-delay: 4.55s; }
+.hero-title-stack img:nth-child(4) { animation-delay: 5.05s; }
+.hero-title-stack img:nth-child(5) { animation-delay: 5.55s; }
+
+.hero-title-stack img:nth-child(1) {
+  width: var(--hero-title-1-width);
+  height: var(--hero-title-1-height);
+  top: var(--hero-title-1-top);
+  right: var(--hero-title-1-right);
+}
+
+.hero-title-stack img:nth-child(2) {
+  width: var(--hero-title-2-width);
+  height: var(--hero-title-2-height);
+  top: var(--hero-title-2-top);
+  right: var(--hero-title-2-right);
+}
+
+.hero-title-stack img:nth-child(3) {
+  width: var(--hero-title-3-width);
+  height: var(--hero-title-3-height);
+  top: var(--hero-title-3-top);
+  right: var(--hero-title-3-right);
+}
+
+.hero-title-stack img:nth-child(4) {
+  width: var(--hero-title-4-width);
+  height: var(--hero-title-4-height);
+  top: var(--hero-title-4-top);
+  right: var(--hero-title-4-right);
+}
+
+.hero-title-stack img:nth-child(5) {
+  width: var(--hero-title-5-width);
+  height: var(--hero-title-5-height);
+  top: var(--hero-title-5-top);
+  right: var(--hero-title-5-right);
+}
+
+.replay-video-btn {
+  /*
+    中文脚注：page1 左上角“重播视频”按钮。
+    - top / left 控制按钮位置。
+    - padding / font-size 控制按钮大小。
+  */
+  position: absolute;
+  z-index: 9;
+  top: 72px;
+  left: 40px;
+  padding: 8px 18px;
+  border: 1px solid rgba(239, 214, 125, .62);
+  border-radius: 999px;
+  background: rgba(5, 6, 5, .58);
+  color: var(--home-paper);
+  font-family: var(--home-font);
+  font-size: 15px;
+  letter-spacing: .18em;
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(239, 214, 125, .14);
+  transition: transform .22s ease, background .22s ease, border-color .22s ease;
+}
+
+.replay-video-btn:hover {
+  transform: scale(1.06);
+  background: rgba(239, 214, 125, .16);
+  border-color: rgba(239, 214, 125, .92);
+}
+
+/* Page 2 */
+.page-instruments .section-bg {
+  position: absolute;
+  inset: 0;
+  background: url("首页assets/2背景图.png") center/cover repeat;
+  filter: saturate(.9) brightness(.86);
+}
+
+.instrument-stage {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  /* 中文脚注：page2 乐器横向轮播区域的位置和高度在这里改。 */
+  top: 25vh;
+  height: 54vh;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.instrument-track {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 3vw;
+  /* 中文脚注：这里按“一屏显示五个乐器”计算左右留白，15vw 是单张乐器占宽。 */
+  padding: 0 calc((100vw - (5 * 18vw + 4 * 3vw)) / 2);
+  transform: translateX(var(--instrument-x, 0px));
+  transition: transform .72s cubic-bezier(.22, 1, .36, 1);
+}
+
+.instrument-card {
+  flex: 0 0 18vw;
+  height: 50vh;
+  min-width: 140px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  place-items: center;
+  padding: 0 8px 12px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transform: scale(.86);
+  opacity: .58;
+  transition: transform .42s ease, opacity .42s ease, filter .42s ease;
+}
+
+.instrument-card.is-center {
+  transform: scale(1.12);
+  opacity: 1;
+  filter: drop-shadow(0 0 18px rgba(239, 214, 125, .24));
+}
+
+.instrument-card:hover {
+  transform: scale(1.04);
+  opacity: .92;
+}
+
+.instrument-card.is-center:hover {
+  transform: scale(1.16);
+}
+
+.instrument-card img {
+  /* 中文脚注：page2 每张乐器图片大小在这里改，max-height 越大图片越大。 */
+  max-width: 128%;
+  max-height: 40vh;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, .52));
+}
+
+.instrument-card h2 {
+  display: grid;
+  gap: 3px;
+  margin-top: 6px;
+  font-size: clamp(20px, 1.6vw, 32px);
+  text-align: center;
+  letter-spacing: .18em;
+}
+
+.instrument-card h2 small {
+  color: rgba(238, 231, 203, .72);
+  font-size: clamp(12px, .78vw, 16px);
+  letter-spacing: .22em;
+}
+
+.instrument-copy {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  bottom: 7vh;
+  /*
+    中文脚注：page2 下方乐器介绍文字宽度。
+    - 想让文字更接近一行显示，把 92vw 或 1360px 继续调大。
+    - 如果文字太挤，可以调小 `.instrument-copy p` 的 font-size。
+  */
+  width: min(1360px, 92vw);
+  min-height: 86px;
+  transform: translateX(-50%);
+  text-align: center;
+  color: rgba(238, 231, 203, .84);
+}
+
+.instrument-copy h2 {
+  /*
+    中文脚注：page2 乐器介绍文字。
+    - font-size 控制介绍文字大小。
+    - line-height 控制行距。
+  */
+  font-size: clamp(14px, .92vw, 18px);
+  color: rgba(238, 231, 203, .88);
+  letter-spacing: .08em;
+  line-height: 1.62;
+}
+
+.instrument-copy h2 span {
+  /* 中文脚注：page2 乐器正文分段换行；每个 span 是文档中的一行。 */
+  display: block;
+}
+
+/* Page 3/4 */
+.type-page {
+  /*
+    中文脚注：page3/page4 必须保持 absolute + inset:0，
+    这样才会和其他首页页面一样铺满屏幕；不要改成 relative，否则会黑屏或错位。
+  */
+  position: absolute;
+  inset: 0;
+  background: var(--home-bg);
+}
+
+.type-page::before {
+  /*
+    中文脚注：page3/page4 背景图位置和明暗在这里改。
+    - background-size 控制背景铺满方式。
+    - filter 的 brightness 控制背景亮暗。
+  */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url("首页assets/0加载背景图-合乐图.jpg") center/cover no-repeat;
+  filter: saturate(.92) brightness(.82);
+  will-change: transform;
+  animation: lowerBgDrift 24s ease-in-out infinite alternate;
+}
+
+.page-types-2::before {
+  /*
+    中文脚注：page4 背景图左右移动轮播。
+    - 修改 24s 可以调整左右移动速度。
+    - translateX 的百分比越大，左右摆动幅度越大。
+  */
+  inset: 0 -10%;
+  background-size: cover;
+  will-change: transform;
+  animation: lowerBgDrift 13s ease-in-out infinite alternate;
+}
+
+.type-grid {
+  position: absolute;
+  z-index: 5;
+  left: clamp(42px, 4vw, 82px);
+  right: clamp(42px, 4vw, 82px);
+  top: 24vh;
+  bottom: 8vh;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 54px);
+}
+
+.type-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  border: 1px solid rgba(239, 214, 125, .18);
+  background: rgba(5, 6, 5, .26);
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.type-card::after {
+  /*
+    中文脚注：page3/page4 标题和正文下方的常驻渐变遮罩。
+    - height 控制遮罩高度。
+    - background 是上下透明度不同的黑色渐变：底部更黑，越往上越透明。
+  */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  height: 62%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, .88) 0%,
+    rgba(0, 0, 0, .72) 22%,
+    rgba(0, 0, 0, .44) 52%,
+    rgba(0, 0, 0, .16) 78%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.type-card img {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  filter: saturate(.88) brightness(.84);
+  transition: transform .7s ease, filter .7s ease;
+}
+
+.type-card:hover img,
+.type-card:focus-within img {
+  /*
+    中文脚注：page3/page4 不做 hover 图片变暗/放大效果，避免出现遮罩盖住小标题的错觉。
+  */
+  transform: none;
+  filter: saturate(.88) brightness(.84);
+}
+
+.type-card h2,
+.type-card p {
+  position: relative;
+  z-index: 10;
+  padding: 0 24px;
+}
+
+.type-card h2 {
+  margin-top: -86px;
+  padding-top: 34px;
+  background: transparent;
+}
+
+.type-card p {
+  padding-bottom: 24px;
+  max-width: 92%;
+  font-size: clamp(15px, 1vw, 18px);
+}
+
+.type-float-card {
+  position: fixed;
+  z-index: 20000;
+  width: min(390px, calc(100vw - 32px));
+  padding: 14px 16px 16px;
+  border-left: 1px solid rgba(239, 214, 125, .68);
+  background: linear-gradient(90deg, rgba(5, 6, 5, .94), rgba(5, 6, 5, .78));
+  box-shadow: 0 18px 32px rgba(0, 0, 0, .42);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity .16s ease, transform .16s ease, visibility .16s;
+}
+
+.type-float-card.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.type-float-card h3 {
+  margin: 0 0 8px;
+  color: var(--home-gold);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: .18em;
+}
+
+.type-float-card p {
+  font-size: 16px;
+  line-height: 1.62;
+}
+
+.image-lightbox {
+  /*
+    中文脚注：首页 page3/page4 点击画作后的大图弹窗。
+    - grid-template-columns 控制左侧画作和右侧介绍的宽度比例。
+    - padding 控制弹窗内容离屏幕边缘的距离。
+  */
+  position: fixed;
+  inset: 0;
+  z-index: 26000;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  gap: 22px;
+  padding: clamp(28px, 4vw, 54px);
+  background: rgba(0, 0, 0, .86);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .18s ease, visibility .18s;
+}
+
+.image-lightbox.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox-image-wrap {
+  /*
+    中文脚注：左侧大图区域。
+    - 滚轮缩放由 homescript.js 的 setLightboxZoom() 控制。
+    - 放大后按住鼠标左键拖动查看局部。
+  */
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: zoom-in;
+  touch-action: none;
+}
+
+.lightbox-image-wrap.is-panning {
+  cursor: grabbing;
+}
+
+.lightbox-image-wrap img {
+  max-width: 100%;
+  max-height: 88vh;
+  object-fit: contain;
+  border: 1px solid rgba(239, 214, 125, .28);
+  background: rgba(8, 9, 8, .42);
+  transform: translate(var(--lightbox-pan-x, 0px), var(--lightbox-pan-y, 0px)) scale(var(--lightbox-zoom, 1));
+  transform-origin: center center;
+  transition: transform .12s ease;
+  will-change: transform;
+}
+
+.lightbox-info {
+  align-self: end;
+  padding: 18px 20px 20px;
+  border-left: 1px solid rgba(239, 214, 125, .72);
+  background: linear-gradient(90deg, rgba(5, 6, 5, .86), rgba(5, 6, 5, .42));
+}
+
+.lightbox-info h3 {
+  margin-bottom: 12px;
+  color: var(--home-gold);
+  font-size: clamp(24px, 1.8vw, 34px);
+  letter-spacing: .18em;
+}
+
+.lightbox-info .painting-intro {
+  color: rgba(238, 231, 203, .88);
+  font-size: clamp(16px, 1vw, 19px);
+  letter-spacing: .08em;
+  line-height: 1.75;
+  text-align: justify;
+  text-indent: 2em;
+}
+
+.lightbox-close {
+  /*
+    中文脚注：大图弹窗关闭按钮样式。
+    - top / right 控制关闭按钮位置。
+    - width / height 控制按钮大小。
+  */
+  position: absolute;
+  top: 82px;
+  right: 24px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(229, 198, 132, .7);
+  border-radius: 50%;
+  color: rgba(255, 246, 219, .95);
+  background: radial-gradient(circle at 35% 30%, rgba(255, 241, 196, .9), rgba(180, 130, 62, .5) 58%, rgba(22, 17, 13, .38));
+  box-shadow: 0 0 18px rgba(217, 186, 114, .24), inset 0 0 10px rgba(255, 244, 201, .15);
+  font-family: inherit;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  outline: none;
+  transform: scale(1);
+  transition: transform .22s ease, filter .22s ease;
+}
+
+.lightbox-close:hover {
+  transform: scale(1.08);
+  filter: brightness(1.12);
+}
+
+/* Page 5 */
+.page-final {
+  position: absolute;
+  inset: 0;
+  background: var(--home-bg);
+}
+
+.page-final::before {
+  /*
+    中文脚注：page5 背景图左右轮播。
+    - animation 的 24s 控制速度。
+    - inset: 0 -10% 防止移动时露出黑边。
+  */
+  content: "";
+  position: absolute;
+  inset: 0 -10%;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(239, 214, 125, .13), transparent 30%),
+    url("首页assets/下半部分.png") center/cover no-repeat;
+  filter: saturate(.92) brightness(.82);
+  will-change: transform;
+  animation: lowerBgDrift 15s ease-in-out infinite alternate;
+}
+
+.final-text {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 50%;
+  width: min(960px, 78vw);
+  transform: translate(-50%, -50%);
+  /*
+    中文脚注：page5 文字区域。
+    - width 控制整段文字宽度。
+    - text-align: left 让标题和正文不居中。
+  */
+  text-align: left;
+}
+
+.final-text h4 {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.final-text p {
+  /*
+    中文脚注：page5 正文排版。
+    - text-align: justify 是左右两端对齐。
+    - text-indent: 2em 是段落首行缩进。
+  */
+  text-align: justify;
+  text-indent: 2em;
+  font-size: clamp(20px, 1.35vw, 28px);
+  line-height: 1.9;
+  color: rgba(238, 231, 203, .92);
+}
+
+.final-text p + p {
+  /* 中文脚注：page5 多段正文之间的间距；每个 p 都会保留首行缩进。 */
+  margin-top: 10px;
+}
+
+@keyframes titleFadeIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes heroPanoramaDrift {
+  from { background-position: 100% center; }
+  to { background-position: 0% center; }
+}
+
+@keyframes lowerBgDrift {
+  from { transform: translateX(4%); }
+  to { transform: translateX(-4%); }
+}
+
+@media (max-width: 900px) {
+  .instrument-track {
+    gap: 3vw;
+    padding: 0 8vw;
+  }
+
+  .instrument-card {
+    flex-basis: 28vw;
+  }
+
+  .type-grid {
+    grid-template-columns: 1fr;
+    top: 18vh;
+    bottom: 6vh;
+  }
+
+  .type-card:nth-child(2) {
+    display: none;
+  }
+}
