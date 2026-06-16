@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>琴韵千年——古琴制作</title>
+<link rel="stylesheet" href="../组件/generalprocess.css">
+<link rel="stylesheet" href="qinstyle.css">
+</head>
+<body>
+<div id="canvas">
+	<div id="bg-painting"></div>
+    <img class="img-layer" id="img-a" src="" alt="">
+    <img class="img-layer" id="img-b" src="" alt="">
+    <img class="img-extra" id="img-ex0" src="" alt="">
+    <img class="img-extra" id="img-ex1" src="" alt="">
+    <img class="img-extra" id="img-ex2" src="" alt="">
+    <div class="overlay-rect" id="overlay-rect"></div>
+    <div class="tilted-rect" id="tilted-rect"></div>
+    <div class="text-layer" id="text-a"></div>
+    <div class="text-layer" id="text-b"></div>
+    <div id="string-panel">
+        <div class="string-opt steel" data-type="steel" role="button" tabindex="0" aria-pressed="false">钢弦</div>
+        <div class="string-opt silk" data-type="silk" role="button" tabindex="0" aria-pressed="false">丝弦</div>
+        <div class="string-opt nylon" data-type="nylon" role="button" tabindex="0" aria-pressed="false">钢丝尼龙弦</div>
+        <div id="string-description" aria-live="polite"></div>
+    </div>
+    <div id="complete-overlay" role="dialog" aria-modal="true" aria-labelledby="complete-title" aria-hidden="true">
+        <div class="completion-backdrop"></div>
+        <div class="completion-card">
+            <div class="completion-animation" aria-hidden="true">
+                <img src="琴部件assets/步骤4-琴演奏.png" alt="">
+            </div>
+            <div class="big" id="complete-title">琴制作流程体验完成</div>
+            <div class="sub">七弦既备 · 千年琴韵</div>
+            <div class="btns">
+                <button class="complete-btn" id="btn-restart" type="button">重新体验</button>
+                <button class="complete-btn secondary" id="btn-back" type="button">继续探索</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="progress-bar-top" id="top-progress"></div>
+<!-- 统一全流程进度导航 (generalprocess.css .nav-dots) -->
+<div class="nav-dots" id="navDots" role="list" aria-label="古琴制作进度">
+    <div class="dot-wrapper active" role="listitem" aria-current="step"><div class="dot active"></div><div class="dot-label">制胚</div></div>
+    <div class="dot-wrapper" role="listitem"><div class="dot"></div><div class="dot-label">髹漆</div></div>
+    <div class="dot-wrapper" role="listitem"><div class="dot"></div><div class="dot-label">选弦</div></div>
+    <div class="dot-wrapper" role="listitem"><div class="dot"></div><div class="dot-label">上弦</div></div>
+</div>
+<!-- 右上角全局导航按钮（与 generalprocess.css .cornerNav 统一） -->
+<nav class="cornerNav" aria-label="步骤导航" style="top:18px;right:22px;">
+    <button class="navBtn" id="backBtn" type="button" aria-label="返回上一步">‹</button>
+    <button class="navBtn" id="nextBtn" type="button" aria-label="前进到下一步">›</button>
+</nav>
+
+
+<script src="qin-script.js"></script>
+</body>
+</html>
