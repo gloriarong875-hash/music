@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 
 /* 全局变量与主题色定义。 */
 :root {
@@ -20,7 +20,7 @@ body {
   background-color: #7f1c1c;
   background-image:
     linear-gradient(var(--wash), var(--wash)),
-    url("埙assets/网页底纹.png");
+    url("笛assets/网页底纹.png");
   background-repeat: no-repeat, repeat;
   background-size: auto, 220px auto;
 }
@@ -66,7 +66,7 @@ button { color: inherit; font: inherit; }
   color: #201a13;
   background:
     linear-gradient(rgba(242,234,204,.96), rgba(226,214,177,.95)),
-    url("埙assets/网页底纹.png");
+    url("笛assets/网页底纹.png");
   background-size: auto, 170px auto;
   box-shadow: 0 5px 20px rgba(0,0,0,.38);
 }
@@ -864,26 +864,150 @@ button { color: inherit; font: inherit; }
   transform: translateY(calc(6% - 5px)) scale(1.095);
 }
 
-/* Final layout calibration: theme, page isolation, and alpha-visible centering. */
-.xun-page {
-  background-color: #8db4b0;
+/* 笛大事纪：长形笛器完整展开，人物与画作保持纸本质感。 */
+.dizi-page .dizi-artifact { overflow: visible; }
+.dizi-page .story-entry::after { display: none; }
+.dizi-page .dizi-artifact::before {
+  display: block;
+  inset: 5%;
+  border: 1px solid rgba(238,231,203,.14);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216,199,156,.1), transparent 67%);
+  filter: none;
+}
+.dizi-page .dizi-artifact img {
+  width: 90%;
+  height: 90%;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  object-fit: contain;
+  object-position: center;
+  opacity: .95;
+  transform-origin: center center;
+  transform: translateY(0) scale(1);
+  filter: sepia(.08) saturate(.9) contrast(1.03) brightness(.94)
+    drop-shadow(0 18px 22px rgba(0,0,0,.48));
+  transition: transform .38s cubic-bezier(.2,.72,.25,1), filter .38s ease, opacity .38s ease;
+}
+.dizi-page .dizi-artifact:hover img {
+  opacity: 1;
+  transform: translateY(-5px) scale(1.035);
+  filter: sepia(.02) saturate(1) contrast(1.05) brightness(1.03)
+    drop-shadow(0 20px 24px rgba(0,0,0,.58));
+}
+.dizi-page .dizi-artifact figcaption { display: flex; }
+
+/* 横向笛器取消圆框，避免细长轮廓受限。 */
+.dizi-page .dizi-jiahu::before,
+.dizi-page .dizi-mawangdui::before,
+.dizi-page .dizi-hanxizai::before,
+.dizi-page .dizi-song-types::before,
+.dizi-page .dizi-liqingzhao::before,
+.dizi-page .dizi-ming-painting::before,
+.dizi-page .dizi-kunqu::before,
+.dizi-page .dizi-qu-bang::before {
+  display: none;
 }
 
-.xun-page .story-page {
+.dizi-page .dizi-jiahu img {
+  width: 112%;
+  height: 86%;
+  transform: translateY(2%) scale(1.04);
+}
+.dizi-page .dizi-jiahu:hover img {
+  transform: translateY(calc(2% - 5px)) scale(1.075);
+}
+
+.dizi-page .dizi-mawangdui img {
+  width: 105%;
+  height: 92%;
+  transform: translateY(2%) scale(1.02);
+}
+.dizi-page .dizi-mawangdui:hover img {
+  transform: translateY(calc(2% - 5px)) scale(1.055);
+}
+
+.dizi-page .dizi-xunxu img {
+  width: 90%;
+  height: 92%;
+  transform: translateY(1%) scale(1);
+}
+.dizi-page .dizi-xunxu:hover img {
+  transform: translateY(calc(1% - 5px)) scale(1.035);
+}
+
+.dizi-page .dizi-tang-flute img,
+.dizi-page .dizi-shakuhachi img {
+  width: 88%;
+  height: 96%;
+  transform: translateY(3%) scale(1.04);
+}
+.dizi-page .dizi-tang-flute:hover img,
+.dizi-page .dizi-shakuhachi:hover img {
+  transform: translateY(calc(3% - 5px)) scale(1.075);
+}
+
+.dizi-page .dizi-hanxizai img,
+.dizi-page .dizi-kunqu img {
+  width: 96%;
+  height: 90%;
+  transform: translateY(2%) scale(1);
+}
+.dizi-page .dizi-hanxizai:hover img,
+.dizi-page .dizi-kunqu:hover img {
+  transform: translateY(calc(2% - 5px)) scale(1.035);
+}
+
+.dizi-page .dizi-song-types img {
+  width: 98%;
+  height: 91%;
+  transform: translateY(5%) scale(1.04);
+}
+.dizi-page .dizi-song-types:hover img {
+  transform: translateY(calc(5% - 5px)) scale(1.075);
+}
+
+.dizi-page .dizi-liqingzhao img,
+.dizi-page .dizi-ming-painting img {
+  width: 82%;
+  height: 92%;
+  transform: translateY(1%) scale(1);
+}
+.dizi-page .dizi-liqingzhao:hover img,
+.dizi-page .dizi-ming-painting:hover img {
+  transform: translateY(calc(1% - 5px)) scale(1.035);
+}
+
+.dizi-page .dizi-qu-bang img {
+  width: 108%;
+  height: 86%;
+  transform: translateY(5%) scale(1.04);
+}
+.dizi-page .dizi-qu-bang:hover img {
+  transform: translateY(calc(5% - 5px)) scale(1.075);
+}
+
+/* Final layout calibration: theme, page isolation, and alpha-visible centering. */
+.dizi-page {
+  background-color: #9b5e2c;
+}
+
+.dizi-page .story-page {
   opacity: 0;
   transform: none;
   contain: paint;
 }
 
-.xun-page .story-page.active {
+.dizi-page .story-page.active {
   opacity: 1;
 }
 
-.xun-page .story-page:not(.active) .artifact {
+.dizi-page .story-page:not(.active) .artifact {
   opacity: 0;
 }
 
-.xun-page .page-body:not(.count-1) .xun-artifact::before {
+.dizi-page .page-body:not(.count-1) .dizi-artifact::before {
   width: auto;
   height: 90%;
   aspect-ratio: 1;
@@ -891,7 +1015,7 @@ button { color: inherit; font: inherit; }
   transform: translate(-50%, -50%);
 }
 
-.xun-page .page-body.count-1 .xun-artifact::before {
+.dizi-page .page-body.count-1 .dizi-artifact::before {
   width: 90%;
   height: auto;
   aspect-ratio: 1;
@@ -899,67 +1023,50 @@ button { color: inherit; font: inherit; }
   transform: translate(-50%, -50%);
 }
 
-.xun-page .xun-hemudu img {
+.dizi-page .dizi-xunxu img {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 100%;
   height: 100%;
-  transform: translate(-51%, -55%) scale(1.15);
+  transform: translate(-50%, -51%) scale(1);
 }
-.xun-page .xun-hemudu:hover img {
-  transform: translate(-51%, calc(-55% - 5px)) scale(1.185);
+.dizi-page .dizi-xunxu:hover img {
+  transform: translate(-50%, calc(-51% - 5px)) scale(1.035);
 }
 
-.xun-page .xun-yangshao img {
+.dizi-page .dizi-tang-flute img {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 100%;
   height: 100%;
-  transform: translate(-49%, -51%) scale(1.2);
+  transform: translate(-50%, -54%) scale(1.1);
 }
-.xun-page .xun-yangshao:hover img {
-  transform: translate(-49%, calc(-51% - 5px)) scale(1.235);
-}
-
-.xun-page .xun-liulige img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 72%;
-  height: 72%;
-  transform: translate(-50%, -50%) scale(1);
-}
-.xun-page .xun-liulige:hover img {
-  transform: translate(-50%, calc(-50% - 5px)) scale(1.035);
+.dizi-page .dizi-tang-flute:hover img {
+  transform: translate(-50%, calc(-54% - 5px)) scale(1.135);
 }
 
-.xun-page .xun-bird-whistle img {
+.dizi-page .dizi-shakuhachi img {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 100%;
   height: 100%;
-  transform: translate(-51%, -51%) scale(1);
+  transform: translate(-49%, -51%) scale(.95);
 }
-.xun-page .xun-bird-whistle:hover img {
-  transform: translate(-51%, calc(-51% - 5px)) scale(1.035);
-}
-
-.xun-page .xun-qing-porcelain img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 100%;
-  height: 100%;
-  transform: translate(-50%, -51%) scale(1.14);
-}
-.xun-page .xun-qing-porcelain:hover img {
-  transform: translate(-50%, calc(-51% - 5px)) scale(1.175);
+.dizi-page .dizi-shakuhachi:hover img {
+  transform: translate(-49%, calc(-51% - 5px)) scale(.985);
 }
 
-.xun-page .xun-shijing img {
+.dizi-page .dizi-jiahu img,
+.dizi-page .dizi-mawangdui img,
+.dizi-page .dizi-hanxizai img,
+.dizi-page .dizi-song-types img,
+.dizi-page .dizi-liqingzhao img,
+.dizi-page .dizi-ming-painting img,
+.dizi-page .dizi-kunqu img,
+.dizi-page .dizi-qu-bang img {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -967,43 +1074,69 @@ button { color: inherit; font: inherit; }
   height: 94%;
   transform: translate(-50%, -50%) scale(1);
 }
-.xun-page .xun-shijing:hover img {
+
+.dizi-page .dizi-jiahu:hover img,
+.dizi-page .dizi-mawangdui:hover img,
+.dizi-page .dizi-hanxizai:hover img,
+.dizi-page .dizi-song-types:hover img,
+.dizi-page .dizi-liqingzhao:hover img,
+.dizi-page .dizi-ming-painting:hover img,
+.dizi-page .dizi-kunqu:hover img,
+.dizi-page .dizi-qu-bang:hover img {
   transform: translate(-50%, calc(-50% - 5px)) scale(1.035);
 }
 
+.dizi-page .dizi-jiahu img,
+.dizi-page .dizi-qu-bang img {
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.dizi-page .dizi-jiahu:hover img,
+.dizi-page .dizi-qu-bang:hover img {
+  transform: translate(-50%, calc(-50% - 5px)) scale(1.115);
+}
+
+.dizi-page .dizi-song-types img {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+.dizi-page .dizi-song-types:hover img {
+  transform: translate(-50%, calc(-50% - 5px)) scale(1.155);
+}
+
 /* Keep labels below the visible artwork and lighten their backing panel. */
-.xun-page .xun-artifact {
+.dizi-page .dizi-artifact {
   padding-bottom: 38px;
 }
-.xun-page .xun-artifact figcaption {
+.dizi-page .dizi-artifact figcaption {
   right: 4%;
   bottom: 0;
   background: rgba(7,7,6,.22);
 }
-.xun-page .xun-artifact img {
+.dizi-page .dizi-artifact img {
   top: calc(50% - 25px);
   max-height: calc(100% - 80px);
 }
-.xun-page .xun-liulige::before {
+.dizi-page .dizi-xunxu::before {
   display: none;
 }
 
-/* Timeline labels tuned to the blue-green page palette. */
-.xun-page .timeline__button {
-  color: rgba(239,246,241,.58);
-  background: rgba(35,66,65,.36);
+/* Timeline labels tuned to the warm ochre page palette. */
+.dizi-page .timeline__button {
+  color: rgba(255,238,216,.58);
+  background: rgba(69,34,15,.38);
   transform: translate(-50%,-50%) scale(.7);
 }
-.xun-page .timeline__button.is-near {
-  color: rgba(248,250,239,.68);
-  background: rgba(45,80,78,.44);
+.dizi-page .timeline__button.is-near {
+  color: rgba(255,240,216,.68);
+  background: rgba(82,41,16,.46);
   transform: translate(-50%,-50%) scale(.82);
 }
-.xun-page .timeline__button.is-active {
+.dizi-page .timeline__button.is-active {
   padding: 14px 22px 15px;
-  color: #30423f;
-  background: rgba(225,230,190,.85);
-  box-shadow: 0 0 28px rgba(225,230,190,.5);
+  color: #3f2813;
+  background: rgba(239,214,151,.85);
+  box-shadow: 0 0 28px rgba(247,208,111,.55);
   transform: translate(-50%,-50%) scale(1.28);
 }
 
@@ -1029,92 +1162,116 @@ body.has-site-topbar {
   }
 }
 
-.xun-page .xun-artifact {
+.dizi-page .dizi-artifact {
   padding-bottom: 30px;
   contain: paint;
 }
-.xun-page .xun-artifact img {
+.dizi-page .dizi-artifact img {
   top: calc(50% - 16px);
-  max-height: calc(100% - 72px);
+  max-height: calc(100% - 68px);
 }
-.xun-page .xun-artifact figcaption {
+.dizi-page .dizi-artifact figcaption {
   bottom: 2px;
 }
 
 /* Content accents */
-.xun-page .page-heading::after {
-  background: linear-gradient(90deg, #6098a4, transparent);
+.dizi-page .page-heading::after {
+  background: linear-gradient(90deg, #846031, transparent);
 }
 
-.xun-page .xun-artifact::before {
-  border-color: #eee7cb;
+.dizi-page .dizi-artifact::before {
+  border-color: #846031;
 }
 
-/* 埙类标签默认位置：右边 4%，底部 34px。要上移，减小 bottom；要左移，增大 right。 */
-.xun-page .xun-artifact figcaption {
+/* 曲笛与梆笛标签位置调整区域 */
+.dizi-page .dizi-artifact figcaption {
   right: 4%;
   bottom: 34px;
 }
 
-/* 凤笛和青花瓷单独标签位置微调 */
-.xun-page .xun-bird-whistle figcaption {
-  bottom: 150px;
+.dizi-page .dizi-xunxu figcaption {
+  bottom: 18px;
 }
 
-.xun-page .xun-qing-porcelain figcaption {
-  bottom: 110px;
+/* 曲笛与梆笛独立标签位置 */
+.dizi-page .dizi-qu-bang figcaption {
+  bottom: 0;
 }
 
-/* 【手动调参区：埙页图片大小与 hover 动效】
-   只改图片，不改文字标签。鸟形哨和瓷埙保持主体完整，同时增强 hover 放大。 */
-.xun-page .xun-bird-whistle:hover img {
-  transform: translate(-51%, calc(-51% - 8px)) scale(1.14);
+/* Final caption alignment: anchor labels to the visible image edge. */
+.dizi-page .dizi-xunxu figcaption {
+  bottom: 66px;
 }
 
-.xun-page .xun-qing-porcelain:hover img {
-  transform: translate(-50%, calc(-51% - 8px)) scale(1.24);
+.dizi-page .dizi-qu-bang figcaption {
+  bottom: 190px;
 }
 
-.xun-page .xun-hemudu:hover img {
-  transform: translate(-51%, calc(-55% - 8px)) scale(1.24);
+/* 【手动调参区：笛页图片大小与 hover 动效】
+   只改图片，不改文字标签。scale 越大图片越大；hover 的 scale 比常态大 0.08-0.12，浮动会更明显。 */
+.dizi-page .dizi-tang-flute img {
+  transform: translate(-50%, -54%) scale(1.26);
 }
 
-.xun-page .xun-yangshao:hover img {
-  transform: translate(-49%, calc(-51% - 8px)) scale(1.3);
+.dizi-page .dizi-tang-flute:hover img {
+  transform: translate(-50%, calc(-54% - 8px)) scale(1.38);
 }
 
-.xun-page .xun-liulige:hover img {
+.dizi-page .dizi-shakuhachi img {
+  transform: translate(-49%, -51%) scale(1.08);
+}
+
+.dizi-page .dizi-shakuhachi:hover img {
+  transform: translate(-49%, calc(-51% - 8px)) scale(1.2);
+}
+
+.dizi-page .dizi-jiahu:hover img,
+.dizi-page .dizi-mawangdui:hover img,
+.dizi-page .dizi-hanxizai:hover img,
+.dizi-page .dizi-song-types:hover img,
+.dizi-page .dizi-liqingzhao:hover img,
+.dizi-page .dizi-ming-painting:hover img,
+.dizi-page .dizi-kunqu:hover img,
+.dizi-page .dizi-qu-bang:hover img {
   transform: translate(-50%, calc(-50% - 8px)) scale(1.14);
 }
 
-.xun-page .xun-shijing:hover img {
-  transform: translate(-50%, calc(-50% - 8px)) scale(1.14);
-}
-
-/* 【最终手动调参区：埙页 hover 范围】
+/* 【最终手动调参区：笛页点名图片 1.25 倍与 hover 范围】
    说明：只改图片，不改文字标签。图片容器取消裁切；hover 以 img 本身为触发目标。 */
-.xun-page .artifact,
-.xun-page .xun-artifact {
+.dizi-page .artifact,
+.dizi-page .dizi-artifact {
   contain: none !important;
   overflow: visible !important;
 }
 
-.xun-page .artifact {
+.dizi-page .artifact {
   pointer-events: none;
 }
 
-.xun-page .artifact img,
-.xun-page .artifact figcaption {
+.dizi-page .artifact img,
+.dizi-page .artifact figcaption {
   pointer-events: auto;
 }
 
-.xun-page .story-entry {
+.dizi-page .story-entry {
   contain: none !important;
   overflow: visible !important;
 }
 
-.xun-page .artifact figcaption {
+.dizi-page .artifact figcaption {
   pointer-events: none;
+}
+
+.dizi-page .dizi-liqingzhao img,
+.dizi-page .dizi-kunqu img {
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+.dizi-page .dizi-liqingzhao:hover img,
+.dizi-page .dizi-kunqu:hover img,
+.dizi-page .dizi-liqingzhao img:hover,
+.dizi-page .dizi-kunqu img:hover {
+  transform: translate(-50%, calc(-50% - 8px)) scale(1.4);
 }
 
 /* 【最终手动调参区：图片可见像素 hover】
@@ -1143,6 +1300,17 @@ body.has-site-topbar {
   transition-duration: .18s !important;
 }
 
+/* 【最终手动调参区：宋代多种笛制图片大小】
+   当前常态尺寸放大到上一版的 1.5 倍；hover 仍保持高亮、上浮和轻微继续放大。 */
+.dizi-page .dizi-song-types img {
+  transform: translate(-50%, -50%) scale(1.68);
+}
+
+.dizi-page .dizi-song-types:hover img,
+.dizi-page .dizi-song-types img:hover {
+  transform: translate(-50%, calc(-50% - 8px)) scale(1.86);
+}
+
 /* 【最终锁定：非可见像素不允许 hover 放大】
    必须放在文件末尾，压过所有旧的 .xxx:hover img / img:hover 规则。 */
 .artifact:not(.is-visible-hover):hover img,
@@ -1150,6 +1318,12 @@ body.has-site-topbar {
   transform: var(--image-base-transform, none) !important;
   filter: var(--image-base-filter, none) !important;
   opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* 【最终手动调参区：荀勖标签位置】
+   bottom 越小标签越靠下；此处让标签更贴近图片可见部分下边缘。 */
+.dizi-page .dizi-xunxu figcaption {
+  bottom: 24px;
 }
 
 /* 【最终统一：按彩陶鼓 hover 效果接管所有图片】
@@ -1170,4 +1344,210 @@ body.has-site-topbar {
   transform: var(--image-base-transform, none) !important;
   filter: var(--image-base-filter, none) !important;
   opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* ???????????????????????hover ???
+   ???????????????????? script.js ? fitTuning() ? fillX / fillY? */
+.story-entry::after {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+.story-entry.visual-left::after { left: 1% !important; right: auto !important; }
+.story-entry.visual-right::after { right: 1% !important; left: auto !important; }
+.artifact,
+.dizi-artifact,
+.drum-artifact,
+.qin-artifact,
+.xun-artifact,
+.relic-roundel {
+  position: relative !important;
+  display: block !important;
+  overflow: visible !important;
+  contain: none !important;
+  pointer-events: none !important;
+}
+.story-entry,
+.story-page,
+.page-body {
+  contain: none !important;
+}
+.artifact img {
+  position: absolute !important;
+  left: 50%;
+  top: 50%;
+  width: auto;
+  height: auto;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 0 !important;
+  object-fit: contain !important;
+  clip-path: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  pointer-events: auto !important;
+  transform-origin: center center !important;
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter, sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46))) !important;
+  transition: transform .34s cubic-bezier(.2,.72,.25,1), filter .34s ease, opacity .34s ease !important;
+  will-change: transform, filter, opacity;
+}
+.artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62)) !important;
+}
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter, sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46))) !important;
+}
+.artifact figcaption {
+  position: absolute !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 6 !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(320px, 78%);
+  padding: 5px 11px !important;
+  border-radius: 0 !important;
+  color: rgba(246,239,212,.78) !important;
+  background: rgba(12, 9, 6, .42) !important;
+  font-size: 9px !important;
+  line-height: 1.45 !important;
+  letter-spacing: 1px !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+.artifact figcaption::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: rgba(238,231,203,.72);
+}
+.artifact:has(figcaption:empty) figcaption {
+  display: none !important;
+}
+/* ????????????????????? */
+.sheng-page .page-heading {
+  display: flex !important;
+  align-items: end !important;
+  gap: 20px !important;
+  padding-left: 3% !important;
+}
+.sheng-page .page-heading::after {
+  display: block !important;
+  content: "" !important;
+  flex: 1 !important;
+  height: 5px !important;
+  margin: 0 0 9px 8px !important;
+  opacity: .42 !important;
+}
+.sheng-page .event-block::before {
+  display: none !important;
+}
+
+/* 本轮手动调参区：笛页面图片缩放与 hover 高亮。 */
+body.dizi-page .artifact.is-visible-hover img {
+  opacity: 1 !important;
+  filter: sepia(.02) saturate(1.08) contrast(1.08) brightness(1.13) drop-shadow(0 20px 28px rgba(0,0,0,.64)) !important;
+}
+/* 《庭中赏乐图》：放大到当前约 1.25 倍，标签继续贴随可见部分。 */
+body.dizi-page .dizi-ming-painting { --fit-scale: 1.25; --fit-x: 0px; --fit-y: 0px; }
+/* 尺八：略缩小，确保可见部分在圆形框线内。 */
+body.dizi-page .dizi-shakuhachi { --fit-scale: .86; --fit-x: 0px; --fit-y: 0px; }
+/* 最终 hover 状态锁：鼠标离开图片可见部分后，高亮、放大和图片阴影同步消失。 */
+body.dizi-page .artifact:not(.is-visible-hover) img,
+body.dizi-page .artifact:not(.is-visible-hover):hover img,
+body.dizi-page .artifact:not(.is-visible-hover) img:hover,
+body.drum-page .artifact:not(.is-visible-hover) img,
+body.drum-page .artifact:not(.is-visible-hover):hover img,
+body.drum-page .artifact:not(.is-visible-hover) img:hover,
+body.qin-page .artifact:not(.is-visible-hover) img,
+body.qin-page .artifact:not(.is-visible-hover):hover img,
+body.qin-page .artifact:not(.is-visible-hover) img:hover,
+body.sheng-page .artifact:not(.is-visible-hover) img,
+body.sheng-page .artifact:not(.is-visible-hover):hover img,
+body.sheng-page .artifact:not(.is-visible-hover) img:hover,
+body.xun-page .artifact:not(.is-visible-hover) img,
+body.xun-page .artifact:not(.is-visible-hover):hover img,
+body.xun-page .artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter, sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46))) !important;
+}
+body.dizi-page .artifact.is-visible-hover img,
+body.drum-page .artifact.is-visible-hover img,
+body.qin-page .artifact.is-visible-hover img,
+body.sheng-page .artifact.is-visible-hover img,
+body.xun-page .artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62)) !important;
+}
+/* 终版 hover 同步复位：非可见像素 hover 时，放大、高亮、阴影全部回到普通态。 */
+body .artifact:not(.is-visible-hover) img,
+body .artifact:not(.is-visible-hover):hover img,
+body .artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter, none) !important;
+}
+body .artifact:not(.is-visible-hover)::before,
+body .artifact:not(.is-visible-hover):hover::before,
+body .artifact:not(.is-visible-hover)::after,
+body .artifact:not(.is-visible-hover):hover::after {
+  filter: none !important;
+  box-shadow: none !important;
+}
+body .artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62)) !important;
+}
+body .artifact img {
+  transition: transform .34s cubic-bezier(.2,.72,.25,1), filter .34s ease, opacity .34s ease !important;
+}
+/* 终极普通态/hover 态分离：普通态滤镜由 CSS 变量声明，不再被 JS 的 hover 读取污染。 */
+body .artifact {
+  --image-base-opacity: .92;
+  --image-base-filter: sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46));
+}
+body .artifact:not(.is-visible-hover) img,
+body .artifact:not(.is-visible-hover):hover img,
+body .artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity, .92) !important;
+  filter: var(--image-base-filter) !important;
+}
+body .artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: var(--image-hover-filter, sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62))) !important;
+}
+
+/* 最终 hover 统一锁：移开可见像素后，同步恢复普通态滤镜、放大和阴影。 */
+body.dizi-page .artifact {
+  --image-base-opacity: .92;
+  --image-base-filter: sepia(.12) saturate(.9) contrast(1) drop-shadow(0 14px 18px rgba(0,0,0,.46));
+  --image-hover-filter: sepia(.03) saturate(1.06) contrast(1.08) brightness(1.12) drop-shadow(0 20px 26px rgba(0,0,0,.62));
+}
+body.dizi-page .artifact:not(.is-visible-hover) img,
+body.dizi-page .artifact:not(.is-visible-hover):hover img,
+body.dizi-page .artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, translate(-50%, -50%)) !important;
+  opacity: var(--image-base-opacity) !important;
+  filter: var(--image-base-filter) !important;
+}
+body.dizi-page .artifact.is-visible-hover img {
+  transform: translate(-50%, calc(-50% - var(--hover-lift, 8px))) scale(var(--hover-scale, 1.075)) !important;
+  opacity: 1 !important;
+  filter: var(--image-hover-filter) !important;
 }

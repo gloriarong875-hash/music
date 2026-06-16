@@ -200,6 +200,7 @@ function initialize(data) {
   buildPages();
   renderNavigation();
   renderTimeline();
+  installVisibleImageHover();
   resizeCanvas();
   drawInk();
   scatterInk();
@@ -265,4 +266,96 @@ if (pageSwitcher) {
   };
 
   layoutPageSwitcher("chronicle", false);
+}
+
+function installVisibleImageHover() {
+  const cache = new WeakMap();
+  let activeArtifact = null;
+
+  function prepareImage(img) {
+    const artifact = img.closest(".artifact");
+    if (!artifact || cache.has(img)) return;
+    const computed = getComputedStyle(img);
+    artifact.style.setProperty("--image-base-transform", computed.transform === "none" ? "none" : computed.transform);
+    artifact.style.setProperty("--image-base-filter", computed.filter === "none" ? "none" : computed.filter);
+    artifact.style.setProperty("--image-base-opacity", computed.opacity || "1");
+    cache.set(img, { canvas: null, context: null, failed: false });
+  }
+
+  function maskForImage(img) {
+    const masks = window.instrumentHoverMasks || {};
+    const rawSrc = img.getAttribute("src") || "";
+    return masks[rawSrc] || masks[decodeURIComponent(rawSrc)] || null;
+  }
+
+  function imagePoint(img, event) {
+    if (!img.complete || !img.naturalWidth || !img.naturalHeight) return null;
+    const rect = img.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+
+    const px = event.clientX - rect.left;
+    const py = event.clientY - rect.top;
+    if (px < 0 || py < 0 || px > rect.width || py > rect.height) return null;
+
+    const style = getComputedStyle(img);
+    const naturalRatio = img.naturalWidth / img.naturalHeight;
+    const boxRatio = rect.width / rect.height;
+    let drawWidth = rect.width;
+    let drawHeight = rect.height;
+
+    if (style.objectFit === "contain" || style.objectFit === "scale-down") {
+      if (naturalRatio > boxRatio) drawHeight = rect.width / naturalRatio;
+      else drawWidth = rect.height * naturalRatio;
+    } else if (style.objectFit === "cover") {
+      if (naturalRatio > boxRatio) drawWidth = rect.height * naturalRatio;
+      else drawHeight = rect.width / naturalRatio;
+    }
+
+    const offsetX = (rect.width - drawWidth) / 2;
+    const offsetY = (rect.height - drawHeight) / 2;
+    if (px < offsetX || py < offsetY || px > offsetX + drawWidth || py > offsetY + drawHeight) return null;
+
+    return {
+      x: Math.max(0, Math.min(img.naturalWidth - 1, Math.floor((px - offsetX) / drawWidth * img.naturalWidth))),
+      y: Math.max(0, Math.min(img.naturalHeight - 1, Math.floor((py - offsetY) / drawHeight * img.naturalHeight))),
+    };
+  }
+
+  function isVisibleImagePixel(img, event) {
+    const point = imagePoint(img, event);
+    if (!point) return false;
+
+    const mask = maskForImage(img);
+    if (!mask || !mask.rows || !mask.grid) return false;
+
+    const gx = Math.max(0, Math.min(mask.grid - 1, Math.floor(point.x / img.naturalWidth * mask.grid)));
+    const gy = Math.max(0, Math.min(mask.grid - 1, Math.floor(point.y / img.naturalHeight * mask.grid)));
+    const row = mask.rows[gy] || "";
+    const nibble = parseInt(row[Math.floor(gx / 4)] || "0", 16);
+    const bit = 3 - (gx % 4);
+    return ((nibble >> bit) & 1) === 1;
+  }
+
+  function clearActive() {
+    if (activeArtifact) activeArtifact.classList.remove("is-visible-hover");
+    activeArtifact = null;
+  }
+
+  document.querySelectorAll(".artifact img").forEach(prepareImage);
+  document.addEventListener("pointermove", (event) => {
+    const img = event.target.closest?.(".artifact img");
+    if (!img) {
+      clearActive();
+      return;
+    }
+    prepareImage(img);
+    const artifact = img.closest(".artifact");
+    const isVisiblePixel = isVisibleImagePixel(img, event);
+    if (activeArtifact && activeArtifact !== artifact) activeArtifact.classList.remove("is-visible-hover");
+    artifact.classList.toggle("is-visible-hover", isVisiblePixel);
+    activeArtifact = isVisiblePixel ? artifact : null;
+  }, { passive: true });
+  document.addEventListener("pointerleave", clearActive);
+  window.addEventListener("blur", clearActive);
+  scroller.addEventListener("scroll", clearActive, { passive: true });
 }

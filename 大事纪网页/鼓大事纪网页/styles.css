@@ -769,3 +769,368 @@ button { color: inherit; font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .001ms !important; }
 }
+
+/* Use the unified topbar's real height instead of the former transparent header gap. */
+body.has-site-topbar {
+  --header-height: var(--site-topbar-height, 44px);
+}
+
+.drum-page .artifact {
+  contain: paint;
+  padding-bottom: 30px;
+}
+.drum-page .artifact img {
+  max-height: calc(100% - 58px);
+}
+.drum-page .artifact figcaption {
+  bottom: 2px;
+}
+
+@media (max-width: 1180px) {
+  .chronicle-layout {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 14px;
+    padding-right: 20px;
+  }
+  .story-entry,
+  .count-1 .story-entry {
+    grid-template-columns: minmax(0, 47%) minmax(0, 53%);
+  }
+  .event-block,
+  .count-1 .event-block {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+  .artifact img {
+    max-width: 96%;
+    max-height: 92%;
+  }
+  .artifact figcaption {
+    right: 3%;
+    bottom: 2%;
+  }
+}
+
+/* Stronger hierarchy between the current era and the remaining eras. */
+.drum-page .timeline__button {
+  color: rgba(238,232,216,.56);
+  background: rgba(48,38,31,.36);
+  transform: translate(-50%,-50%) scale(.7);
+}
+.drum-page .timeline__button.is-near {
+  color: rgba(246,236,216,.68);
+  background: rgba(63,45,31,.44);
+  transform: translate(-50%,-50%) scale(.82);
+}
+.drum-page .timeline__button.is-active {
+  padding: 14px 22px 15px;
+  color: #3f3018;
+  background: rgba(223,172,104,.85);
+  box-shadow: 0 0 28px rgba(223,172,104,.55);
+  transform: translate(-50%,-50%) scale(1.28);
+}
+
+/* Keep the full relic silhouette visible and centered inside its roundel. */
+.drum-page .drum-pottery img {
+  transform: translate(.5%, -5%) scale(.96);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.drum-page .drum-pottery:hover img {
+  transform: translate(.5%, calc(-5% - 5px)) scale(.995);
+}
+
+.drum-page .drum-storyteller img {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 16px);
+  width: 72%;
+  height: 82%;
+  transform: translate(-50%, -50%) scale(.96);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.drum-page .drum-storyteller:hover img {
+  transform: translate(-50%, calc(-50% - 5px)) scale(.995);
+}
+
+/* 鼓类标签位置：右边 4%，底部 34px。要上移，减小 bottom；要左移，增大 right。 */
+.drum-page .artifact figcaption {
+  right: 4%;
+  bottom: 34px;
+}
+
+/* 角鼓/羯鼓单独标签位置微调 */
+.drum-page .drum-jiegu figcaption {
+  bottom: 40px;
+}
+
+/* 戏曲鼓标签位置微调 */
+.drum-page .drum-song-opera figcaption {
+  bottom: 74px;
+}
+
+/* Absolute final caption alignment. */
+.drum-page .drum-jiegu figcaption {
+  bottom: 158px;
+}
+
+.drum-page .drum-song-opera figcaption {
+  bottom: 100px;
+}
+
+/* 【最终统一：按彩陶鼓 hover 效果接管所有图片】
+   保留每张图的常态 transform；仅在预计算遮罩判断为可见像素时，上浮 5px、轻微放大并同步提亮。 */
+.artifact img {
+  transition: transform .24s cubic-bezier(.2,.72,.25,1), filter .24s ease, opacity .24s ease !important;
+}
+
+.artifact.is-visible-hover img {
+  transform: var(--image-base-transform, none) translateY(-5px) scale(1.035) !important;
+  filter: sepia(.06) saturate(.98) contrast(1.04) brightness(1.1) drop-shadow(0 18px 24px rgba(14,10,6,.22)) !important;
+  opacity: 1 !important;
+}
+
+/* 【最终锁定：非可见像素不允许 hover 放大】
+   必须放在文件末尾，压过所有旧的 .xxx:hover img / img:hover 规则。 */
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* 【最终统一：按彩陶鼓 hover 效果接管所有图片】
+   保留每张图的常态 transform；仅在预计算遮罩判断为可见像素时，上浮 5px、轻微放大并同步提亮。 */
+.artifact img {
+  transition: transform .24s cubic-bezier(.2,.72,.25,1), filter .24s ease, opacity .24s ease !important;
+}
+
+.artifact.is-visible-hover img {
+  transform: var(--image-base-transform, none) translateY(-5px) scale(1.035) !important;
+  filter: sepia(.06) saturate(.98) contrast(1.04) brightness(1.1) drop-shadow(0 18px 24px rgba(14,10,6,.22)) !important;
+  opacity: 1 !important;
+}
+
+.artifact:not(.is-visible-hover) img,
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* 【最终统一：按彩陶鼓 hover 效果接管所有图片】
+   保留每张图的常态 transform；仅在预计算遮罩判断为可见像素时，上浮 5px、轻微放大并同步提亮。 */
+.artifact img {
+  transition: transform .24s cubic-bezier(.2,.72,.25,1), filter .24s ease, opacity .24s ease !important;
+}
+
+.artifact.is-visible-hover img {
+  transform: var(--image-base-transform, none) translateY(-5px) scale(1.035) !important;
+  filter: sepia(.06) saturate(.98) contrast(1.04) brightness(1.1) drop-shadow(0 18px 24px rgba(14,10,6,.22)) !important;
+  opacity: 1 !important;
+}
+
+.artifact:not(.is-visible-hover) img,
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* 【最终统一：按彩陶鼓 hover 效果接管所有图片】
+   保留每张图的常态 transform；仅在预计算遮罩判断为可见像素时，上浮 5px、轻微放大并同步提亮。 */
+.artifact img {
+  transition: transform .24s cubic-bezier(.2,.72,.25,1), filter .24s ease, opacity .24s ease !important;
+}
+
+.artifact.is-visible-hover img {
+  transform: var(--image-base-transform, none) translateY(-5px) scale(1.035) !important;
+  filter: sepia(.06) saturate(.98) contrast(1.04) brightness(1.1) drop-shadow(0 18px 24px rgba(14,10,6,.22)) !important;
+  opacity: 1 !important;
+}
+
+.artifact:not(.is-visible-hover) img,
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* 【最终锁定：非可见像素不允许 hover 放大】
+   必须放在文件末尾，压过所有旧的 .xxx:hover img / img:hover 规则。 */
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* 【最终锁定：非可见像素不允许 hover 放大】
+   必须放在文件末尾，压过所有旧的 .xxx:hover img / img:hover 规则。 */
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* 【最终手动调参区：击鼓说唱俑放大与 hover 范围】
+   上方有旧版 hover 规则，这里放在文件末尾保证 1.25 倍后的尺寸最终生效。 */
+.drum-page .drum-storyteller img {
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+.drum-page .drum-storyteller:hover img,
+.drum-page .drum-storyteller img:hover {
+  transform: translate(-50%, calc(-50% - 8px)) scale(1.35);
+}
+
+/* 【最终手动调参区：图片可见像素 hover】
+   JS 会根据图片透明度添加 is-visible-hover；透明区域或鼠标移开时平滑恢复原尺寸。 */
+.artifact img {
+  pointer-events: auto !important;
+}
+
+.artifact figcaption,
+.artifact::before,
+.artifact::after {
+  pointer-events: none !important;
+}
+
+.artifact:not(.is-visible-hover):hover img {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}
+
+.artifact:not(.is-visible-hover) img {
+  transition-duration: .24s !important;
+}
+
+.artifact.is-visible-hover img {
+  transition-duration: .18s !important;
+}
+
+/* 【最终手动调参区：鼓页点名图片 1.25 倍与 hover 范围】
+   说明：只改图片，不改文字标签。图片容器取消裁切；hover 以 img 本身为触发目标。 */
+.drum-page .artifact,
+.drum-page .drum-artifact {
+  contain: none !important;
+  overflow: visible !important;
+}
+
+.drum-page .artifact {
+  pointer-events: none;
+}
+
+.drum-page .artifact img,
+.drum-page .artifact figcaption {
+  pointer-events: auto;
+}
+
+.drum-page .story-entry {
+  contain: none !important;
+  overflow: visible !important;
+}
+
+.drum-page .artifact figcaption {
+  pointer-events: none;
+}
+
+.drum-page .drum-storyteller img {
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+.drum-page .drum-storyteller:hover img,
+.drum-page .drum-storyteller img:hover {
+  transform: translate(-50%, calc(-50% - 8px)) scale(1.35);
+}
+
+/* 【手动调参区：鼓页图片大小与 hover 动效】
+   只改图片，不改文字标签。hover 浮动从 5px 提高到 8px，缩放更明显。 */
+.drum-page .drum-jiegu img {
+  transform: translateY(-2.5%) scale(1.06);
+}
+
+.drum-page .drum-jiegu:hover img {
+  transform: translateY(calc(-2.5% - 8px)) scale(1.18);
+}
+
+.drum-page .drum-song-opera img {
+  transform: translate(-.25%, -1.83%) scale(1.08);
+}
+
+.drum-page .drum-song-opera:hover img {
+  transform: translate(-.25%, calc(-1.83% - 8px)) scale(1.2);
+}
+
+.drum-page .drum-relief:hover img,
+.drum-page .drum-yuan-mural:hover img,
+.drum-page .drum-inheritor:hover img {
+  transform: translateY(-8px) scale(1.12);
+}
+
+.drum-page .drum-pottery:hover img {
+  transform: translate(.5%, calc(-5% - 8px)) scale(1.08);
+}
+
+.drum-page .drum-storyteller:hover img {
+  transform: translate(-50%, calc(-50% - 8px)) scale(1.08);
+}
+
+/* Final override after legacy duplicated rule. */
+.drum-page .drum-jiegu figcaption {
+  bottom: 158px;
+}
+
+.drum-page .drum-song-opera figcaption {
+  bottom: 100px;
+}
+
+/* Final caption alignment: anchor labels to the visible image edge. */
+.drum-page .drum-jiegu figcaption {
+  bottom: 158px;
+}
+
+.drum-page .drum-song-opera figcaption {
+  bottom: 100px;
+}
+
+.drum-page .drum-song-opera figcaption {
+  bottom: 100px;
+}
+
+/* 【最终锁定：非可见像素不允许 hover 放大】
+   必须放在文件末尾，压过所有旧的 .xxx:hover img / img:hover 规则。 */
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}
+
+/* ???????????? hover ?????????
+   ????????????????????? hover ??? */
+.artifact img {
+  transition: transform .24s cubic-bezier(.2,.72,.25,1), filter .24s ease, opacity .24s ease !important;
+}
+
+.artifact.is-visible-hover img {
+  transform: var(--image-base-transform, none) translateY(-5px) scale(1.035) !important;
+  filter: sepia(.06) saturate(.98) contrast(1.04) brightness(1.1) drop-shadow(0 18px 24px rgba(14,10,6,.22)) !important;
+  opacity: 1 !important;
+}
+
+.artifact:not(.is-visible-hover) img,
+.artifact:not(.is-visible-hover):hover img,
+.artifact:not(.is-visible-hover) img:hover {
+  transform: var(--image-base-transform, none) !important;
+  filter: var(--image-base-filter, none) !important;
+  opacity: var(--image-base-opacity, 1) !important;
+}

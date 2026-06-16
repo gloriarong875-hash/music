@@ -1,0 +1,8 @@
+{
+  "instrument": "琴",
+  "title": "琴·大事纪",
+  "eraCount": 5,
+  "eventCount": 15,
+  "pageCount": 9,
+  "eras": ["先秦汉", "唐", "宋元", "明清", "现代"]
+}

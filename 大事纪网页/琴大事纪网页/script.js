@@ -1,3 +1,4 @@
+// 页面状态与数据缓存。
 const state = {
   data: null,
   pages: [],
@@ -11,57 +12,18 @@ const timelineProgress = document.querySelector("#timelineProgress");
 const scroller = document.querySelector("#archiveScroll");
 const canvas = document.querySelector("#inkCanvas");
 const ctx = canvas.getContext("2d");
-const timelinePositions = [[47, 10], [31, 36], [51, 63], [34, 89]];
+const timelinePositions = [[47, 8], [31, 29], [51, 50], [32, 71], [48, 92]];
 
-function glyph(name, fading = false) {
-  return `<div class="instrument-glyph ${fading ? "fading" : ""}">
-    <div class="pipes"><i></i><i></i><i></i><i></i></div><b>${name}</b>
-  </div>`;
+// 根据埙事件数据生成文物或史料图片。
+function visualMarkup(event) {
+  const imageClass = event.imageClass || "";
+  return `<figure class="artifact qin-artifact ${imageClass}">
+    <img src="${event.image}" alt="${event.caption}" loading="lazy">
+    <figcaption>${event.caption}</figcaption>
+  </figure>`;
 }
 
-function visualMarkup(event, index) {
-  if (event.image) {
-    const isOrigin = event.image.includes("起源");
-    const isRelic = event.image.includes("曾侯乙") || event.image.includes("辛追");
-    const imageClass = event.image.includes("辛追")
-      ? "image-yu"
-      : event.image.includes("曾侯乙")
-        ? "image-zenghouyi"
-        : event.image.includes("正仓院")
-          ? "image-shosoin"
-          : event.image.includes("陶俑")
-            ? "image-tang-figures"
-            : event.image.includes("诗经")
-              ? "image-shijing"
-              : event.image.includes("十三部色")
-                ? "image-song-colors"
-            : isOrigin
-              ? "image-origin"
-              : "";
-    return `<figure class="artifact ${isOrigin ? "paper" : ""} ${isRelic ? "relic-roundel" : ""} ${imageClass}">
-      <img src="${event.image}" alt="${event.caption}" loading="lazy">
-      <figcaption>${event.caption}</figcaption>
-    </figure>`;
-  }
-  if (event.visual === "scroll") {
-    return `<div class="ink-illustration visual-${index}"><div class="verse">我有嘉宾<br>鼓瑟吹笙</div></div>`;
-  }
-  if (event.visual === "transition") {
-    return `<div class="ink-illustration transition-art visual-${index}">
-      ${glyph("竽", true)}${glyph("笙")}
-    </div>`;
-  }
-  if (event.visual === "opera") {
-    return `<div class="ink-illustration opera-art visual-${index}"></div>`;
-  }
-  if (event.visual === "spread") {
-    return `<div class="ink-illustration visual-${index}">
-      <div class="spread-route"><span>笙</span><i></i><span>口琴</span><i></i><span>手风琴</span></div>
-    </div>`;
-  }
-  return `<div class="ink-illustration visual-${index}"><div class="verse">燕乐流光<br>梵音相和</div></div>`;
-}
-
+// 生成每段历史事件的正文卡片结构。
 function eventMarkup(event) {
   return `<article class="event-block">
     <span class="event-type">${event.type}</span>
@@ -71,6 +33,7 @@ function eventMarkup(event) {
   </article>`;
 }
 
+// 把时间线数据按两条事件一页的方式拆分成页面。
 function buildPages() {
   state.pages = [];
   state.data.eras.forEach((era) => {
@@ -84,9 +47,12 @@ function buildPages() {
   });
 }
 
+// 渲染左侧时间轴导航按钮。
 function renderNavigation() {
   timelineItems.innerHTML = state.data.eras.map((era, index) => {
-    const [x, y] = timelinePositions[index];
+    const compactPositions = [[47, 10], [31, 50], [48, 90]];
+    const positions = state.data.eras.length === 3 ? compactPositions : timelinePositions;
+    const [x, y] = positions[index];
     return `<button class="timeline__button" type="button" data-era="${era.id}"
       data-index="${index}" style="--x:${x}%;--y:${y}%">
       <span>${era.name}</span>
@@ -95,23 +61,21 @@ function renderNavigation() {
   }).join("");
 }
 
+// 渲染所有故事页和每页的内容布局。
 function renderTimeline() {
   content.innerHTML = state.pages.map((page, pageIndex) => {
     const body = page.events.map((event, eventIndex) => {
       const alignment = eventIndex % 2 === 0 ? "visual-left" : "visual-right";
-      return `<div class="story-entry ${alignment}">
-        ${visualMarkup(event, eventIndex + 1)}
+      const imageClass = event.imageClass || "";
+      return `<div class="story-entry ${alignment} ${imageClass}">
+        ${visualMarkup(event)}
         ${eventMarkup(event)}
       </div>`;
     }).join("");
 
     const eraClass = `era-${page.era.id}`;
     const volumeClass = page.continuation ? "volume-continuation" : "volume-opening";
-    const featureClasses = [
-      page.events.some((event) => event.title === "东传日本") ? "page-eastward" : "",
-      page.events.some((event) => event.title === "竽失传") ? "page-song-transition" : "",
-    ].filter(Boolean).join(" ");
-    return `<section class="story-page ${eraClass} ${volumeClass} ${featureClasses} ${pageIndex === 0 ? "active" : ""}"
+    return `<section class="story-page ${eraClass} ${volumeClass} ${pageIndex === 0 ? "active" : ""}"
       id="page-${pageIndex}" data-page="${pageIndex}" data-era="${page.era.id}" data-ghost="${page.era.name}">
       <header class="page-heading">
         <h2>${page.era.name}</h2>
@@ -123,6 +87,7 @@ function renderTimeline() {
   }).join("");
 }
 
+// 切换到指定页面，并同步高亮时间轴与墨迹效果。
 function setActivePage(index) {
   if (index === state.activePage && document.querySelector(".story-page.active")) return;
   state.activePage = index;
@@ -144,6 +109,7 @@ function setActivePage(index) {
   scatterInk();
 }
 
+// 根据滚动位置同步当前激活页。
 function syncScroll() {
   const index = Math.max(0, Math.min(
     state.pages.length - 1,
@@ -152,6 +118,7 @@ function syncScroll() {
   setActivePage(index);
 }
 
+// 重置墨迹画布尺寸，适配当前窗口大小。
 function resizeCanvas() {
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
   const height = window.innerHeight - 58;
@@ -162,6 +129,7 @@ function resizeCanvas() {
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 }
 
+// 生成墨迹粒子，模拟页面上的墨汁飞散效果。
 function scatterInk() {
   const section = document.querySelector(".story-page.active");
   if (!section) return;
@@ -185,6 +153,7 @@ function scatterInk() {
   });
 }
 
+// 持续绘制墨迹动画。
 function drawInk() {
   ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
   state.particles = state.particles.filter((particle) => particle.life < particle.maxLife);
@@ -206,6 +175,7 @@ function drawInk() {
   requestAnimationFrame(drawInk);
 }
 
+// 点击时间轴按钮时平滑滚动到对应页面。
 document.addEventListener("click", (event) => {
   const button = event.target.closest(".timeline__button");
   if (!button) return;
@@ -213,6 +183,7 @@ document.addEventListener("click", (event) => {
   scroller.scrollTo({ top: pageIndex * scroller.clientHeight, behavior: "smooth" });
 });
 
+// 键盘方向键可切换时间轴页面。
 window.addEventListener("keydown", (event) => {
   if (event.target.closest?.(".page-switcher")) return;
   if (!state.data || !["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft"].includes(event.key)) return;
@@ -225,6 +196,7 @@ window.addEventListener("keydown", (event) => {
   scroller.scrollTo({ top: pageIndex * scroller.clientHeight, behavior: "smooth" });
 });
 
+// 初始化页面：加载数据、渲染页面、启动画布与滚动监听。
 function initialize(data) {
   state.data = data;
   buildPages();
@@ -244,6 +216,7 @@ if (window.shengTimelineData) {
   content.innerHTML = '<p class="load-error">无法读取大事纪数据</p>';
 }
 
+// 顶部声/形/纪切换器的逻辑。
 const pageSwitcher = document.querySelector("#pageSwitcher");
 if (pageSwitcher) {
   const switchButtons = [...pageSwitcher.querySelectorAll(".switch-item")];

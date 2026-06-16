@@ -20,7 +20,7 @@ body {
   background-color: #7f1c1c;
   background-image:
     linear-gradient(var(--wash), var(--wash)),
-    url("埙assets/网页底纹.png");
+    url("琴大事纪assets/网页底纹.png");
   background-repeat: no-repeat, repeat;
   background-size: auto, 220px auto;
 }
@@ -66,7 +66,7 @@ button { color: inherit; font: inherit; }
   color: #201a13;
   background:
     linear-gradient(rgba(242,234,204,.96), rgba(226,214,177,.95)),
-    url("埙assets/网页底纹.png");
+    url("琴大事纪assets/网页底纹.png");
   background-size: auto, 170px auto;
   box-shadow: 0 5px 20px rgba(0,0,0,.38);
 }
@@ -864,26 +864,155 @@ button { color: inherit; font: inherit; }
   transform: translateY(calc(6% - 5px)) scale(1.095);
 }
 
-/* Final layout calibration: theme, page isolation, and alpha-visible centering. */
-.xun-page {
-  background-color: #8db4b0;
+/* 琴大事纪：沿用卷宗系统，按琴器、人物和琴谱素材分别校准。 */
+.qin-page .qin-artifact { overflow: visible; }
+.qin-page .story-entry::after { display: none; }
+.qin-page .qin-artifact::before {
+  display: block;
+  inset: 5%;
+  border: 1px solid rgba(238,231,203,.14);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216,199,156,.1), transparent 67%);
+  filter: none;
+}
+.qin-page .qin-artifact img {
+  width: 88%;
+  height: 88%;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  object-fit: contain;
+  object-position: center;
+  opacity: .94;
+  transform-origin: center center;
+  transform: translateY(0) scale(1);
+  filter: sepia(.1) saturate(.86) contrast(1.02) brightness(.92)
+    drop-shadow(0 18px 22px rgba(0,0,0,.5));
+  transition: transform .38s cubic-bezier(.2,.72,.25,1), filter .38s ease, opacity .38s ease;
+}
+.qin-page .qin-artifact:hover img {
+  opacity: 1;
+  transform: translateY(-5px) scale(1.035);
+  filter: sepia(.03) saturate(.98) contrast(1.04) brightness(1.02)
+    drop-shadow(0 20px 24px rgba(0,0,0,.58));
+}
+.qin-page .qin-artifact figcaption { display: flex; }
+
+/* 琴器横向较长，扩大宽度并保持完整轮廓。 */
+.qin-page .qin-zenghouyi img,
+.qin-page .qin-mawangdui img {
+  width: 108%;
+  height: 94%;
+  transform: translateY(4%) scale(1.05);
+}
+.qin-page .qin-zenghouyi:hover img,
+.qin-page .qin-mawangdui:hover img {
+  transform: translateY(calc(4% - 5px)) scale(1.085);
 }
 
-.xun-page .story-page {
+/* 人物类素材透明留白较大，放大可见主体。 */
+.qin-page .qin-han-figure img,
+.qin-page .qin-jikang img {
+  width: 94%;
+  height: 98%;
+  transform: translateY(6%) scale(1.1);
+}
+.qin-page .qin-han-figure:hover img,
+.qin-page .qin-jikang:hover img {
+  transform: translateY(calc(6% - 5px)) scale(1.135);
+}
+
+.qin-page .qin-yantianchi img {
+  width: 78%;
+  height: 92%;
+  transform: translateY(1%) scale(1);
+}
+.qin-page .qin-yantianchi:hover img {
+  transform: translateY(calc(1% - 5px)) scale(1.035);
+}
+
+/* 画卷与文献采用纸本插图展示，不叠加圆形展框。 */
+.qin-page .qin-fuxi::before,
+.qin-page .qin-boya::before,
+.qin-page .qin-tang-painting::before,
+.qin-page .qin-jianzipu::before,
+.qin-page .qin-huangying::before,
+.qin-page .qin-shilin::before,
+.qin-page .qin-yuan-painting::before,
+.qin-page .qin-shenqi::before,
+.qin-page .qin-ming-painting::before,
+.qin-page .qin-guanpinghu::before {
+  display: none;
+}
+
+.qin-page .qin-fuxi img {
+  width: 96%;
+  height: 88%;
+  transform: translateY(2%) scale(1);
+}
+.qin-page .qin-fuxi:hover img {
+  transform: translateY(calc(2% - 5px)) scale(1.035);
+}
+
+.qin-page .qin-boya img,
+.qin-page .qin-guanpinghu img {
+  width: 92%;
+  height: 88%;
+  transform: translateY(4%) scale(1);
+}
+.qin-page .qin-boya:hover img,
+.qin-page .qin-guanpinghu:hover img {
+  transform: translateY(calc(4% - 5px)) scale(1.035);
+}
+
+.qin-page .qin-tang-painting img,
+.qin-page .qin-yuan-painting img,
+.qin-page .qin-ming-painting img {
+  width: 82%;
+  height: 91%;
+  transform: translateY(2%) scale(1);
+}
+.qin-page .qin-tang-painting:hover img,
+.qin-page .qin-yuan-painting:hover img,
+.qin-page .qin-ming-painting:hover img {
+  transform: translateY(calc(2% - 5px)) scale(1.035);
+}
+
+.qin-page .qin-jianzipu img,
+.qin-page .qin-huangying img,
+.qin-page .qin-shilin img,
+.qin-page .qin-shenqi img {
+  width: 78%;
+  height: 92%;
+  transform: translateY(1%) scale(1);
+}
+.qin-page .qin-jianzipu:hover img,
+.qin-page .qin-huangying:hover img,
+.qin-page .qin-shilin:hover img,
+.qin-page .qin-shenqi:hover img {
+  transform: translateY(calc(1% - 5px)) scale(1.035);
+}
+
+/* Final layout calibration: theme, page isolation, and alpha-visible centering. */
+.qin-page {
+  background-color: #563a5c;
+}
+
+.qin-page .story-page {
   opacity: 0;
   transform: none;
   contain: paint;
 }
 
-.xun-page .story-page.active {
+.qin-page .story-page.active {
   opacity: 1;
 }
 
-.xun-page .story-page:not(.active) .artifact {
+.qin-page .story-page:not(.active) .artifact {
   opacity: 0;
 }
 
-.xun-page .page-body:not(.count-1) .xun-artifact::before {
+.qin-page .page-body:not(.count-1) .qin-artifact::before {
   width: auto;
   height: 90%;
   aspect-ratio: 1;
@@ -891,7 +1020,7 @@ button { color: inherit; font: inherit; }
   transform: translate(-50%, -50%);
 }
 
-.xun-page .page-body.count-1 .xun-artifact::before {
+.qin-page .page-body.count-1 .qin-artifact::before {
   width: 90%;
   height: auto;
   aspect-ratio: 1;
@@ -899,111 +1028,138 @@ button { color: inherit; font: inherit; }
   transform: translate(-50%, -50%);
 }
 
-.xun-page .xun-hemudu img {
+.qin-page .qin-zenghouyi img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 76%;
+  height: 76%;
+  transform: translate(-50%, -53%) scale(1);
+}
+.qin-page .qin-zenghouyi:hover img {
+  transform: translate(-50%, calc(-53% - 5px)) scale(1.035);
+}
+
+.qin-page .qin-mawangdui img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 76%;
+  height: 76%;
+  transform: translate(-49%, -44%) scale(1);
+}
+.qin-page .qin-mawangdui:hover img {
+  transform: translate(-49%, calc(-44% - 5px)) scale(1.035);
+}
+
+.qin-page .qin-han-figure img {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 100%;
   height: 100%;
-  transform: translate(-51%, -55%) scale(1.15);
+  transform: translate(-50%, -49%) scale(1.34);
 }
-.xun-page .xun-hemudu:hover img {
-  transform: translate(-51%, calc(-55% - 5px)) scale(1.185);
+.qin-page .qin-han-figure:hover img {
+  transform: translate(-50%, calc(-49% - 5px)) scale(1.375);
 }
 
-.xun-page .xun-yangshao img {
+.qin-page .qin-jikang img {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 100%;
   height: 100%;
-  transform: translate(-49%, -51%) scale(1.2);
+  transform: translate(-49%, -51%) scale(1.22);
 }
-.xun-page .xun-yangshao:hover img {
-  transform: translate(-49%, calc(-51% - 5px)) scale(1.235);
+.qin-page .qin-jikang:hover img {
+  transform: translate(-49%, calc(-51% - 5px)) scale(1.255);
 }
 
-.xun-page .xun-liulige img {
+.qin-page .qin-yantianchi img {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 72%;
-  height: 72%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%) scale(.8);
+}
+.qin-page .qin-yantianchi:hover img {
+  transform: translate(-50%, calc(-50% - 5px)) scale(.835);
+}
+
+.qin-page .qin-fuxi img,
+.qin-page .qin-boya img,
+.qin-page .qin-tang-painting img,
+.qin-page .qin-jianzipu img,
+.qin-page .qin-huangying img,
+.qin-page .qin-shilin img,
+.qin-page .qin-yuan-painting img,
+.qin-page .qin-shenqi img,
+.qin-page .qin-ming-painting img,
+.qin-page .qin-guanpinghu img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 92%;
+  height: 92%;
   transform: translate(-50%, -50%) scale(1);
 }
-.xun-page .xun-liulige:hover img {
+
+.qin-page .qin-fuxi:hover img,
+.qin-page .qin-boya:hover img,
+.qin-page .qin-tang-painting:hover img,
+.qin-page .qin-jianzipu:hover img,
+.qin-page .qin-huangying:hover img,
+.qin-page .qin-shilin:hover img,
+.qin-page .qin-yuan-painting:hover img,
+.qin-page .qin-shenqi:hover img,
+.qin-page .qin-ming-painting:hover img,
+.qin-page .qin-guanpinghu:hover img {
   transform: translate(-50%, calc(-50% - 5px)) scale(1.035);
 }
 
-.xun-page .xun-bird-whistle img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 100%;
-  height: 100%;
-  transform: translate(-51%, -51%) scale(1);
-}
-.xun-page .xun-bird-whistle:hover img {
-  transform: translate(-51%, calc(-51% - 5px)) scale(1.035);
+.qin-page .qin-fuxi img,
+.qin-page .qin-guanpinghu img {
+  width: 96%;
+  height: 88%;
 }
 
-.xun-page .xun-qing-porcelain img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 100%;
-  height: 100%;
-  transform: translate(-50%, -51%) scale(1.14);
-}
-.xun-page .xun-qing-porcelain:hover img {
-  transform: translate(-50%, calc(-51% - 5px)) scale(1.175);
-}
-
-.xun-page .xun-shijing img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 94%;
-  height: 94%;
-  transform: translate(-50%, -50%) scale(1);
-}
-.xun-page .xun-shijing:hover img {
-  transform: translate(-50%, calc(-50% - 5px)) scale(1.035);
-}
-
-/* Keep labels below the visible artwork and lighten their backing panel. */
-.xun-page .xun-artifact {
+/* Reserve a caption strip so labels never cover the visible artwork. */
+.qin-page .qin-artifact {
   padding-bottom: 38px;
 }
-.xun-page .xun-artifact figcaption {
+.qin-page .qin-artifact figcaption {
   right: 4%;
   bottom: 0;
-  background: rgba(7,7,6,.22);
 }
-.xun-page .xun-artifact img {
+.qin-page .qin-artifact img {
   top: calc(50% - 25px);
   max-height: calc(100% - 80px);
 }
-.xun-page .xun-liulige::before {
+.qin-page .qin-yantianchi::before {
   display: none;
 }
+.qin-page .qin-han-figure img {
+  max-height: calc(100% - 100px);
+}
 
-/* Timeline labels tuned to the blue-green page palette. */
-.xun-page .timeline__button {
-  color: rgba(239,246,241,.58);
-  background: rgba(35,66,65,.36);
+/* Timeline labels tuned to the muted violet page palette. */
+.qin-page .timeline__button {
+  color: rgba(245,232,243,.58);
+  background: rgba(48,29,52,.38);
   transform: translate(-50%,-50%) scale(.7);
 }
-.xun-page .timeline__button.is-near {
-  color: rgba(248,250,239,.68);
-  background: rgba(45,80,78,.44);
+.qin-page .timeline__button.is-near {
+  color: rgba(250,239,248,.68);
+  background: rgba(61,37,66,.46);
   transform: translate(-50%,-50%) scale(.82);
 }
-.xun-page .timeline__button.is-active {
+.qin-page .timeline__button.is-active {
   padding: 14px 22px 15px;
-  color: #30423f;
-  background: rgba(225,230,190,.85);
-  box-shadow: 0 0 28px rgba(225,230,190,.5);
+  color: #38263c;
+  background: rgba(190,174,194,.85);
+  box-shadow: 0 0 28px rgba(190,174,194,.5);
   transform: translate(-50%,-50%) scale(1.28);
 }
 
@@ -1029,92 +1185,136 @@ body.has-site-topbar {
   }
 }
 
-.xun-page .xun-artifact {
+.qin-page .qin-artifact {
   padding-bottom: 30px;
   contain: paint;
 }
-.xun-page .xun-artifact img {
+.qin-page .qin-artifact img {
   top: calc(50% - 16px);
-  max-height: calc(100% - 72px);
+  max-height: calc(100% - 58px);
 }
-.xun-page .xun-artifact figcaption {
+.qin-page .qin-han-figure img {
+  max-height: calc(100% - 78px);
+}
+.qin-page .qin-artifact figcaption {
   bottom: 2px;
 }
 
-/* Content accents */
-.xun-page .page-heading::after {
-  background: linear-gradient(90deg, #6098a4, transparent);
-}
-
-.xun-page .xun-artifact::before {
-  border-color: #eee7cb;
-}
-
-/* 埙类标签默认位置：右边 4%，底部 34px。要上移，减小 bottom；要左移，增大 right。 */
-.xun-page .xun-artifact figcaption {
+/* 琴类标签默认位置：右边 4%，底部 34px。上移减小 bottom，左移增大 right。 */
+.qin-page .qin-artifact figcaption {
   right: 4%;
   bottom: 34px;
 }
 
-/* 凤笛和青花瓷单独标签位置微调 */
-.xun-page .xun-bird-whistle figcaption {
-  bottom: 150px;
+/* 季康、演天池等单独标签位置微调 */
+.qin-page .qin-jikang figcaption {
+  bottom: 44px;
 }
 
-.xun-page .xun-qing-porcelain figcaption {
-  bottom: 110px;
+.qin-page .qin-yantianchi figcaption {
+  bottom: 70px;
 }
 
-/* 【手动调参区：埙页图片大小与 hover 动效】
-   只改图片，不改文字标签。鸟形哨和瓷埙保持主体完整，同时增强 hover 放大。 */
-.xun-page .xun-bird-whistle:hover img {
-  transform: translate(-51%, calc(-51% - 8px)) scale(1.14);
+/* Final caption alignment: bring labels closer to the visible figure edge. */
+.qin-page .qin-jikang figcaption {
+  bottom: 48px;
 }
 
-.xun-page .xun-qing-porcelain:hover img {
-  transform: translate(-50%, calc(-51% - 8px)) scale(1.24);
+.qin-page .qin-yantianchi figcaption {
+  bottom: 74px;
 }
 
-.xun-page .xun-hemudu:hover img {
-  transform: translate(-51%, calc(-55% - 8px)) scale(1.24);
+/* 【手动调参区：琴页图片大小与 hover 动效】
+   只改图片，不改文字标签。重点放大书谱、画作类图片，避免画面过空。 */
+.qin-page .qin-jianzipu img,
+.qin-page .qin-huangying img,
+.qin-page .qin-shilin img,
+.qin-page .qin-yuan-painting img,
+.qin-page .qin-shenqi img,
+.qin-page .qin-ming-painting img {
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%) scale(1.18);
 }
 
-.xun-page .xun-yangshao:hover img {
-  transform: translate(-49%, calc(-51% - 8px)) scale(1.3);
+.qin-page .qin-jianzipu:hover img,
+.qin-page .qin-huangying:hover img,
+.qin-page .qin-shilin:hover img,
+.qin-page .qin-yuan-painting:hover img,
+.qin-page .qin-shenqi:hover img,
+.qin-page .qin-ming-painting:hover img {
+  transform: translate(-50%, calc(-50% - 8px)) scale(1.32);
 }
 
-.xun-page .xun-liulige:hover img {
-  transform: translate(-50%, calc(-50% - 8px)) scale(1.14);
+.qin-page .qin-tang-painting img,
+.qin-page .qin-guanpinghu img {
+  transform: translate(-50%, -50%) scale(1.08);
 }
 
-.xun-page .xun-shijing:hover img {
-  transform: translate(-50%, calc(-50% - 8px)) scale(1.14);
+.qin-page .qin-tang-painting:hover img,
+.qin-page .qin-guanpinghu:hover img {
+  transform: translate(-50%, calc(-50% - 8px)) scale(1.2);
 }
 
-/* 【最终手动调参区：埙页 hover 范围】
+.qin-page .qin-jikang:hover img {
+  transform: translate(-49%, calc(-51% - 8px)) scale(1.34);
+}
+
+.qin-page .qin-yantianchi:hover img {
+  transform: translate(-50%, calc(-50% - 8px)) scale(.94);
+}
+
+/* 【最终手动调参区：琴页点名图片 1.25 倍与 hover 范围】
    说明：只改图片，不改文字标签。图片容器取消裁切；hover 以 img 本身为触发目标。 */
-.xun-page .artifact,
-.xun-page .xun-artifact {
+.qin-page .artifact,
+.qin-page .qin-artifact {
   contain: none !important;
   overflow: visible !important;
 }
 
-.xun-page .artifact {
+.qin-page .artifact {
   pointer-events: none;
 }
 
-.xun-page .artifact img,
-.xun-page .artifact figcaption {
+.qin-page .artifact img,
+.qin-page .artifact figcaption {
   pointer-events: auto;
 }
 
-.xun-page .story-entry {
+.qin-page .story-entry {
   contain: none !important;
   overflow: visible !important;
 }
 
-.xun-page .artifact figcaption {
+.qin-page .artifact figcaption {
   pointer-events: none;
+}
+
+.qin-page .qin-boya img {
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+.qin-page .qin-boya:hover img,
+.qin-page .qin-boya img:hover {
+  transform: translate(-50%, calc(-50% - 8px)) scale(1.4);
+}
+
+.qin-page .qin-han-figure img {
+  transform: translate(-50%, -49%) scale(1.675);
+}
+
+.qin-page .qin-han-figure:hover img,
+.qin-page .qin-han-figure img:hover {
+  transform: translate(-50%, calc(-49% - 8px)) scale(1.82);
+}
+
+.qin-page .qin-jikang img {
+  transform: translate(-49%, -51%) scale(1.525);
+}
+
+.qin-page .qin-jikang:hover img,
+.qin-page .qin-jikang img:hover {
+  transform: translate(-49%, calc(-51% - 8px)) scale(1.68);
 }
 
 /* 【最终手动调参区：图片可见像素 hover】
