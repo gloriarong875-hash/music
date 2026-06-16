@@ -1,0 +1,558 @@
+@charset "UTF-8";
+
+/*
+  中文脚注：2.2 页面专属样式
+  - 本文件负责页面布局、背景、遮罩、图片大小、图片入场动画、文字块位置和移动端适配。
+  - 修改图片资源路径：优先看 index.html 的 img src。
+  - 修改图片显示大小/位置：看 .art-frame--painting / .art-frame--ensemble / .art-frame--sheng / .art-frame--ladies。
+  - 修改背景底纹和黑色遮罩：看 .story-section::before 和 .story-section::after。
+*/
+
+html,
+body {
+  /* 桌面端固定为整屏滚动切换，不让浏览器页面本身滚动。 */
+  overflow: hidden;
+}
+
+.page {
+  /* 页面最外层画布：宽高铺满视口。 */
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 720px;
+  overflow: hidden;
+  background-color: #000000;
+  background-image: url("笙音画assets/2.2背景图.png");
+  background-repeat: repeat;
+  isolation: isolate;
+}
+
+.page::before {
+  /* 全局氛围光：在底纹上叠一点金色/红色暗场，让画面更接近 3.1 的整体气氛。 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 30% 35%, rgba(201, 169, 110, .16), transparent 32%),
+    radial-gradient(circle at 74% 54%, rgba(157, 45, 46, .10), transparent 30%),
+    linear-gradient(to bottom, rgba(0, 0, 0, .18), rgba(0, 0, 0, .42));
+}
+
+
+.story-section::before {
+  /*
+    每一屏的基础背景底纹。
+    如需更换底纹，把 url("笙音画assets/2.2背景底纹.png") 改成新图片路径。
+  */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("笙音画assets/2.2背景图.png");
+  background-repeat: repeat;
+  pointer-events: none;
+}
+
+.story-section::after {
+  /*
+    每一屏的半透明黑色遮罩。
+    调整 rgba 最后一位即可改变遮罩深浅：.54 较暗，.35 较透。
+  */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, .6);
+  pointer-events: none;
+}
+
+.story-section:last-child::before {
+  /*
+    最后一屏单独背景：使用唐宫乐图满屏铺底。
+    background-size: cover 表示铺满屏幕，可能会裁掉边缘；若想完整显示，可改成 contain。
+  */
+  background-image: url("笙音画assets/唐宫乐图.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  opacity: .65;
+  filter: saturate(.82) brightness(.72);
+}
+
+.story-section:last-child::after {
+  /* 最后一屏因为背景信息更复杂，遮罩更深，保证正文可读。 */
+  background: rgba(0, 0, 0, .1);
+}
+
+.scroll-shell {
+  /*
+    屏幕滚动容器。
+    scroll-snap-type: y mandatory 表示滚动时自动吸附到每一屏。
+  */
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+.scroll-shell::-webkit-scrollbar {
+  width: 0;
+}
+
+.story-section {
+  /* 单屏容器：每个 section 占一整屏。 */
+  position: relative;
+  min-height: 100vh;
+  padding: clamp(24px, 2.8vw, 48px);
+  scroll-snap-align: start;
+  overflow: hidden;
+}
+
+.story-head {
+  /*
+    首屏左上角标题位置；想移动主标题可调 top / left。
+    标题按你的要求一开始就显示，不等待图片动画。
+    如果想让标题也延迟出现，可以在这里重新添加 opacity: 0，并给 .story-section.is-active .story-head 写 animation。
+  */
+  position: absolute;
+  top: clamp(24px, 2.8vw, 48px);
+  left: clamp(24px, 2.8vw, 48px);
+  opacity: 1;
+  transform: none;
+}
+
+.story-layout {
+  /* 每屏内部内容层，z-index: 2 确保内容在背景和遮罩之上。 */
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  min-height: calc(100vh - clamp(48px, 5.6vw, 96px));
+}
+
+.story-layout--intro {
+  /*
+    第 1 屏布局：左侧大画、右侧文字。
+    grid-template-columns 控制左右比例；gap 控制图文间距。
+  */
+  display: grid;
+  grid-template-columns: minmax(660px, 1.35fr) minmax(420px, .65fr);
+  align-items: end;
+  gap: clamp(28px, 3.6vw, 72px);
+  padding-top: clamp(120px, 12vh, 190px);
+}
+
+.story-layout--wide {
+  /* 第 2 屏布局：左下文字、右侧乐器组图。 */
+  display: grid;
+  grid-template-columns: minmax(420px, .56fr) minmax(720px, 1.44fr);
+  align-items: center;
+  gap: clamp(24px, 3vw, 58px);
+}
+
+.story-layout--split {
+  /* 第 3/4 屏布局：左图右文。 */
+  display: grid;
+  grid-template-columns: minmax(520px, .92fr) minmax(520px, 1.08fr);
+  align-items: center;
+  gap: clamp(36px, 5vw, 96px);
+}
+
+.art-frame {
+  /*
+    所有 PNG/GIF 图片外框的通用入场/离场状态。
+    这里先把图片设为“未激活”：透明、略小、下移、轻微模糊。
+    当前屏添加 .is-active 后，会触发下面的 artEnterForward / artEnterBack 动画。
+  */
+  position: relative;
+  margin: 0;
+  opacity: 0;
+  transform: translate3d(0, 72px, 0) scale(.88) rotate(-1.2deg);
+  filter: blur(5px) brightness(.72);
+  will-change: transform, opacity;
+}
+
+.story-section.is-active .art-frame {
+  /*
+    当前屏激活后的图片进入动画：
+    - 默认从右侧/下方带一点旋转进入；
+    - body.scene-back 时会从左侧进入；
+    - 首屏唐宫乐图会被 .art-frame--painting 的专属动画覆盖。
+  */
+  animation: artEnterForward 1.05s cubic-bezier(.16, .86, .2, 1) both;
+}
+
+body.scene-back .story-section.is-active .art-frame {
+  /* 向上/上一屏切换时，图片从左侧进入，让方向感更清楚。 */
+  animation-name: artEnterBack;
+}
+
+.story-section.is-leaving .art-frame {
+  /*
+    离开当前屏时，图片放大并淡出。
+    这能让滚动切换不只是硬切，而有“近景退场”的视觉层次。
+  */
+  animation: artLeaveZoom .72s cubic-bezier(.4, 0, .2, 1) both;
+}
+
+.art-frame img {
+  /* 所有图片本体的通用设置：保持比例、加柔和投影。 */
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 28px rgba(221, 199, 137, .22)) drop-shadow(0 18px 26px rgba(0, 0, 0, .55));
+  user-select: none;
+}
+
+.art-frame--painting {
+  /*
+    第 1 屏《唐宫乐图》：
+    width 控制画面放大程度；
+    margin-left 控制最终位置偏左/偏右；
+    translateX(-120vw) 表示从屏幕左侧外进入；
+    animation-duration 控制进入速度。
+  */
+  align-self: center;
+  width: min(104%, 1180px);
+  margin-left: -2vw;
+  transform: translate3d(-105vw, 0, 0) scale(1.02);
+}
+
+.art-frame--painting img {
+  /* 第 1 屏大画的最大高度，数值越大画越大。 */
+  max-height: 75vh;
+}
+
+.story-section.is-active .art-frame--painting {
+  /*
+    第 1 屏专属进入动画：
+    使用 keyframes 而不是只靠 transition，避免页面初始已有 is-active 时动画不播放。
+  */
+  animation: paintingEnter 4.2s cubic-bezier(.12, .78, .16, 1) both;
+}
+
+.art-frame--ensemble {
+  /* 第 2 屏四乐图：width 控制大小，translateX 控制初始入场方向。 */
+  justify-self: end;
+  width: min(110%, 1800px);
+  transform: translateX(8vw);
+}
+
+.story-section.is-active .art-frame--ensemble {
+  /* 第 2 屏使用通用进入动画即可，这里只保留注释方便定位。 */
+}
+
+.art-frame--ensemble img {
+  /* 第 2 屏图片最大高度。 */
+  max-height: 80vh;
+}
+
+.art-frame--sheng {
+  /* 第 3 屏笙 GIF 图片大小。 */
+  justify-self: center;
+  width: min(72%, 660px);
+}
+
+.art-frame--sheng img,
+.art-frame--ladies img {
+  /* 第 3/4 屏图片最大高度。 */
+  max-height: 78vh;
+}
+
+.art-frame--ladies {
+  /* 第 4 屏仕女 PNG 图片大小。 */
+  justify-self: center;
+  width: min(82%, 760px);
+}
+
+.text-block {
+  /*
+    每屏文字块通用样式。
+    max-width 控制正文行宽；
+    transform/transition 控制文字淡入上移动画。
+  */
+  position: relative;
+  z-index: 4;
+  max-width: 660px;
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .8s ease .22s, transform .9s cubic-bezier(.18, .78, .18, 1) .22s;
+}
+
+.story-section.is-active .text-block {
+  /*
+    当前屏文字进入动画：
+    普通页图片入场动画 artEnterForward / artEnterBack 当前约 1.05s。
+    这里的最后一个时间值 1.12s 就是“文字渐显动画延迟时间”，想让文字更晚出现就调大，例如 1.6s；想更早出现就调小，例如 .6s。
+    textEnter 前面的 .9s 是“文字渐显动画持续时间”，想让文字淡入更慢就调大，例如 1.4s。
+  */
+  animation: textEnter .9s cubic-bezier(.18, .78, .18, 1) 1.12s both;
+}
+
+.story-section--intro.is-active .text-block {
+  /*
+    第 1 屏正文渐显：
+    首屏画作 animation: paintingEnter 4.2s，比普通页图片入场更慢。
+    下面的 animation-delay: 4.35s 就是“第 1 屏正文渐显延迟时间”。
+    如果你把首屏画作动画改慢/改快，请同步修改这里。
+  */
+  animation-delay: 4.35s;
+}
+
+.story-section.is-leaving .text-block {
+  /* 离开时文字轻微上移并淡出。 */
+  animation: textLeave .48s ease both;
+}
+
+.text-block h2 {
+  /* 小标题和正文之间的距离。 */
+  margin-bottom: 24px;
+}
+
+.text-block h4 {
+  /*
+    正文样式：
+    - 按你的要求，正文全部使用 h4 字号；
+    - 颜色强制改为白色；
+    - text-indent: 2em 表示首行缩进两个中文字符。
+  */
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: var(--type-h4);
+  font-weight: 400;
+  line-height: 1.72;
+  letter-spacing: 2.2px;
+  text-indent: 2em;
+  text-shadow: 0 4px 14px #000;
+}
+
+@keyframes paintingEnter {
+  /*
+    首屏唐宫乐图从屏幕左侧缓慢进入：
+    0% 在屏幕左侧外；
+    68% 稍微越过终点，形成轻微“到位”的缓冲；
+    100% 停在最终放大位置。
+  */
+  0% {
+    opacity: 0;
+    transform: translate3d(-105vw, 0, 0) scale(1.04);
+    filter: blur(8px) brightness(.66);
+  }
+  68% {
+    opacity: 1;
+    transform: translate3d(1.2vw, 0, 0) scale(1.025);
+    filter: blur(0) brightness(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1.02);
+    filter: blur(0) brightness(1);
+  }
+}
+
+@keyframes artEnterForward {
+  /*
+    下一屏方向的通用图片进入：
+    从右下方进入，同时由小变大，最后稳定在正常比例。
+  */
+  0% {
+    opacity: 0;
+    transform: translate3d(9vw, 80px, 0) scale(.82) rotate(2.4deg);
+    filter: blur(7px) brightness(.64);
+  }
+  70% {
+    opacity: 1;
+    transform: translate3d(-1.2vw, -6px, 0) scale(1.035) rotate(-.35deg);
+    filter: blur(0) brightness(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    filter: blur(0) brightness(1);
+  }
+}
+
+@keyframes artEnterBack {
+  /*
+    上一屏方向的通用图片进入：
+    从左下方进入，与向下切换方向区分开。
+  */
+  0% {
+    opacity: 0;
+    transform: translate3d(-9vw, 80px, 0) scale(.82) rotate(-2.4deg);
+    filter: blur(7px) brightness(.64);
+  }
+  70% {
+    opacity: 1;
+    transform: translate3d(1.2vw, -6px, 0) scale(1.035) rotate(.35deg);
+    filter: blur(0) brightness(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    filter: blur(0) brightness(1);
+  }
+}
+
+@keyframes artLeaveZoom {
+  /*
+    当前图片退场：
+    放大、上移、淡出，形成“图片被推近后消失”的切换效果。
+  */
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0) brightness(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -42px, 0) scale(1.18);
+    filter: blur(9px) brightness(.82);
+  }
+}
+
+@keyframes textEnter {
+  /* 文字淡入并轻微上移。 */
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 34px, 0);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+@keyframes textLeave {
+  /* 文字离场时更快，避免拖慢切换节奏。 */
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -22px, 0);
+  }
+}
+
+.text-block--right {
+  /* 第 1 屏右侧文字位置。 */
+  align-self: end;
+  margin-bottom: clamp(40px, 8vh, 116px);
+}
+
+.text-block--lower-left {
+  /* 第 2 屏左下角文字位置。 */
+  align-self: end;
+  margin-left: clamp(24px, 4vw, 96px);
+  margin-bottom: clamp(70px, 12vh, 150px);
+}
+
+.text-block--center-right {
+  /* 第 3/4 屏右侧文字位置。 */
+  justify-self: start;
+}
+
+@media (max-width: 1180px) {
+  /* 平板/窄屏：取消整屏锁定，改为普通纵向排列，避免内容挤压。 */
+  html,
+  body {
+    overflow: auto;
+  }
+
+  .page {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .scroll-shell {
+    overflow-y: visible;
+  }
+
+  .story-section {
+    min-height: auto;
+    padding: 30px 20px 64px;
+  }
+
+  .story-head {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin-bottom: 28px;
+  }
+
+  .story-layout,
+  .story-layout--intro,
+  .story-layout--wide,
+  .story-layout--split {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding-top: 0;
+    gap: 28px;
+  }
+
+  .text-block,
+  .text-block--right,
+  .text-block--lower-left,
+  .text-block--center-right {
+    justify-self: stretch;
+    max-width: none;
+    margin: 0;
+  }
+
+  .art-frame,
+  .art-frame--ensemble,
+  .story-section.is-active .art-frame--ensemble {
+    justify-self: center;
+    width: min(100%, 880px);
+    transform: translateX(0);
+  }
+
+  .art-frame--sheng,
+  .art-frame--ladies {
+    width: min(92%, 620px);
+  }
+
+}
+
+@media (max-width: 640px) {
+  /* 手机端：降低字号、收紧按钮和标题间距。 */
+  :root {
+    --type-h1: 28px;
+    --type-h2: 23px;
+    --type-h3: 18px;
+    --type-h4: 15px;
+  }
+
+  .cornerNav {
+    top: 18px;
+    right: 18px;
+    gap: 10px;
+  }
+
+  .text-block h2 {
+    margin-bottom: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 系统开启“减少动态效果”时，关闭大部分动画，提升可访问性。 */
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+
+
+
+
