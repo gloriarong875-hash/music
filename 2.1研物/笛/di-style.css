@@ -147,6 +147,44 @@ color: #d7bd89;
 letter-spacing: 1.5px;
 }
 
+/* 竹材选择要求：H1 字号，金色大字 */
+.guide-requirement {
+font-size: clamp(24px, 2.6vw, 20px);
+color: #f2d7a0;
+letter-spacing: 4px;
+line-height: 1.45;
+text-shadow: 0 2px 14px rgba(0,0,0,.85);
+transition: opacity 0.28s ease;
+}
+
+/* 点击反馈：与 requirement 叠放在 guide 内，默认隐藏，show 时交叉淡入 */
+.guide-feedback {
+position: absolute;
+top: 14px;
+left: 18px;
+right: 18px;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.28s ease;
+}
+.guide-feedback.show {
+opacity: 1;
+}
+
+.feedback-name {
+font-size: clamp(28px, 3vw, 44px);
+color: #f2d7a0;
+letter-spacing: 4px;
+text-shadow: 0 2px 16px rgba(0,0,0,.9);
+}
+.feedback-hint {
+font-size: clamp(14px, 1.4vw, 20px);
+color: #d7bd89;
+letter-spacing: 2px;
+margin-top: 6px;
+text-shadow: 0 2px 10px rgba(0,0,0,.8);
+}
+
 /* Scroll Hint — positioning only; .hint from generalprocess.css provides styling */
 .scroll-hint {
 position: fixed; bottom: 20px; left: 50%;
@@ -248,9 +286,11 @@ z-index: 50;
 .step-indicator { display: none; }
 
 /* ======================================== */
-/* === STAGE 2-3: BAKE / DRILL === */
+/* === STAGE 2: BAKE  === */
 /* ======================================== */
+/* 步骤2（烘烤）和步骤3（开孔）共用此舞台，通过 data-mode 属性切换状态 */
 
+/* 舞台面板基础样式：全屏居中布局 */
 .stage-panel {
 position: absolute;
 inset: 0;
@@ -294,8 +334,7 @@ font-family: "LiSu", "隶书", "Microsoft YaHei", "PingFang SC", serif;
 text-shadow: 0 2px 8px #000;
 }
 
-/* The bake and drilling interactions share one canvas. Keep their controls
-   mutually exclusive so step 2 cannot leak into step 3 (or vice versa). */
+
 #bake-stage[data-mode="bake"] .drill-pickup-btn,
 #bake-stage[data-mode="bake"] .drill-pickup-hint,
 #bake-stage[data-mode="bake"] .drill-chisel-img,
@@ -335,10 +374,32 @@ margin-top: 0;
 
 #bake-stage[data-mode="drill"] .bamboo-container {
 position: relative;
+width: 70%;
+max-width: 900px;
+height: 200px;
+display: flex;
+align-items: center;
+justify-content: center;
 left: auto;
 top: auto;
 transform: none;
-margin-top: 4%;
+margin-top: -1%;
+}
+
+#bake-stage[data-mode="drill"] #bamboo-pipe {
+position: relative;
+width: 100%;
+height: auto;
+max-height: 2500px;
+bottom: auto;
+left: auto;
+transform: none;
+rotate: none;
+filter: sepia(0.8) brightness(0.85) contrast(1.1);
+}
+
+#bake-stage[data-mode="drill"] .holes-layer {
+top: 15%;
 }
 
 /* 凿子图片跟随鼠标，但保留系统指针，便于准确判断落点。 */
@@ -353,12 +414,13 @@ height: 320px;
 max-height: 320px;
 object-fit: contain;
 position: absolute;
-bottom: 70px;
+bottom: 60px;
 left: 45%;
 transform: translateX(-50%) translateY(var(--bamboo-offset, 0px)) scale(0.78);
 z-index: 5;
 filter: sepia(0.35) brightness(0.9);
 transition: all 0.5s ease;
+rotate: -10deg;
 }
 
 #bamboo-pipe.baking {
@@ -710,24 +772,24 @@ transform: translateX(-50%);
 pointer-events: none;
 opacity: 0.8;
 }
+/* 孔洞位置 */
+#bake-stage .hole-1 { left: 19.2%; top: 45%; }
+#bake-stage .hole-2 { left: 27.2%; top: 45%; }
+#bake-stage .hole-3 { left: 40%; top: 45%  ; }
+#bake-stage .hole-4 { left: 48%; top: 45%; }
+#bake-stage .hole-5 { left: 56%; top: 45%; }
+#bake-stage .hole-6 { left: 64%; top: 45%; }
+#bake-stage .hole-7 { left: 72%; top: 45%; }
+#bake-stage .hole-8 { left: 80%; top: 45%; }
 
-#bake-stage .hole-1 { left: 26%; top: 56%; }
-#bake-stage .hole-2 { left: 34%; top: 56%; }
-#bake-stage .hole-3 { left: 42%; top: 56%; }
-#bake-stage .hole-4 { left: 50%; top: 56%; }
-#bake-stage .hole-5 { left: 58%; top: 56%; }
-#bake-stage .hole-6 { left: 66%; top: 56%; }
-#bake-stage .hole-7 { left: 74%; top: 56%; }
-#bake-stage .hole-8 { left: 82%; top: 56%; }
-
-#bake-stage .label-1 { left: 26%; top: 64%; }
-#bake-stage .label-2 { left: 34%; top: 64%; }
-#bake-stage .label-3 { left: 42%; top: 64%; }
-#bake-stage .label-4 { left: 50%; top: 64%; }
-#bake-stage .label-5 { left: 58%; top: 64%; }
-#bake-stage .label-6 { left: 66%; top: 64%; }
-#bake-stage .label-7 { left: 74%; top: 64%; }
-#bake-stage .label-8 { left: 82%; top: 64%; }
+#bake-stage .label-1 { left: 19.2%; top: 57%; }
+#bake-stage .label-2 { left: 27.2%; top: 57%; }
+#bake-stage .label-3 { left: 40%; top: 57%; }
+#bake-stage .label-4 { left: 48%; top: 57%; }
+#bake-stage .label-5 { left: 56%; top: 57%; }
+#bake-stage .label-6 { left: 64%; top: 57%; }
+#bake-stage .label-7 { left: 72%; top: 57%; }
+#bake-stage .label-8 { left: 80%; top: 57%; }
 
 #final-stage .hole-1 { left: 12%; top: 48%; }
 #final-stage .hole-2 { left: 22%; top: 48%; }
@@ -1016,7 +1078,7 @@ letter-spacing: 1px;
 /* 确认贴膜按钮：底部居中，选中膜材后淡入显示 */
 #final-stage .confirm-btn {
 position: absolute;
-bottom: 20%;
+bottom: 15%;
 padding: 12px 40px;
 background: transparent;
 border: 2px solid var(--gold-dim);
@@ -1237,50 +1299,99 @@ bottom: auto;
 letter-spacing: 2px;
 }
 
-/* 结束按钮组：仅保留向下按钮，演奏五次后淡入显示。 */
-#final-stage .end-buttons {
-position: absolute;
-bottom: 22%;
-display: flex;
-gap: 40px;
-opacity: 0;
-pointer-events: none;
-transition: all 0.8s ease;
-z-index: 15;
-}
-
-#final-stage .end-buttons.visible {
-opacity: 1;
-pointer-events: all;
-}
-
-/* 结束按钮基础样式：圆形金色边框按钮 */
-#final-stage .end-btn {
-width: 60px;
-height: 60px;
-border-radius: 50%;
-border: 2px solid var(--gold-dim);
-background: transparent;
-color: var(--gold);
-font-size: 14px;
-cursor: pointer;
-display: flex;
+/* 笙制作同款完成卡片 */
+.result-modal {
+position: fixed;
+inset: 0;
+display: none;
 align-items: center;
 justify-content: center;
-transition: all 0.4s ease;
-letter-spacing: 1px;
+z-index: 140;
 }
-
-#final-stage .end-btn:hover {
-border-color: var(--gold);
-box-shadow: 0 0 25px rgba(201, 169, 110, 0.4);
-transform: scale(1.1);
+.result-modal.is-visible { display: flex; }
+.result-backdrop {
+position: absolute;
+inset: 0;
+background: rgba(0,0,0,0.48);
 }
-
-/* 向下箭头按钮：大号字体显示箭头 */
-#final-stage .end-btn.arrow {
-font-size: 24px;
+.result-card {
+position: relative;
+z-index: 141;
+width: min(560px,78%);
+max-width: 90%;
+max-height: 78vh;
+padding: 22px;
+border-radius: 18px;
+background-color: #eee7cb;
+background-image: url("笛部件assets/2.1卡片背景.png"),
+radial-gradient(circle at 20% 10%,rgba(0,0,0,0.03),transparent 8%),
+radial-gradient(circle at 80% 80%,rgba(0,0,0,0.02),transparent 12%);
+background-repeat: repeat,no-repeat,no-repeat;
+background-blend-mode: normal,multiply,overlay;
+color: #361e19;
+box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+overflow: hidden;
 }
+.result-animation {
+width: 100%;
+height: min(52vh,430px);
+border-radius: 10px;
+overflow: hidden;
+}
+.result-animation img {
+width: 100%;
+height: 100%;
+display: block;
+object-fit: contain;
+}
+.result-card h2 {
+margin: 12px 0 6px;
+font-size: 20px;
+color: #361e19;
+letter-spacing: 3px;
+}
+.result-actions { display: flex; gap: 14px; width: 100%; margin-top: 14px; }
+.result-button {
+position: relative;
+z-index: 142;
+flex: 1 1 auto;
+min-width: 120px;
+padding: 12px 18px;
+border: none;
+border-radius: 22px;
+background: #54483d;
+color: #f6eed7;
+box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+cursor: pointer;
+font: inherit;
+}
+.result-button.secondary { background: #54483d; color: #f6eed7; }
+.result-card::before,.result-card::after {
+content: "";
+position: absolute;
+top: 12%;
+left: 50%;
+width: 8px;
+height: 8px;
+border-radius: 50%;
+opacity: 0;
+pointer-events: none;
+}
+.result-card::before { background:#f6d365; box-shadow:28px -18px #e6b56a,-26px -30px #f0d88a,12px -46px #e3b981; }
+.result-card::after { background:#ffeab8; box-shadow:-22px -12px #d8bf80,18px -34px #f1dd9e,-12px -46px #e6c97a; }
+@keyframes resultBackdropIn { from { opacity:0; } to { opacity:1; } }
+@keyframes resultPop { 0% { opacity:0; transform:translateY(18px) scale(.96); } 60% { opacity:1; transform:translateY(-6px) scale(1.02); } 100% { transform:translateY(0) scale(1); } }
+@keyframes resultImageIn { from { opacity:0; transform:translateY(12px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes resultConfetti { from { opacity:1; transform:translateX(-50%) translateY(0) scale(1) rotate(0); } to { opacity:0; transform:translateX(-50%) translateY(-140px) scale(.6) rotate(320deg); } }
+.result-modal.is-visible .result-backdrop { animation:resultBackdropIn .36s ease-out both; }
+.result-modal.is-visible .result-card { animation:resultPop .56s cubic-bezier(.2,.9,.3,1) both; }
+.result-modal.is-visible .result-animation img { animation:resultImageIn .6s cubic-bezier(.2,.9,.3,1) both; }
+.result-modal.is-visible .result-card::before { animation:resultConfetti .92s cubic-bezier(.2,.8,.3,1) both; }
+.result-modal.is-visible .result-card::after { animation:resultConfetti .98s cubic-bezier(.2,.8,.3,1) .06s both; }
 
 /* ======================================== */
 /* === RESPONSIVE: 768px 以下移动端适配 === */
@@ -1353,4 +1464,8 @@ height: 24px;
 #final-stage .note-display {
 font-size: 2rem;
 }
+.result-card { width: calc(100% - 36px); padding: 14px; }
+.result-animation { height: 42vh; }
+.result-actions { flex-direction: column; }
+.result-button { width: 100%; min-width: 0; }
 }

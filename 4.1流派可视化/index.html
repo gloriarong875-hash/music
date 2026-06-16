@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171512" />
+    <meta name="description" content="乐器流派、地域与历史传播可视化" />
+    <title>乐器流派地图</title>
+    <link rel="stylesheet" href="./shared/styles/base.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar site-topbar">
+        <a class="brand" href="../index.html" aria-label="返回首页">
+          <span class="brand-seal">乐</span>
+          <span><strong>声纹</strong><small>ARCHIVE</small></span>
+        </a>
+        <nav class="main-nav site-topbar__nav" aria-label="首页、研物、观象、编年">
+          <a class="site-topbar__link home-link" href="../index.html"><h2>首页</h2></a>
+          <span class="site-topbar__link is-muted" aria-disabled="true"><h2>研物</h2></span>
+          <span class="site-topbar__link is-muted" aria-disabled="true"><h2>观象</h2></span>
+          <button class="site-topbar__link is-active active" data-view="chronicle" type="button" aria-current="page"><h2>编年</h2></button>
+        </nav>
+        <button class="sound-orb" type="button" aria-label="切换环境音" title="环境音"><i></i></button>
+      </header>
+
+      <nav class="rail-page-switcher" id="railPageSwitcher" aria-label="页面切换">
+        <button class="rail-switch-item is-active" type="button" data-page="sound" aria-label="当前为声页面" aria-current="page">声</button>
+        <button class="rail-switch-item" type="button" data-page="painting" data-view="object" aria-label="切换到画页面">画</button>
+        <button class="rail-switch-item" type="button" data-page="chronicle" data-view="chronicle" aria-label="切换到纪页面">纪</button>
+      </nav>
+
+      <section class="workspace" data-current-view="chronicle">
+        <aside class="chronicle-rail" aria-label="乐器历史时间轴">
+          <svg class="rail-curve" viewBox="0 0 180 760" preserveAspectRatio="none" aria-hidden="true">
+            <path class="rail-shadow" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780" />
+            <path class="rail-line" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780" />
+            <path class="rail-progress" d="M82 -20 C24 68 136 126 75 214 C20 292 134 356 73 446 C20 528 139 592 84 780" pathLength="1" />
+          </svg>
+          <div class="era-list" id="eraList"></div>
+        </aside>
+
+        <section class="map-stage" aria-label="乐器历史传播省级地图">
+          <div class="stage-title">
+            <h4 id="stageKicker">CHRONICLE</h4>
+            <h1 id="stageTitle">乐器传统的地域与时代脉络</h1>
+          </div>
+
+          <div class="map-wrap" id="mapWrap">
+            <svg class="china-map-svg" id="chinaMapSvg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" role="img" aria-label="中国省级行政区互动地图">
+              <defs>
+                <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
+                  <feGaussianBlur stdDeviation="5" result="blur" />
+                  <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+                <filter id="inkRough" x="-5%" y="-5%" width="110%" height="110%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="noise" />
+                  <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.25" />
+                </filter>
+                <marker id="arrowHead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#f4ecd7" />
+                </marker>
+              </defs>
+              <g id="mapViewport">
+                <g id="baseMapLayer"></g>
+                <g id="highlightLayer"></g>
+                <circle class="map-point-halo" id="mapHalo" r="18" />
+                <circle class="map-point" id="mapPoint" r="6" />
+              </g>
+              <path class="route-guide" id="routeGuide" />
+              <path class="route-path" id="routePath" />
+              <path class="route-arrow" id="routeArrow" d="M 10 0 L -7 -6 L -3 0 L -7 6 Z" />
+            </svg>
+            <div class="map-loading" id="mapLoading">正在展开舆图...</div>
+            <div class="place-label" id="placeLabel"></div>
+          </div>
+
+          <div class="stage-index"><span id="stageNumber">01</span><i></i><small id="stagePeriod">历史源流</small></div>
+          <div class="map-note">行政区轮廓：中国省级 GeoJSON<br />省域高亮，标签保留具体流传地点</div>
+        </section>
+
+        <aside class="archive-panel">
+          <article class="archive-card" id="archiveCard">
+            <h2 id="cardTitle">流派名称</h2>
+            <p class="card-location"><strong>地点：</strong><span id="cardLocation">地域</span></p>
+            <section>
+              <h3>01小传</h3>
+              <p id="cardStory"></p>
+            </section>
+            <button class="track-button" id="trackButton" type="button">
+              <span><strong>代表曲目：</strong><b id="trackTitle">代表曲目</b></span>
+              <i class="play-icon"></i>
+            </button>
+            <div class="audio-progress" id="audioProgress" aria-hidden="true">
+              <input id="audioSeek" type="range" min="0" max="100" value="0" step="0.1" aria-label="曲目播放进度" />
+              <div class="audio-time"><span id="audioCurrent">00:00</span><span id="audioDuration">00:00</span></div>
+            </div>
+          </article>
+        </aside>
+      </section>
+
+      <img class="sheng-performer" src="" alt="" hidden />
+      <div class="mobile-message"><span>乐</span><p>请横置设备或使用更宽的屏幕观看编年地图。</p></div>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

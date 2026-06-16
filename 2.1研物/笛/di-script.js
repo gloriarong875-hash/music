@@ -448,34 +448,23 @@ allLayers.forEach(layer => {
             return;
         }
 
-        // Bad bamboo — give feedback
+        // Bad bamboo — audio feedback only, no shake/flip
         initAudio();
-        // Visual shake
-        this.classList.add('bad-shake');
-        // Store current transform to restore
-        const savedTransform = this.style.transform;
-        this.style.setProperty('--sx', '0px');
-        this.style.setProperty('--sy', '0px');
-        setTimeout(() => {
-            this.classList.remove('bad-shake');
-            this.style.transform = savedTransform;
-        }, 400);
 
-        // 保留竹材高亮反馈；判断文字已直接显示在图片附近。
-        if (selected === type) {
-            selected = null;
-            this.classList.remove('selected');
-        } else {
-            allLayers.forEach(l=>l.classList.remove('selected'));
-            selected = type;
-            this.classList.add('selected');
-        }
-
-        // Update scroll hint
-        if (type === 'xin') {
-            scrollHint.textContent = '嫩竹不堪用 · 继续寻觅';
-        } else if (type === 'wai') {
-            scrollHint.textContent = '歪竹不可取 · 再择良材';
+        // Crossfade guide: requirement ↔ feedback
+        const guide = document.getElementById('guide' + type.charAt(0).toUpperCase() + type.slice(1));
+        if (guide) {
+            const fb = guide.querySelector('.guide-feedback');
+            const req = guide.querySelector('.guide-requirement');
+            if (fb && req) {
+                req.style.opacity = '0';
+                fb.classList.add('show');
+                clearTimeout(guide._revertTimer);
+                guide._revertTimer = setTimeout(function () {
+                    fb.classList.remove('show');
+                    req.style.opacity = '';
+                }, 1800);
+            }
         }
     });
 });
@@ -578,6 +567,10 @@ const drillChiselImg = document.getElementById('drillChiselImg');
 
 let drillChiselPickedUp = false;
 
+function setMainText(text) {
+    if (mainText) mainText.innerText = text;
+}
+
 function setNavStage(index) {
     navDotWrappers.forEach((dot, i) => {
         dot.classList.remove('active', 'completed');
@@ -613,7 +606,6 @@ function showBakeStage() {
     bambooPipe.style.bottom = '80px';
     bambooPipe.style.left = '45%';
     bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.78)';
-    mainText.innerText = '新竹砍下需要阴干2年以上';
     subText.innerText = '烘烤去湿可防止竹笛后期开裂';
     bambooPipe.classList.remove('baked', 'baking');
     bakeProgress = 0;
@@ -673,9 +665,9 @@ function updateBakingHold(now = performance.now()) {
     bakeProgress = Math.min(1, bakeProgressAtHoldStart + (now - bakeHoldStartedAt) / BAKE_HOLD_DURATION);
     progressBar.style.width = `${bakeProgress * 100}%`;
     if (bakeProgress >= 0.66) {
-        mainText.innerText = '色泽转深，竹质紧实';
+        setMainText('色泽转深，竹质紧实');
     } else if (bakeProgress >= 0.25) {
-        mainText.innerText = '竹管受热，水分开始蒸发';
+        setMainText('竹管受热，水分开始蒸发');
     }
     if (bakeProgress >= 1) {
         playBakeSound();
@@ -706,10 +698,8 @@ function finishBaking() {
     progressContainer.style.opacity = '0';
     bakeHoldHint.classList.add('hidden');
     furnace.classList.add('hidden');
-    bambooPipe.style.left = '45%';
-    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(20deg)';
-    bambooPipe.style.bottom = '25%';
-    mainText.innerText = '烘烤完成';
+    bambooPipe.removeAttribute('style');
+    setMainText('烘烤完成');
     subText.innerText = '竹管已去湿定型，准备进入开孔工序';
     playCompleteSound();
     completeOverlay.querySelector('.complete-text').innerText = '汗青完成';
@@ -728,16 +718,14 @@ function showDrillStage() {
     stageBake.classList.remove('tool-active');
     setNavStage(2);
     finalStage.classList.remove('visible');
-    bambooPipe.style.left = '45%';
-    bambooPipe.style.bottom = '60px';
-    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(20deg)';
+    bambooPipe.removeAttribute('style');
     holesLayer.style.display = 'block';
     resetDrillHoles();
     drillChiselPickedUp = false;
     gongcheChars.innerHTML = '';
     gongchePanel.classList.remove('visible');
     scaleOverlay.classList.remove('visible');
-    mainText.innerText = '最后两孔待开';
+    setMainText('最后两孔待开');
     subText.innerText = '点击白色按钮拿起凿子，再完成最后两个孔位';
     completeOverlay.classList.remove('active');
     scaleOverlay.style.display = 'none';
@@ -818,7 +806,7 @@ function drillHole(hole, force = false) {
     drilledCount++;
     gongchePanel.classList.add('visible');
     addGongcheChar(note, name, tone);
-    mainText.innerText = `已开${name}，对应工尺谱「${note}」，${tone}音`;
+    setMainText(`已开${name}，对应工尺谱「${note}」，${tone}音`);
     const remaining = TOTAL_HOLES - drilledCount;
     subText.innerText = remaining > 0 ? `还差 ${remaining} 个孔位` : '最后两孔已完成';
     if (drilledCount >= TOTAL_HOLES) {
@@ -846,8 +834,6 @@ function showToneStage() {
     navDots.classList.add('visible');
     finalMembraneStage.classList.remove('hidden');
     finalPlayStage.classList.remove('visible');
-    finalEndButtons.classList.remove('visible');
-
     finalSubText.innerText = '请选择膜材，贴于膜孔之上';
     completeOverlay.classList.remove('active');
     progressContainer.style.opacity = '0';
@@ -877,9 +863,7 @@ function backToDrill() {
 
     // Set bamboo to baked, centered position
     bambooPipe.classList.add('baked');
-    bambooPipe.style.transform = 'translateX(-50%) translateY(0) scale(0.85) rotate(20deg)';
-    bambooPipe.style.bottom = '25%';
-    bambooPipe.style.animation = '';
+    bambooPipe.removeAttribute('style');
 
     // Hide bake-specific elements
     furnace.classList.add('hidden');
@@ -898,7 +882,7 @@ function backToDrill() {
     scaleOverlay.classList.remove('visible');
     scaleOverlay.style.display = 'none';
 
-    mainText.innerText = '最后两孔待开';
+    setMainText('最后两孔待开');
     subText.innerText = '点击白色按钮拿起凿子，再完成最后两个孔位';
 
     // 返回步骤 3 时恢复未拾取状态。
@@ -910,7 +894,6 @@ function backToDrill() {
     // Reset final stage internal state
     finalMembraneStage.classList.remove('hidden');
     finalPlayStage.classList.remove('visible');
-    finalEndButtons.classList.remove('visible');
     selectedMembrane = null;
     currentMembrane = null;
     finalMembraneItems.forEach(i => i.classList.remove('selected'));
@@ -925,7 +908,14 @@ function backToDrill() {
 // ============================================================
 // === STAGE 4: 试音 (FINAL) ===
 // ============================================================
+// 试音阶段核心功能：选择膜材、显示指法、播放音阶
 
+/* 膜材音色参数配置
+ * - brightness: 基频亮度系数
+ * - harmonic: 谐波分量数组，控制音色特征
+ * - attack: 起音时间（秒）
+ * - decay: 衰减时间（秒）
+ */
 const membraneTypes = {
     reed:   { name: '芦苇膜', brightness: 1.3, harmonic: [1, 0.6, 0.4, 0.2, 0.1], attack: 0.02, decay: 0.8 },
     bamboo: { name: '竹膜',   brightness: 1.0, harmonic: [1, 0.5, 0.3, 0.15, 0.08], attack: 0.03, decay: 1.0 },
@@ -935,6 +925,11 @@ const membraneTypes = {
 let currentMembrane = null;
 let selectedMembrane = null;
 
+/* 音阶指法映射表
+ * freq: 基础频率（Hz）
+ * name: 工尺谱名称
+ * holes: 6个音孔的开闭状态（true=按住，false=放开）
+ */
 const noteFingerings = {
     '1': { freq: 293.66, name: '宫', holes: [true, true, true, false, false, false] },
     '2': { freq: 329.63, name: '商', holes: [true, true, false, false, false, false] },
@@ -945,6 +940,7 @@ const noteFingerings = {
     '7': { freq: 523.25, name: '变徵', holes: [true, true, true, true, false, false] }
 };
 
+/* 数字键到工尺谱字符的映射 */
 const noteChars = {
     '1': '宫',
     '2': '商',
@@ -964,13 +960,25 @@ const finalNoteChar = document.getElementById('final-note-char');
 const finalNoteName = document.getElementById('final-note-name');
 const finalBambooContainer = document.getElementById('final-bamboo-container');
 const finalBambooPipe = document.getElementById('final-bamboo-pipe');
-const finalEndButtons = document.getElementById('final-end-buttons');
-const finalArrowBtn = document.getElementById('final-arrow-btn');
 const finalMainText = document.getElementById('final-main-text');
 const finalSubText = document.getElementById('final-sub-text');
+const resultModal = document.getElementById('result-modal');
+const resultRestartBtn = document.getElementById('result-restart-btn');
+const resultExploreBtn = document.getElementById('result-explore-btn');
 
 let finalPlayCount = 0;
 const PLAY_TO_END = 5;
+let resultTimer = null;
+
+function openResultCard() {
+    if (!resultModal) return;
+    if (resultTimer) {
+        clearTimeout(resultTimer);
+        resultTimer = null;
+    }
+    resultModal.classList.add('is-visible');
+    resultModal.setAttribute('aria-hidden', 'false');
+}
 
 finalMembraneItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -1056,6 +1064,13 @@ const finalHintElements = [
     document.querySelector('#final-stage .hint-7')
 ];
 
+/* 播放竹笛音符
+ * 使用 Web Audio API 合成音色：
+ * 1. 基础正弦波作为基频
+ * 2. 多个谐波振荡器模拟泛音列
+ * 3. 带通滤波白噪声增加真实感
+ * 同时更新孔位指法显示和音符UI
+ */
 function playFluteNote(key) {
     const note = noteFingerings[key];
     if (!note || !currentMembrane) return;
@@ -1064,6 +1079,7 @@ function playFluteNote(key) {
     const params = membraneTypes[currentMembrane];
     const baseFreq = note.freq * params.brightness;
 
+    // 主振荡器：正弦波基频
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'sine';
@@ -1077,6 +1093,7 @@ function playFluteNote(key) {
     osc.start(now);
     osc.stop(now + params.attack + params.decay + 0.1);
 
+    // 谐波振荡器：偶数次用正弦，奇数次用三角波
     params.harmonic.forEach((amp, i) => {
         if (amp < 0.05) return;
         const harmOsc = audioCtx.createOscillator();
@@ -1092,6 +1109,7 @@ function playFluteNote(key) {
         harmOsc.stop(now + params.attack + params.decay + 0.1);
     });
 
+    // 白噪声：增加吹奏气息感
     const noise = audioCtx.createBufferSource();
     const bufferSize = audioCtx.sampleRate * 0.1;
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -1112,10 +1130,12 @@ function playFluteNote(key) {
     noiseGain.connect(audioCtx.destination);
     noise.start(now);
 
+    // 更新音符显示
     finalNoteChar.textContent = noteChars[key];
     finalNoteName.textContent = note.name;
     finalNoteDisplay.classList.add('visible');
 
+    // 更新指法显示：按住的孔显示金色发光
     note.holes.forEach((closed, index) => {
         if (finalHoleElements[index]) {
             if (closed) {
@@ -1129,21 +1149,26 @@ function playFluteNote(key) {
         }
     });
 
+    // 按住吹孔和膜孔
     document.getElementById('final-hole-1').classList.add('active');
     document.getElementById('final-hole-2').classList.add('active');
+
+    // 创建声波效果
     const activeHoles = note.holes.map((closed, i) => closed ? finalHoleElements[i] : null).filter(Boolean);
     if (activeHoles.length > 0) {
         const centerHole = activeHoles[Math.floor(activeHoles.length / 2)];
         createFinalSoundWave(centerHole);
     }
 
+    // 更新提示文字和播放计数
     finalMainText.innerText = `吹奏「${note.name}」，指法已示于孔位`;
     finalPlayCount++;
-    if (finalPlayCount >= PLAY_TO_END && !finalEndButtons.classList.contains('visible')) {
-        finalEndButtons.classList.add('visible');
-        finalSubText.innerText = '五音已备，可向下浏览';
+    if (finalPlayCount === PLAY_TO_END) {
+        finalSubText.innerText = '五音已备，即将完成体验';
+        resultTimer = setTimeout(openResultCard, 2000);
     }
 
+    // 延迟清除指法显示
     setTimeout(() => {
         finalNoteDisplay.classList.remove('visible');
         finalHoleElements.forEach(h => h.classList.remove('active'));
@@ -1202,7 +1227,8 @@ finalPlayHoles.forEach((hole, index) => {
     });
 });
 
-finalArrowBtn.addEventListener('click', () => {
+resultRestartBtn?.addEventListener('click', () => location.reload());
+resultExploreBtn?.addEventListener('click', () => {
     window.location.href = '../../index.html?instrument=%E7%AC%9B';
 });
 
@@ -1260,7 +1286,7 @@ function pickUpDrillChisel(e) {
     drillTargets.forEach(hole => {
         hole.style.pointerEvents = 'all';
     });
-    mainText.innerText = '凿子已在手，完成最后两孔';
+    setMainText('凿子已在手，完成最后两孔');
     subText.innerText = '依次点击两个墨线标记';
 }
 
