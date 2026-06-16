@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>编年·画作数据 - 笙</title>
+  <!-- 中文脚注：本页对应“画”章节，左侧为笙相关画作的编年数据可视化，右侧为画作缩略图与大图鉴赏。 -->
+  <link rel="stylesheet" crossorigin href="/assets/form-3biwnpWS.css">
+</head>
+<body>
+  <main class="page">
+    <section class="layout" aria-label="笙画作数据与图像展示">
+      <div class="left-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Instrumental Music in Paintings</h4>
+            <h1>编年·画中器乐</h1>
+          </div>
+        </header>
+
+        <section class="chart-stage" aria-label="笙画作数据可视化">
+          <!-- 中文脚注：此处使用 h4 作为简短说明层级，保持与页面标题左侧对齐，避免形成额外标题层级。 -->
+          <div class="chart-title">
+            <h4>横跨五个历史时期的含有乐器的画作依据题材被细分为宫廷礼宴、文人雅集、民间世俗、宗教神话，在三维空间构成波形曲面 <br>悬停可查看画作、材质与馆藏信息。</h4>
+          </div>
+          <div class="chart-shell">
+            <canvas id="paintChart" width="760" height="600" aria-label="笙画作朝代与题材数据图"></canvas>
+            <div id="chartTip" class="chart-tip" role="tooltip"></div>
+          </div>
+          <div id="chartLegend" class="chart-legend" aria-label="朝代图例"></div>
+        </section>
+      </div>
+
+      <div class="right-pane">
+        <header class="panel-head">
+          <div>
+            <h4 class="kicker">Painting Appreciation</h4>
+            <h1>编年·画作鉴赏</h1>
+          </div>
+        </header>
+
+        <section class="gallery-panel" aria-label="笙相关画作缩略图">
+          <!-- 中文脚注：右侧说明同样使用 h4 层级；画作卡片由 JS 根据 assets 数据生成，点击后进入大图弹窗。 -->
+          <div class="gallery-summary">
+            <h4>中国传统绘画宝库中出现乐器笙的画作。</h4>
+          </div>
+          <div id="paintingGrid" class="painting-grid"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="./general.js"></script>
+  <script src="./shengscript.js"></script>
+</body>
+</html>
