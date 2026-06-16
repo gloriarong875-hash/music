@@ -312,7 +312,7 @@ transition: all 0.6s ease;
 position: absolute;
 z-index: 10;
 right: 5.83%;
-top: 14.78%;
+top: 20%;
 width: clamp(260px, 35.83vw, 516px);
 max-height: 75vh;
 display: flex;
@@ -418,52 +418,56 @@ max-width: 320px;
 /* === 各时期图像独立尺寸调整 === */
 /* ================================================================ */
 
-/* 商周场景：主图放大，装饰图也较大 */
-#scene-shangzhou .main-image-area {
+/* 汉代场景：主图放大，装饰图也较大 */
+#scene-han.evolved .decor-image{
 right: 5%;
 top: 30%;
 width: clamp(320px, 42vw, 620px);
 }
-#scene-shangzhou .decor-image {
+#scene-han.evolved .decor-image {
 left: 5%;
 top: 30%;
 width: clamp(80px, 16vw, 230px);
 }
-/* 商周 delay后状态：主图缩小右移，装饰图缩小下移 */
-#scene-shangzhou.evolved .main-image-area {
+/* 汉代 delay后状态：主图缩小右移，*/
+#scene-han.evolved .main-image-area {
 right: 2%;
-top: 40%;
+top: calc(20% - 90px);
 width: clamp(200px, 30vw, 440px);
 }
-#scene-shangzhou.evolved .decor-image {
-left: 10%;
-top: 40%;
-width: clamp(60px, 10vw, 150px);
+/*装饰图缩小左下移 */
+#scene-han.evolved .decor-image {
+left: 5%;
+top: 65%;
+width: clamp(60px, 40vw, 500px);
 }
 
-/* 汉唐场景：主图和装饰图都较小 */
-#scene-hantang .main-image-area {
+
+/* 隋唐场景：主图和装饰图都较小 */
+#scene-suitang.evolved .main-image-area {
 right: 8%;
 top: 18%;
 width: clamp(200px, 28vw, 400px);
 }
-#scene-hantang .decor-image {
+#scene-suitang.evolved .decor-image {
 left: 18%;
 top: 34%;
 width: clamp(40px, 9vw, 130px);
 }
 /* 汉唐 hover 状态：进一步缩小 */
-#scene-hantang.evolved .main-image-area {
+#scene-suitang.evolved .main-image-area {
 right: 5%;
 top: 20%;
 height: 500px;
 width: clamp(200px, 28vw, 400px);
 }
-#scene-hantang.evolved .decor-image {
-left: 15%;
+#scene-suitang.evolved .decor-image {
+left: 2%;
 top: 50%;
-width: clamp(30px, 5vw, 80px);
+width: clamp(30px, 50vw, 500px);
 }
+
+
 
 /* ================================================================ */
 /* === 自动演变状态：标题归位 + 描述显现 + 图片缩小 === */
@@ -489,19 +493,34 @@ filter: blur(0);
 /* 主体演奏图进一步缩小+右移 */
 .scene.evolved .main-image-area {
 right: 6%;
-top: 23.44%;
+top: 45%;
 width: clamp(140px, 22vw, 340px);
 }
 
 /* 左侧装饰图缩小+下移+旋转+降低透明度 */
 .scene.evolved .decor-image {
-left: 12%;
-top: 40%;
-width: clamp(50px, 7.78vw, 112px);
+left: 0%;
+top:65%;
+width: clamp(50px, 50vw, 500px);
 opacity: 0.35;
-transform: rotate(-22.2deg);
+transform: rotate(30deg);
 }
 
+/* 第 2、3 时期的左侧乐器图上移 30px。 */
+#scene-han.evolved .decor-image,
+#scene-suitang.evolved .decor-image {
+top: calc(65% - 30px);
+}
+
+/* 第 2 时期右图在当前基础上再上移 30px。 */
+#scene-han.evolved .main-image-area {
+top: calc(25% - 40px);
+}
+
+/* 第 3 时期右图保持原位置。 */
+#scene-suitang.evolved .main-image-area {
+top: calc(25% - 10px);
+}
 /* 描述文字块：悬浮时淡入显现 */
 .desc-block {
 position: absolute;
@@ -675,7 +694,7 @@ bottom: 48px;
 .decor-image {
     width: clamp(50px, 10vw, 90px);
     left: 4%;
-    top: 33%;
+    top: 0%;
     opacity: 0.3;
 }
 .desc-block {
