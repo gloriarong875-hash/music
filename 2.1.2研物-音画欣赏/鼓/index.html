@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN" data-instrument="drum">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鼓 · 音画欣赏</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+
+  
+</head>
+<body>
+  <main class="scene">
+    <div class="background" aria-hidden="true"></div>
+    <div class="shade" aria-hidden="true"></div>
+    <div class="fade" aria-hidden="true"></div>
+    <img class="painting-original" id="painting-original" src="" alt="南宋马远诗经豳风图卷笙主题画作">
+    <section id="particle-stage" aria-label="画作粒子化与笙形重组视觉"></section>
+    <header class="page-mark">
+      <small>Audio-Visual Appreciation</small>
+      <h1>音画欣赏</h1>
+    </header>
+    <aside class="audio-visuals" aria-label="音频响应说明与实时频谱">
+      <div class="audio-monitor" id="audio-monitor" aria-label="声纹实时分析">
+        <h2 class="monitor-title">声纹实时分析</h2>
+        <canvas id="spectrum" aria-hidden="true"></canvas>
+        <div class="monitor-values">
+          <span class="monitor-value">音量<b id="volume-value">0%</b></span>
+          <span class="monitor-value">音高<b id="pitch-value">-- Hz</b></span>
+          <span class="monitor-value">节奏<b id="rhythm-value">0%</b></span>
+        </div>
+      </div>
+      <section class="audio-guide">
+        <h2>说明</h2>
+        <p>音量 → 粒子扩散</p>
+        <p>节奏 → 色彩明暗</p>
+        <p>频段 → 涟漪与摇摆</p>
+      </section>
+    </aside>
+    <div class="loading" id="loading">画作粒子正在生成</div>
+
+    <aside class="panel">
+      <h2 class="card-title">音画欣赏</h2>
+      <div class="info-stage">
+        <div class="art-info card-painting">
+          <p><strong>画作信息：</strong>诗经豳风图卷</p>
+          <p>南宋 · 马远（传）</p>
+          <p>克利夫兰艺术博物馆</p>
+        </div>
+        <div class="art-info card-particle">
+          <div class="intro-pages">
+            <p class="intro-page first"><strong>曲目简介：</strong>《微山湖船歌》是一首具有鲜明山东地域色彩的笙独奏作品，音乐素材取自微山湖一带的民间音乐与水乡生活意象。乐曲旋律清新悠扬，节奏舒展流动，借助笙明亮、通透而富有弹性的音色，描绘出湖面行舟、渔歌回荡、波光粼粼的画面。</p>
+            <p class="intro-page second">作品既保留了山东民歌质朴、爽朗的气质，又通过现代笙的演奏技巧增强了音乐的表现力，使旋律在抒情与灵动之间自然转换。作为山东牟派笙艺术中具有代表性的曲目之一，作品展现了笙在旋律表达、气息控制和音色变化上的特点，也体现了地方民间音乐向现代舞台作品转化的路径。</p>
+          </div>
+        </div>
+      </div>
+      <div class="track-box">
+        <span class="track-name">代表曲目：微山湖船歌</span>
+        <div class="controls">
+          <button class="control secondary" id="reset" type="button">重置</button>
+          <button class="control primary" id="play" type="button" aria-label="播放" disabled>播放</button>
+        </div>
+      </div>
+      <span class="sr-status" id="status" aria-live="polite">Loading</span>
+      <p class="error" id="error" role="alert"></p>
+    </aside>
+    <a class="continue-link" id="continue-link" href="./2.2研物-音画故事-笙/2.2研物-音画故事-笙/index.html">点击继续</a>
+  </main>
+
+  <audio id="audio" preload="metadata" src=""></audio>
+  <script src="./assets/inline-images.js"></script>
+  <script src="../shared/app.bundle.js"></script>
+
+</body>
+</html>
