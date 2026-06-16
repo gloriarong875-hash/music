@@ -16,10 +16,11 @@ body {
 
 .page {
   /* 页面最外层画布：宽高铺满视口。 */
-  position: relative;
+  position: fixed;
+  inset: 0;
   width: 100vw;
-  height: 100vh;
-  min-height: 720px;
+  height: 100dvh;
+  min-height: 0;
   overflow: hidden;
   background-color: #000000;
   background-image: url("笙音画assets/2.2背景图.png");
@@ -90,7 +91,7 @@ body {
     屏幕滚动容器。
     scroll-snap-type: y mandatory 表示滚动时自动吸附到每一屏。
   */
-  height: 100%;
+  height: 100dvh;
   overflow-y: auto;
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
@@ -103,7 +104,8 @@ body {
 .story-section {
   /* 单屏容器：每个 section 占一整屏。 */
   position: relative;
-  min-height: 100vh;
+  height: 100dvh;
+  min-height: 0;
   padding: clamp(24px, 2.8vw, 48px);
   scroll-snap-align: start;
   overflow: hidden;
@@ -128,7 +130,7 @@ body {
   z-index: 2;
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - clamp(48px, 5.6vw, 96px));
+  min-height: 0;
 }
 
 .story-layout--intro {
@@ -465,6 +467,8 @@ body.scene-back .story-section.is-active .art-frame {
   }
 
   .page {
+    position: relative;
+    inset: auto;
     height: auto;
     min-height: 100vh;
   }
@@ -551,8 +555,6 @@ body.scene-back .story-section.is-active .art-frame {
     transition-duration: .001ms !important;
   }
 }
-
-
 
 
 

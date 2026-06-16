@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>名画中的笛</title>
+  <!--
+    中文脚注：本页参考 2.2 鼓的版式与交互完成。
+    1. generalcomponent.css：字体、标准色、标题层级、右上角切换按钮等通用规范。
+    2. flutestyle.css：本页布局、背景底纹、黑色遮罩、笛画图片位置、入场动画和响应式样式。
+    3. flutescript.js：滚轮切屏、键盘切屏、上一页/下一页按钮逻辑。
+    4. 如果只想改文字，优先修改下方每个 section 里的 h2 和 h4。
+    5. 如果只想换图片，修改 img 的 src 路径，并确保图片放在“笛音画assets”文件夹中。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="flutestyle.css" />
+  <link rel="stylesheet" href="../../site-nav/site-nav.css" />
+</head>
+<body>
+  <main class="page" aria-label="名画中的笛">
+    <!-- 右上角圆形按钮：只负责切换上一屏/下一屏，具体交互在 flutescript.js 中。 -->
+    <nav class="cornerNav" aria-label="页面切换">
+      <button class="navBtn" id="prevScene" type="button" aria-label="上一页">‹</button>
+      <button class="navBtn" id="nextScene" type="button" aria-label="下一页">›</button>
+    </nav>
+
+    <div class="scroll-shell" id="storyScroll">
+      <!-- 第 1 屏：《柳溪卧笛图》。 -->
+      <section class="story-section story-section--intro is-active" data-scene="0" aria-label="柳岸横笛，水气清远">
+        <header class="panel-head story-head">
+          <div>
+            <h4 class="kicker">Instruments in Famous Paintings</h4>
+            <h1>名画中的笛</h1>
+          </div>
+        </header>
+
+        <div class="story-layout story-layout--intro">
+          <figure class="art-frame art-frame--painting">
+            <img src="笛音画assets/柳溪卧笛图.jpg" alt="柳溪卧笛图" />
+          </figure>
+          <article class="text-block text-block--right">
+            <h2>柳岸横笛，水气清远</h2>
+            <h4>梁楷《柳溪卧笛图》以极简水墨营造柳岸溪畔的幽远景致，画中人物卧于岸边吹笛，身形虽小，却成为全画意境的中心。笛声与烟水、柳树、远岸相互交融，使静寂山水中生出清音，表现出南宋小景画空灵、含蓄而富有余韵的审美特征。</h4>
+          </article>
+        </div>
+      </section>
+
+      <!-- 第 2 屏：《桓野王图》。 -->
+      <section class="story-section" data-scene="1" aria-label="名士吹笛，清音入画">
+        <div class="story-layout story-layout--wide">
+          <article class="text-block text-block--lower-left">
+            <h2>名士吹笛，清音入画</h2>
+            <h4>元代钱选《桓野王图》描绘东晋名士桓伊形象。画中人物身着红袍，头戴黑冠，腰间横插长笛，神情沉静而含蓄。桓伊以善吹笛著称，画面虽未直接表现吹奏瞬间，却以笛点明人物身份与风雅气质，使音乐从动作转化为人物典故与精神象征，呈现出元代人物画中高古、清雅的文人意趣。</h4>
+          </article>
+          <figure class="art-frame art-frame--flute-main">
+            <img src="笛音画assets/桓野王图.jpg" alt="桓野王图" />
+          </figure>
+        </div>
+      </section>
+
+      <!-- 第 3 屏：《沧江横笛图》。三页共用同一背景底纹。 -->
+      <section class="story-section" data-scene="2" aria-label="沧江横笛，山水有声">
+        <div class="story-layout story-layout--split">
+          <figure class="art-frame art-frame--flute-river">
+            <img src="笛音画assets/沧江横笛图.jpg" alt="沧江横笛图" />
+          </figure>
+          <article class="text-block text-block--center-right">
+            <h2>沧江横笛，山水有声</h2>
+            <h4>《沧江横笛图》传为元代盛懋作品，画面以江岸山水为背景，远树、坡石与水面相互映衬，人物临江横笛，姿态闲适。笛声虽不可闻，却通过人物动作与空阔江景被转化为画面的诗意，表现出元代山水画中渔隐、清游与寄情自然的文人气息。</h4>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="flutescript.js"></script>
+  <script src="../../site-nav/site-nav.js"></script>
+</body>
+</html>

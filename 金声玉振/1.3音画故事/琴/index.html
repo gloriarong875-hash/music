@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>名画中的琴</title>
+  <!--
+    中文脚注：本页参考 2.2 鼓/笛的版式与交互完成。
+    1. generalcomponent.css：字体、标准色、标题层级、右上角切换按钮等通用规范。
+    2. qinstyle.css：本页布局、背景底纹、黑色遮罩、琴画图片位置、入场动画和响应式样式。
+    3. qinscript.js：滚轮切屏、键盘切屏、上一页/下一页按钮逻辑。
+    4. 如果只想改文字，优先修改下方每个 section 里的 h2 和 h4。
+    5. 如果只想换图片，修改 img 的 src 路径，并确保图片放在“琴音画assets”文件夹中。
+  -->
+  <link rel="stylesheet" href="generalcomponent.css" />
+  <link rel="stylesheet" href="qinstyle.css" />
+  <link rel="stylesheet" href="../../site-nav/site-nav.css" />
+</head>
+<body>
+  <main class="page" aria-label="名画中的琴">
+    <!-- 右上角圆形按钮：只负责切换上一屏/下一屏，具体交互在 qinscript.js 中。 -->
+    <nav class="cornerNav" aria-label="页面切换">
+      <button class="navBtn" id="prevScene" type="button" aria-label="上一页">‹</button>
+      <button class="navBtn" id="nextScene" type="button" aria-label="下一页">›</button>
+    </nav>
+
+    <div class="scroll-shell" id="storyScroll">
+      <!-- 第 1 屏：《观瀑图》。 -->
+      <section class="story-section story-section--intro is-active" data-scene="0" aria-label="观瀑听泉，琴韵相和">
+        <header class="panel-head story-head">
+          <div>
+            <h4 class="kicker">Instruments in Famous Paintings</h4>
+            <h1>名画中的琴</h1>
+          </div>
+        </header>
+
+        <div class="story-layout story-layout--intro">
+          <figure class="art-frame art-frame--painting">
+            <img src="琴音画assets/观瀑图.jpg" alt="观瀑图" />
+          </figure>
+          <article class="text-block text-block--right">
+            <h2>观瀑听泉，琴韵相和</h2>
+            <h4>《观瀑图》以山水幽境为背景，画中高士临近飞泉而坐，身旁置琴，人物、山石与瀑布共同构成清寂悠远的空间。琴在画中并非单纯的演奏器物，而是文人观瀑听泉、寄情自然的精神象征，使无声画面仿佛含有泉声与琴韵相和的意境。</h4>
+          </article>
+        </div>
+      </section>
+
+      <!-- 第 2 屏：《临流抚琴图》。 -->
+      <section class="story-section" data-scene="1" aria-label="临流抚琴，声入山水">
+        <div class="story-layout story-layout--wide">
+          <article class="text-block text-block--lower-left">
+            <h2>临流抚琴，声入山水</h2>
+            <h4>《临流抚琴图》描绘高士临水抚琴的场景。人物坐于溪岸之间，面对水流与山石，将琴声寄托于自然景物之中。画面以简淡笔墨营造静谧氛围，琴声与流水相互呼应，体现古代文人追求清心静性、与山水相契合的生活理想。</h4>
+          </article>
+          <figure class="art-frame art-frame--qin-main">
+            <img src="琴音画assets/临流抚琴图.jpg" alt="临流抚琴图" />
+          </figure>
+        </div>
+      </section>
+
+      <!-- 第 3 屏：《深堂琴趣图》。三页共用同一背景底纹。 -->
+      <section class="story-section" data-scene="2" aria-label="深堂琴趣，鹤步清音">
+        <div class="story-layout story-layout--split">
+          <figure class="art-frame art-frame--qin-hall">
+            <img src="琴音画assets/深堂琴趣图.jpg" alt="深堂琴趣图" />
+          </figure>
+          <article class="text-block text-block--center-right">
+            <h2>深堂琴趣，鹤步清音</h2>
+            <h4>《深堂琴趣图》描绘山斋掩映于树木之间，一人端坐堂中抚琴，双鹤在琴声中闲步。画面将建筑、远山、林木与琴声融为一体，营造出清新明净的雅致空间。琴在此成为连接人与自然、庭院与山林的媒介，表现宋画含蓄、空灵而富有诗意的审美趣味。</h4>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="qinscript.js"></script>
+  <script src="../../site-nav/site-nav.js"></script>
+</body>
+</html>

@@ -68,12 +68,12 @@ function setActive(index) {
 function goTo(index) {
   /*
     跳转到指定屏幕：
-    - scrollIntoView 的 behavior: "smooth" 控制页面滚动本身的平滑；
+    - shell.scrollTo 只滚动内部容器，避免 scrollIntoView 带动外层页面后底部露出黑条；
     - setActive(index) 控制图片和文字的进入/离开动画。
   */
   const target = sections[index];
   if (!target) return;
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  shell.scrollTo({ top: target.offsetTop, behavior: "smooth" });
   setActive(index);
 }
 
