@@ -182,6 +182,7 @@
       transform: translate(-50%, -50%);
       display: grid;
       place-items: center;
+      text-decoration: none;
       box-shadow:
         0 0 0 1px rgba(255, 232, 178, 0),
         0 0 0 0 rgba(224, 190, 112, 0);
@@ -247,22 +248,22 @@
     }
 
     /* 不同乐器比例不同，这里只微调图片尺寸，不移动圆形框本身 */
-    .instrument-card.guqin img,
-    .instrument-card.flute img {
+    .instrument-card.qin img,
+    .instrument-card.di img {
       width: 116%;
       height: 116%;
     }
 
-    .instrument-card.guqin img {
+    .instrument-card.qin img {
       --img-x: 2px;
       --img-y: 6px;
     }
 
-    .instrument-card.paixiao img {
+    .instrument-card.sheng img {
       width: 72%;
       height: 88%;
-      --img-x: -1px;
-      --img-y: -3px;
+      --img-x: 0px;
+      --img-y: -2px;
     }
 
     .instrument-card.drum img {
@@ -277,7 +278,7 @@
       --img-y: 1px;
     }
 
-    .instrument-card.flute img {
+    .instrument-card.di img {
       --img-x: 1px;
       --img-y: 1px;
     }
@@ -379,50 +380,55 @@
       <!-- 左侧圆形边栏：鼠标移入左侧区域后，小圆点散开并显示乐器 -->
       <aside class="circle-sidebar" aria-label="器物圆形边栏">
         <div class="circle-wheel">
-          <button
-            class="instrument-card guqin"
+          <a
+            class="instrument-card di"
             style="--small-x: 90px; --small-y: 183px; --open-x: 143px; --open-y: 51px;"
-            type="button"
+            href="../3.2画作数据/笛/index.html"
+            aria-label="进入笛画作数据页面"
           >
-            <img src="./0a8e13ad-7ead-4696-a86a-c7e2d49b0099.png" alt="" />
-            <span class="sr-only">古琴</span>
-          </button>
+            <img src="./di.png" alt="" />
+            <span class="sr-only">笛</span>
+          </a>
 
-          <button
-            class="instrument-card paixiao"
+          <a
+            class="instrument-card qin"
             style="--small-x: 120px; --small-y: 205px; --open-x: 262px; --open-y: 215px;"
-            type="button"
+            href="../3.2画作数据/琴/index.html"
+            aria-label="进入琴画作数据页面"
           >
-            <img src="./instrument.png" alt="" />
-            <span class="sr-only">排箫</span>
-          </button>
+            <img src="./qin.png" alt="" />
+            <span class="sr-only">琴</span>
+          </a>
 
-          <button
+          <a
             class="instrument-card drum"
             style="--small-x: 109px; --small-y: 241px; --open-x: 143px; --open-y: 379px;"
-            type="button"
+            href="../3.2画作数据/鼓/index.html"
+            aria-label="进入鼓画作数据页面"
           >
-            <img src="./d97ebee4-4262-494d-994a-b462e729360d.png" alt="" />
+            <img src="./gu.png" alt="" />
             <span class="sr-only">鼓</span>
-          </button>
+          </a>
 
-          <button
+          <a
             class="instrument-card xun"
             style="--small-x: 71px; --small-y: 241px; --open-x: -49px; --open-y: 316px;"
-            type="button"
+            href="../3.2画作数据/埙/index.html"
+            aria-label="进入埙画作数据页面"
           >
-            <img src="./0de126f9-39ef-4cca-b973-e30a195c2116.png" alt="" />
+            <img src="./xun.png" alt="" />
             <span class="sr-only">埙</span>
-          </button>
+          </a>
 
-          <button
-            class="instrument-card flute"
+          <a
+            class="instrument-card sheng"
             style="--small-x: 60px; --small-y: 205px; --open-x: -49px; --open-y: 114px;"
-            type="button"
+            href="../3.2画作数据/笙/index.html"
+            aria-label="进入笙画作数据页面"
           >
-            <img src="./7272d2db-8caf-456a-90ee-878237bf668a.png" alt="" />
-            <span class="sr-only">横笛</span>
-          </button>
+            <img src="./sheng.png" alt="" />
+            <span class="sr-only">笙</span>
+          </a>
         </div>
       </aside>
 

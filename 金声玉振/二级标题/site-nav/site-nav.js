@@ -7,7 +7,7 @@
   */
   const navItems = [
     { key: "home", label: "首页", href: "#" },
-    { key: "study", label: "研物", href: "index.html" },
+    { key: "study", label: "研物", href: "yanwu.html" },
     { key: "observe", label: "观象", href: "guanxiang.html" },
     { key: "chronicle", label: "编年", href: "biannian.html" }
   ];
