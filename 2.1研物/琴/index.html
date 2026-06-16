@@ -20,17 +20,23 @@
     <div class="text-layer" id="text-a"></div>
     <div class="text-layer" id="text-b"></div>
     <div id="string-panel">
-        <div class="string-opt steel" data-type="steel" role="button" tabindex="0">钢弦</div>
-        <div class="string-opt silk" data-type="silk" role="button" tabindex="0">丝弦</div>
-        <div class="string-opt nylon" data-type="nylon" role="button" tabindex="0">钢丝尼龙弦</div>
+        <div class="string-opt steel" data-type="steel" role="button" tabindex="0" aria-pressed="false">钢弦</div>
+        <div class="string-opt silk" data-type="silk" role="button" tabindex="0" aria-pressed="false">丝弦</div>
+        <div class="string-opt nylon" data-type="nylon" role="button" tabindex="0" aria-pressed="false">钢丝尼龙弦</div>
         <div id="string-description" aria-live="polite"></div>
     </div>
-    <div id="complete-overlay">
-        <div class="big">琴成</div>
-        <div class="sub">七弦既备 · 千年琴韵</div>
-        <div class="btns" style="display:none;">
-            <button class="complete-btn" id="btn-restart">再次体验</button>
-            <button class="complete-btn" id="btn-back">← 返回</button>
+    <div id="complete-overlay" role="dialog" aria-modal="true" aria-labelledby="complete-title" aria-hidden="true">
+        <div class="completion-backdrop"></div>
+        <div class="completion-card">
+            <div class="completion-animation" aria-hidden="true">
+                <img src="琴部件assets/步骤4-琴演奏.png" alt="">
+            </div>
+            <div class="big" id="complete-title">琴制作流程体验完成</div>
+            <div class="sub">七弦既备 · 千年琴韵</div>
+            <div class="btns">
+                <button class="complete-btn" id="btn-restart" type="button">重新体验</button>
+                <button class="complete-btn secondary" id="btn-back" type="button">继续探索</button>
+            </div>
         </div>
     </div>
 </div>
