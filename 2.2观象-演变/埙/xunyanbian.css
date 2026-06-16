@@ -418,51 +418,63 @@ max-width: 320px;
 /* === 各时期图像独立尺寸调整 === */
 /* ================================================================ */
 
-/* 商周场景：主图放大，装饰图也较大 */
-#scene-shangzhou .main-image-area {
-right: 5%;
-top: 30%;
-width: clamp(320px, 42vw, 620px);
+/* 新石器：竖幅文物图居右，陶埙实物置于左下。 */
+#scene-xinshiqi .main-image-area {
+right: 8%;
+top: 16%;
+width: clamp(230px, 26vw, 390px);
 }
-#scene-shangzhou .decor-image {
-left: 5%;
-top: 30%;
-width: clamp(80px, 16vw, 230px);
-}
-/* 商周 delay后状态：主图缩小右移，装饰图缩小下移 */
-#scene-shangzhou.evolved .main-image-area {
-right: 2%;
-top: 40%;
-width: clamp(200px, 30vw, 440px);
-}
-#scene-shangzhou.evolved .decor-image {
+#scene-xinshiqi .decor-image {
 left: 10%;
-top: 40%;
-width: clamp(60px, 10vw, 150px);
+top: 44%;
+width: clamp(120px, 12vw, 180px);
+}
+#scene-xinshiqi.evolved .main-image-area {
+right: 8%;
+top: 19%;
+width: clamp(220px, 24vw, 360px);
+}
+#scene-xinshiqi.evolved .decor-image {
+left: 10%;
+top: 51%;
+width: clamp(130px, 14vw, 210px);
 }
 
-/* 汉唐场景：主图和装饰图都较小 */
-#scene-hantang .main-image-area {
+/* 秦汉、清代：主图偏右，左侧埙图放大作为清晰陈列。 */
+#scene-qinhan .main-image-area,
+#scene-qing .main-image-area {
+right: 7%;
+top: 15%;
+width: clamp(240px, 28vw, 420px);
+}
+#scene-qinhan .decor-image,
+#scene-qing .decor-image {
+left: 8%;
+top: 43%;
+width: clamp(120px, 13vw, 190px);
+}
+#scene-qinhan.evolved .main-image-area,
+#scene-qing.evolved .main-image-area {
 right: 8%;
 top: 18%;
-width: clamp(200px, 28vw, 400px);
+width: clamp(230px, 25vw, 380px);
 }
-#scene-hantang .decor-image {
-left: 18%;
-top: 34%;
-width: clamp(40px, 9vw, 130px);
-}
-/* 汉唐 hover 状态：进一步缩小 */
-#scene-hantang.evolved .main-image-area {
-right: 5%;
-top: 20%;
-height: 500px;
-width: clamp(200px, 28vw, 400px);
-}
-#scene-hantang.evolved .decor-image {
-left: 15%;
+#scene-qinhan.evolved .decor-image,
+#scene-qing.evolved .decor-image {
+left: 8%;
 top: 50%;
-width: clamp(30px, 5vw, 80px);
+width: clamp(130px, 15vw, 220px);
+opacity: 0.78;
+transform: rotate(-10deg);
+}
+
+#scene-xinshiqi .decor-image img,
+#scene-qinhan .decor-image img,
+#scene-qing .decor-image img,
+#scene-xinshiqi.evolved .decor-image img,
+#scene-qinhan.evolved .decor-image img,
+#scene-qing.evolved .decor-image img {
+width: 100%;
 }
 
 /* ================================================================ */
@@ -589,6 +601,26 @@ bottom: 48px;
     right: 5%;
     top: 16%;
 }
+#scene-xinshiqi .main-image-area,
+#scene-qinhan .main-image-area,
+#scene-qing .main-image-area,
+#scene-xinshiqi.evolved .main-image-area,
+#scene-qinhan.evolved .main-image-area,
+#scene-qing.evolved .main-image-area {
+    right: 4%;
+    top: 17%;
+    width: clamp(190px, 35vw, 330px);
+}
+#scene-xinshiqi .decor-image,
+#scene-qinhan .decor-image,
+#scene-qing .decor-image,
+#scene-xinshiqi.evolved .decor-image,
+#scene-qinhan.evolved .decor-image,
+#scene-qing.evolved .decor-image {
+    left: 6%;
+    top: 54%;
+    width: clamp(95px, 17vw, 150px);
+}
 .desc-block {
     max-width: 50vw;
     left: 18%;
@@ -677,6 +709,28 @@ bottom: 48px;
     left: 4%;
     top: 33%;
     opacity: 0.3;
+}
+#scene-xinshiqi .main-image-area,
+#scene-qinhan .main-image-area,
+#scene-qing .main-image-area,
+#scene-xinshiqi.evolved .main-image-area,
+#scene-qinhan.evolved .main-image-area,
+#scene-qing.evolved .main-image-area {
+    right: 3%;
+    top: 23%;
+    width: 40vw;
+}
+#scene-xinshiqi .decor-image,
+#scene-qinhan .decor-image,
+#scene-qing .decor-image,
+#scene-xinshiqi.evolved .decor-image,
+#scene-qinhan.evolved .decor-image,
+#scene-qing.evolved .decor-image {
+    left: 5%;
+    top: 64%;
+    width: clamp(70px, 18vw, 110px);
+    opacity: 0.55;
+    transform: rotate(-8deg);
 }
 .desc-block {
     max-width: 70vw;
