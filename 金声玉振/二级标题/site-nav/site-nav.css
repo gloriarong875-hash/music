@@ -33,12 +33,11 @@ body.has-site-topbar {
   /* 中文脚注：这里不再使用 padding 推开页面，避免与各页面 100vh 高度叠加后导致底部溢出。 */
   padding-top: 0 !important;
   overflow: hidden !important;
-  /* 中文脚注：2.1 制作页原本 body 是 grid 居中布局；有上边栏后要改回普通块布局，避免页面被居中后右侧/底部露出黑边。 */
-  display: block !important;
 }
 
 body.has-site-topbar .page,
-body.has-site-topbar .app {
+body.has-site-topbar .app,
+body.has-site-topbar #canvas {
   /* 中文脚注：这里控制“上边栏加入后”的页面整体位置和缩放。
      margin-top 负责避开上边栏；scale 负责把原 100vh 页面轻微缩小到剩余画幅内。
      想让页面内容整体更大/更小，优先修改 site-nav.js 里的 topbarHeight 或 scale 最小值。 */
@@ -60,12 +59,55 @@ body.has-site-topbar .app {
   transform: none !important;
 }
 
+body.has-site-topbar #canvas {
+  margin-top: var(--site-topbar-height) !important;
+  width: 100vw !important;
+  height: calc(100vh - var(--site-topbar-height)) !important;
+  transform: none !important;
+}
+
+body.has-site-topbar .parallax-scene,
+body.has-site-topbar .stage-panel,
+body.has-site-topbar .final-stage {
+  margin-top: var(--site-topbar-height) !important;
+  width: 100vw !important;
+  height: calc(100vh - var(--site-topbar-height)) !important;
+}
+
+body.has-site-topbar .stage-panel,
+body.has-site-topbar .final-stage {
+  inset: var(--site-topbar-height) 0 auto 0 !important;
+  margin-top: 0 !important;
+}
+
+body.has-site-topbar #bg-layer {
+  top: var(--site-topbar-height) !important;
+  bottom: 0 !important;
+  height: calc(100vh - var(--site-topbar-height)) !important;
+}
+
+body.has-site-topbar .top-nav {
+  display: none !important;
+}
+
+body.has-site-topbar .progress-bar-top {
+  top: var(--site-topbar-height) !important;
+}
+
+body.has-site-topbar .nav-dots {
+  top: calc(var(--site-topbar-height) + 36px) !important;
+}
+
+body.has-site-topbar .game-container {
+  margin-top: var(--site-topbar-height) !important;
+}
+
 body.has-site-topbar .cornerNav {
   /* 中文脚注：全站右上角“前进/后退”按钮位置统一参考 3.1 观象页面。
      想整体调整位置，只改这里的 top/right；top 越大越往下，right 越大越靠左。 */
   position: fixed !important;
   z-index: 9990 !important;
-  top: 5.8% !important;
+  top: calc(var(--site-topbar-height) + 18px) !important;
   right: 5% !important;
   display: flex !important;
   gap: 16px !important;
