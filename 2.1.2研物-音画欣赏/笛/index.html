@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN" data-instrument="dizi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>笛 · 音画欣赏</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    .background { background-image: url("./background.png"); }
+  </style>
+</head>
+<body>
+  <main class="scene">
+    <div class="background" aria-hidden="true"></div>
+    <div class="shade" aria-hidden="true"></div>
+    <div class="fade" aria-hidden="true"></div>
+    <img class="painting-original" id="painting-original" src="" alt="元代盛懋沧江横笛图">
+    <section id="particle-stage" aria-label="画作粒子化与笛形重组视觉"></section>
+    <header class="page-mark">
+      <small>Audio-Visual Appreciation</small>
+      <h1>音画欣赏</h1>
+    </header>
+    <aside class="audio-visuals" aria-label="音频响应说明与实时频谱">
+      <div class="audio-monitor" id="audio-monitor" aria-label="声纹实时分析">
+        <h2 class="monitor-title">声纹实时分析</h2>
+        <canvas id="spectrum" aria-hidden="true"></canvas>
+        <div class="monitor-values">
+          <span class="monitor-value">音量<b id="volume-value">0%</b></span>
+          <span class="monitor-value">音高<b id="pitch-value">-- Hz</b></span>
+          <span class="monitor-value">节奏<b id="rhythm-value">0%</b></span>
+        </div>
+      </div>
+      <section class="audio-guide">
+        <h2>说明</h2>
+        <p>音量 → 粒子扩散</p>
+        <p>节奏 → 色彩明暗</p>
+        <p>频段 → 涟漪与摇摆</p>
+      </section>
+    </aside>
+    <div class="loading" id="loading">画作粒子正在生成</div>
+
+    <aside class="panel">
+      <h2 class="card-title">音画欣赏</h2>
+      <div class="info-stage">
+        <div class="art-info card-painting">
+          <p><strong>画作信息：</strong>沧江横笛图</p>
+          <p>元 · 盛懋</p>
+          <p>南京博物院</p>
+        </div>
+        <div class="art-info card-particle">
+          <div class="intro-pages">
+            <p class="intro-page first"><strong>《喜相逢》曲目介绍：</strong>《喜相逢》是一首流传较广的传统笛曲，曲名本身便带有久别重逢、欢聚团圆的美好意味。乐曲情绪明快活泼，旋律流畅跳跃，常以清亮悠扬的笛声表现人们相见时的喜悦、亲切与热闹气氛。笛子音色明亮通透，既能吹出轻巧灵动的装饰音，也能表现舒展开阔的旋律线，因此十分适合呈现《喜相逢》中欢快而富有生活气息的情感。</p>
+            <p class="intro-page second">乐曲节奏多变，时而轻盈婉转，像熟人相见时的含笑问候；时而热烈奔放，仿佛节庆场景中人群相聚、笑语盈盈。它不以宏大的叙事取胜，而是通过亲切的旋律、鲜明的节奏和富有弹性的气息，营造出一种温暖明朗的民间画面。聆听《喜相逢》，仿佛能感受到春日晴光下的相聚时刻，也能体会笛声中那份朴素真挚的喜悦。</p>
+          </div>
+        </div>
+      </div>
+      <div class="track-box">
+        <span class="track-name">代表曲目：《喜相逢》</span>
+        <div class="controls">
+          <button class="control secondary" id="reset" type="button">重置</button>
+          <button class="control primary" id="play" type="button" aria-label="播放" disabled>播放</button>
+        </div>
+      </div>
+      <span class="sr-status" id="status" aria-live="polite">Loading</span>
+      <p class="error" id="error" role="alert"></p>
+    </aside>
+    <a class="continue-link" id="continue-link" href="../../4.1流派可视化/笛地图/index.html">点击继续</a>
+  </main>
+
+  <audio id="audio" preload="metadata" src=""></audio>
+  <script src="./assets/inline-images.js"></script>
+  <script src="../shared/app.bundle.js"></script>
+</body>
+</html>

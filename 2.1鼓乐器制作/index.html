@@ -1,0 +1,2132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>鼓制作互动原型</title>
+  <link rel="stylesheet" href="generalprocess.css" />
+  <style>
+    /* ===== 1. 全局变量与页面基础样式 ===== */
+    :root {
+      /* 背景和基础色 */
+      --bg: #8e3129;
+      --bg-deep: #6f241f;
+      
+      /* 黄金/金色系 - 与 generalprocess.css 协调 */
+      --gold: #c9a96e;
+      --gold-dim: #8a7a5a;
+      --brown: #5a4a3a;
+      --gold-soft: #d6c49b;
+      
+      /* 纸质和墨色 */
+      --paper: #f1e5d4;
+      --ink: #f6dfb2;
+      --muted: rgba(239, 220, 186, 0.66);
+      --white: rgba(255, 255, 255, 0.92);
+      --shadow: 0 22px 55px rgba(64, 16, 12, 0.32);
+      
+      /* 响应式字号（来自 generalprocess.css） */
+      --type-lg: clamp(24px, 1.85vw, 36px);
+      --type-sm: clamp(18px, 1.34vw, 27px);
+      
+      /* 字体系列 - 优先级：隶书 -> 系统中文 -> 无衬线 */
+      font-family: "FZLiShu", "LiSu", "隶书", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 游戏外层容器：负责铺满浏览器并居中舞台 */
+    .app {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      background-color: #813027;
+      background-image: url("dark-circles-1920x1080.png");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    /* 主舞台：所有素材、按钮、提示和弹窗都定位在这里 */
+    .stage {
+      position: relative;
+      width: min(100vw, 160vh);
+      aspect-ratio: 16 / 10;
+      max-height: 100vh;
+      overflow: hidden;
+      background-color: #813027;
+      background-image: url("dark-circles-1920x1080.png");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      box-shadow: inset 0 0 120px rgba(84, 24, 19, 0.12);
+      isolation: isolate;
+    }
+
+    .stage::before,
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .stage::before {
+      z-index: 1;
+      background: radial-gradient(ellipse at 50% 48%, rgba(255, 222, 166, .08) 0 24%, rgba(121, 34, 27, 0) 60%);
+    }
+
+    .stage::after {
+      z-index: 22;
+      box-shadow: inset 0 0 90px rgba(71, 18, 14, .16);
+      background: linear-gradient(180deg, rgba(78, 21, 17, .06), transparent 20%, transparent 76%, rgba(65, 16, 13, .1));
+    }
+
+    /* 顶部步骤栏：显示四个制作阶段及当前完成状态 */
+    .nav-dots {
+      position: absolute;
+      top: 5.8%;
+      left: 50%;
+      z-index: 30;
+      display: flex;
+      gap: clamp(26px, 3vw, 48px);
+      transform: translateX(-50%);
+      user-select: none;
+    }
+
+    .dot-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .dot {
+      width: clamp(15px, 1.35vw, 22px);
+      height: clamp(15px, 1.35vw, 22px);
+      border-radius: 50%;
+      background: #444;
+      border: 2px solid #555;
+      transition: all 0.4s ease;
+    }
+
+    .dot.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      box-shadow: 0 0 18px rgba(201, 169, 110, 0.45);
+    }
+
+    .dot.done,
+    .dot.completed {
+      background: var(--gold-dim);
+      border-color: var(--gold-dim);
+    }
+
+    .dot-label {
+      font-family: inherit;
+      font-size: clamp(13px, 1.15vw, 18px);
+      color: #7f7f7f;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      transition: color 0.4s ease;
+    }
+
+    .dot.done + .dot-label,
+    .dot.active + .dot-label,
+    .dot.completed + .dot-label {
+      color: var(--gold);
+    }
+
+    /* 右上角前后步骤切换按钮 */
+    .corner-nav {
+      position: absolute;
+      z-index: 34;
+      top: 5.2%;
+      right: 5%;
+      display: flex;
+      gap: 16px;
+    }
+
+    .nav-btn {
+      width: clamp(46px, 4.7vw, 72px);
+      height: clamp(46px, 4.7vw, 72px);
+      border: 1px solid rgba(229, 198, 132, .7);
+      border-radius: 50%;
+      color: rgba(255, 246, 219, .96);
+      background: radial-gradient(circle at 35% 30%, rgba(255, 241, 196, .88), rgba(180, 130, 62, .48) 58%, rgba(22, 17, 13, .38));
+      box-shadow: 0 0 18px rgba(217, 186, 114, .24), inset 0 0 10px rgba(255, 244, 201, .15);
+      font-size: clamp(28px, 2.4vw, 40px);
+      line-height: 1;
+      transition: transform 220ms ease, opacity 220ms ease, filter 220ms ease;
+    }
+
+    .nav-btn:hover,
+    .nav-btn:focus-visible {
+      outline: 0;
+      transform: scale(1.08);
+      filter: brightness(1.12);
+    }
+
+    .nav-btn:disabled {
+      opacity: .34;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* 场景内容区：切换步骤时使用透明、缩放和模糊完成转场 */
+    .scene {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition:
+        opacity 560ms cubic-bezier(.2,.8,.2,1),
+        transform 620ms cubic-bezier(.16,.84,.24,1),
+        filter 620ms cubic-bezier(.16,.84,.24,1);
+      will-change: opacity, transform, filter;
+    }
+
+    .scene.is-swapping {
+      opacity: 0;
+      transform: translateY(2.4%) scale(.968);
+      filter: blur(8px) brightness(.84);
+    }
+
+    .scene.is-entering {
+      opacity: 0;
+      transform: translateY(-1.6%) scale(1.025);
+      filter: blur(9px) brightness(.9);
+    }
+
+    .scene.step-arrival > * {
+      animation: content-arrive 620ms cubic-bezier(.16,.84,.24,1) both;
+    }
+
+    .scene.step-arrival > :nth-child(2) { animation-delay: 45ms; }
+    .scene.step-arrival > :nth-child(3) { animation-delay: 85ms; }
+
+    @keyframes content-arrive {
+      0% { opacity: 0; translate: 0 -12px; scale: 1.018; filter: blur(7px); }
+      55% { opacity: 1; }
+      100% { opacity: 1; translate: 0 0; scale: 1; filter: blur(0); }
+    }
+
+    /* 通用图片图层，便于不同素材在舞台中绝对定位 */
+    .layer {
+      position: absolute;
+      display: block;
+      max-width: none;
+      user-select: none;
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+
+    .soft-glow {
+      filter: drop-shadow(0 18px 20px rgba(80, 19, 12, 0.22));
+    }
+
+    .round-hide,
+    .drum-body.large,
+    .mounted-drum,
+    .decor-drum-loose,
+    .paint-layer {
+      animation: object-focus-in 760ms cubic-bezier(.16,.84,.24,1) both;
+    }
+
+    @keyframes object-focus-in {
+      0% { opacity: 0; scale: .965; filter: blur(7px) brightness(.86); }
+      68% { opacity: 1; scale: 1.012; filter: blur(0) brightness(1.04); }
+      100% { opacity: 1; scale: 1; }
+    }
+
+    .skin-workspace {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 55%;
+      transition: transform 760ms cubic-bezier(.16,.84,.24,1), filter 760ms ease;
+      will-change: transform, filter;
+    }
+
+    .skin-workspace.is-cleaned {
+      transform: scale(.82) translateY(2%);
+      filter: drop-shadow(0 22px 20px rgba(73, 18, 12, .18));
+    }
+
+    /* ===== 2. 第一步：刮毛与裁切鼓皮 ===== */
+    .hide-wide {
+      left: -13%;
+      bottom: -10%;
+      width: 116%;
+    }
+
+    .scraper {
+      position: absolute;
+      left: var(--scrape-x, 58%);
+      top: var(--scrape-y, 50%);
+      z-index: 8;
+      width: clamp(100px, 13vw, 180px);
+      height: auto;
+      pointer-events: none;
+      opacity: var(--scrape-opacity, 0);
+      filter: drop-shadow(0 12px 12px rgba(35, 15, 10, .38));
+      transform-origin: 42% 73%;
+      transform: translate(-42%, -73%) rotate(var(--scrape-r, -18deg));
+      transition: opacity 120ms ease, transform 80ms linear;
+    }
+
+    .scrape-canvas {
+      position: absolute;
+      z-index: 4;
+      pointer-events: auto;
+      cursor: none;
+      touch-action: none;
+    }
+
+    .skin-workspace.is-cleaned .scrape-canvas {
+      pointer-events: none;
+    }
+
+    .cut-guide {
+      position: absolute;
+      left: 26.5%;
+      top: 21.5%;
+      z-index: 6;
+      width: 38%;
+      aspect-ratio: 1 / 0.92;
+      border: clamp(8px, 1vw, 14px) dashed rgba(126, 113, 77, 0.5);
+      border-radius: 50%;
+      background: transparent;
+      opacity: 0;
+      transform: scale(0.92);
+      transition: opacity 260ms ease, transform 320ms ease;
+      pointer-events: none;
+    }
+
+    .cut-guide.is-visible {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .round-hide {
+      left: 29.5%;
+      top: 21.5%;
+      width: 42%;
+      transition: left 480ms cubic-bezier(.2,.8,.2,1), top 480ms cubic-bezier(.2,.8,.2,1), width 480ms cubic-bezier(.2,.8,.2,1), transform 360ms ease;
+      filter: drop-shadow(0 24px 18px rgba(81, 18, 12, 0.22));
+    }
+
+    /* ===== 3. 第二步：移动木板并拼接鼓腔 ===== */
+    .shell-open {
+      left: 24%;
+      top: 15%;
+      width: 52%;
+    }
+
+    .plank {
+      left: var(--plank-x, 69%);
+      top: var(--plank-y, 40%);
+      width: 13.5%;
+      pointer-events: auto;
+      cursor: grab;
+      transition: filter 200ms ease, transform 180ms ease;
+      filter: drop-shadow(0 18px 18px rgba(55, 15, 9, 0.23));
+      transform: rotate(var(--plank-r, -4deg));
+      touch-action: none;
+    }
+
+    .plank.is-snapping {
+      transition:
+        left 560ms cubic-bezier(.16,.84,.24,1),
+        top 560ms cubic-bezier(.16,.84,.24,1),
+        transform 560ms cubic-bezier(.16,.84,.24,1),
+        filter 300ms ease;
+      filter: drop-shadow(0 12px 13px rgba(55, 15, 9, 0.18));
+    }
+
+    .plank:active {
+      cursor: grabbing;
+      filter: drop-shadow(0 28px 24px rgba(55, 15, 9, 0.32));
+    }
+
+    .arc-arrow {
+      position: absolute;
+      left: 35%;
+      top: 64%;
+      width: 38%;
+      height: 18%;
+      pointer-events: none;
+      opacity: 0.74;
+      filter: drop-shadow(0 0 16px rgba(238, 210, 155, 0.2));
+    }
+
+    .drum-body {
+      left: 28%;
+      top: 19%;
+      width: 45%;
+      transition: transform 500ms cubic-bezier(.2,.8,.2,1), opacity 300ms ease;
+    }
+
+    .drum-body.large {
+      left: 24.8%;
+      top: 17%;
+      width: 50%;
+    }
+
+    /* ===== 4. 第三步：拉伸、覆盖并绷紧鼓皮 ===== */
+    .stretch-wrap {
+      position: absolute;
+      left: 50%;
+      top: 47%;
+      width: min(42vw, 38%);
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .stretch-hide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      transform: scale(var(--sx, 1), var(--sy, 1)) skew(var(--skew, 0deg));
+      transition: transform 110ms ease-out;
+      filter: drop-shadow(0 20px 16px rgba(72, 18, 12, 0.24));
+    }
+
+    .mounted-drum {
+      left: 27%;
+      top: 16%;
+      width: 48%;
+      transition: transform 520ms cubic-bezier(.16,.84,.24,1), filter 520ms ease;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .mounted-drum.is-tight {
+      filter: brightness(1.08) drop-shadow(0 0 18px rgba(241, 216, 164, 0.28));
+    }
+
+    .mounted-drum.is-struck {
+      animation: drum-strike 440ms cubic-bezier(.16,.84,.24,1);
+    }
+
+    @keyframes drum-strike {
+      0% { transform: scale(1); filter: brightness(1) drop-shadow(0 18px 20px rgba(80, 19, 12, .22)); }
+      22% { transform: scale(.982); filter: brightness(1.12) drop-shadow(0 12px 16px rgba(80, 19, 12, .18)); }
+      58% { transform: scale(1.012); }
+      100% { transform: scale(1); }
+    }
+
+    .rim-hit {
+      position: absolute;
+      left: 34%;
+      top: 21%;
+      width: 32%;
+      height: 18%;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 241, 200, 0);
+      pointer-events: none;
+    }
+
+    .rim-hit.pulse {
+      animation: pulse-ring 520ms ease-out;
+    }
+
+    @keyframes pulse-ring {
+      0% { border-color: rgba(255, 241, 200, 0.72); transform: scale(0.92); opacity: 1; }
+      100% { border-color: rgba(255, 241, 200, 0); transform: scale(1.12); opacity: 0; }
+    }
+
+    .decor-drum {
+      left: 25.5%;
+      top: 15%;
+      width: 51%;
+    }
+
+    .decor-drum-loose {
+      left: 26.4%;
+      top: 9.8%;
+      width: 49.3%;
+    }
+
+    .nail-fade {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .nail-fade .decor-drum {
+      transition: opacity 360ms cubic-bezier(.2,.8,.2,1), filter 420ms ease, transform 420ms cubic-bezier(.16,.84,.24,1);
+    }
+
+    .nail-fade-top {
+      opacity: var(--nail-opacity, 0);
+      transform-origin: 50% 14.5%;
+      transform: scaleY(var(--nail-scale, .94));
+    }
+
+    /* ===== 5. 第四步：钉皮与刷漆 ===== */
+    .paint-layer {
+      left: 25.5%;
+      top: 15%;
+      width: 51%;
+      transition: clip-path 120ms linear, opacity 240ms ease;
+    }
+
+    .paint-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* ===== 6. 最终成品、诗句说明与人物演奏 ===== */
+    .final-drum {
+      left: 5%;
+      top: 16%;
+      width: 50%;
+      filter: drop-shadow(0 0 20px rgba(228, 171, 95, 0.34));
+      animation: final-drum-arrive 1100ms cubic-bezier(.16,.84,.24,1) both;
+    }
+
+    .final-gif {
+      position: absolute;
+      right: 2.5%;
+      bottom: 4%;
+      z-index: 8;
+      width: 30%;
+      aspect-ratio: 1318 / 1193;
+      filter: drop-shadow(0 0 18px rgba(227, 171, 95, 0.32));
+      pointer-events: none;
+      animation: final-player-arrive 1250ms 220ms cubic-bezier(.16,.84,.24,1) both;
+    }
+
+    .final-gif img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform-origin: 50% 50%;
+      opacity: 0;
+      animation: gif-flicker 1.05s steps(1, end) infinite;
+    }
+
+    .final-gif img:nth-child(2) {
+      animation-delay: .525s;
+      transform: translate(-0.35%, 0.2%) scale(1.006);
+    }
+
+    .final-story {
+      position: absolute;
+      z-index: 10;
+      bottom: 17%;
+      left: 35%;
+      width: 40%;
+      padding: clamp(12px, 1.25vw, 18px) clamp(16px, 1.8vw, 24px);
+      box-sizing: border-box;
+      color: #f3ead3;
+      text-align: center;
+      background: linear-gradient(90deg, transparent, rgba(32, 19, 15, .5) 13%, rgba(27, 18, 15, .64) 50%, rgba(32, 19, 15, .5) 87%, transparent);
+      text-shadow: 0 2px 8px rgba(24, 10, 8, .72);
+      pointer-events: none;
+      animation: final-story-arrive 1200ms 340ms cubic-bezier(.16,.84,.24,1) both;
+    }
+
+    .final-quote {
+      margin: 0;
+      font-size: clamp(18px, 1.7vw, 28px);
+      font-weight: 900;
+      line-height: 1.4;
+      letter-spacing: 2px;
+    }
+
+    .final-source {
+      margin: clamp(14px, 1.8vh, 22px) 0 0;
+      color: #e1c78f;
+      font-size: clamp(12px, .9vw, 15px);
+      letter-spacing: 1px;
+    }
+
+    .final-description {
+      margin: clamp(10px, 1.4vh, 16px) auto 0;
+      max-width: 540px;
+      font-size: clamp(11px, .82vw, 14px);
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    @keyframes gif-flicker {
+      0%, 49.9% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    @keyframes final-drum-arrive {
+      0% { opacity: 0; transform: translate(-7%, 4%) scale(.82); filter: blur(12px) brightness(.76); }
+      62% { opacity: 1; transform: translate(.8%, -.7%) scale(1.025); filter: blur(0) brightness(1.06); }
+      100% { opacity: 1; transform: translate(0) scale(1); filter: drop-shadow(0 0 20px rgba(228, 171, 95, 0.34)); }
+    }
+
+    @keyframes final-story-arrive {
+      0% { opacity: 0; transform: translateY(24px) scale(.97); filter: blur(10px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    @keyframes final-player-arrive {
+      0% { opacity: 0; transform: translate(8%, 6%) scale(.86); filter: blur(10px); }
+      70% { opacity: 1; transform: translate(-1%, -1%) scale(1.015); filter: blur(0); }
+      100% { opacity: 1; transform: translate(0) scale(1); }
+    }
+
+    /* 制作过程中使用的木锤、刷子等工具素材 */
+    .tool-img {
+      position: absolute;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      filter: drop-shadow(0 16px 16px rgba(55, 15, 8, 0.26));
+    }
+
+    .hammer {
+      left: var(--hammer-x, 70%);
+      top: var(--hammer-y, 45%);
+      width: 17%;
+      transform: rotate(-58deg);
+      transition: left 180ms ease, top 180ms ease, transform 180ms ease;
+    }
+
+    .hammer.hit {
+      transform: rotate(-42deg) translateY(2%);
+    }
+
+    .nail-hammer {
+      left: var(--hammer-x, 68%);
+      top: var(--hammer-y, 31%);
+      z-index: 9;
+      width: 18%;
+      opacity: var(--hammer-opacity, 0);
+      transform-origin: 28% 78%;
+      animation: hammer-tap 520ms cubic-bezier(.2,.9,.28,1) infinite;
+      transition: left 160ms linear, top 160ms linear, opacity 180ms ease;
+    }
+
+    @keyframes hammer-tap {
+      0%, 100% { transform: rotate(-54deg) translate(0, 0); }
+      45% { transform: rotate(-34deg) translate(-1.2%, 2.2%); }
+      62% { transform: rotate(-43deg) translate(-0.4%, 1%); }
+    }
+
+    .brush {
+      left: var(--brush-x, 74%);
+      top: var(--brush-y, 39%);
+      width: 18%;
+      pointer-events: auto;
+      cursor: grab;
+      touch-action: none;
+      transform: rotate(18deg);
+      transition: filter 160ms ease, transform 160ms ease;
+    }
+
+    .brush:active {
+      cursor: grabbing;
+      filter: drop-shadow(0 24px 20px rgba(55, 15, 8, 0.32));
+    }
+
+    /* 左下角任务说明和当前步骤进度条 */
+    .hud {
+      position: absolute;
+      left: clamp(18px, 3.8%, 56px);
+      bottom: clamp(20px, 5.2%, 56px);
+      z-index: 25;
+      width: min(330px, 34%);
+      color: rgba(244, 217, 171, 0.86);
+      user-select: none;
+    }
+
+    .task-label {
+      margin: 0 0 12px;
+      font-size: clamp(14px, 1.25vw, 18px);
+      line-height: 1.45;
+      color: rgba(232, 193, 121, 0.88);
+      text-shadow: 0 3px 10px rgba(76, 18, 12, 0.2);
+    }
+
+    .progress {
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(244, 222, 183, 0.2);
+      box-shadow: inset 0 0 0 1px rgba(255, 232, 194, 0.08);
+    }
+
+    .progress span {
+      display: block;
+      width: var(--progress, 0%);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(236, 193, 107, 0.8), rgba(255, 239, 184, 0.96));
+      transition: width 180ms ease;
+    }
+
+    /* 右下角主要操作按钮，如一键刮毛、下一步、重新开始 */
+    .controls {
+      position: absolute;
+      right: clamp(22px, 5.2%, 76px);
+      bottom: clamp(22px, 7%, 72px);
+      z-index: 26;
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      min-width: 126px;
+    }
+
+    .round-btn {
+      width: clamp(58px, 5vw, 72px);
+      height: clamp(58px, 5vw, 72px);
+      border-radius: 50%;
+      color: #7a3c35;
+      background: rgba(242, 229, 227, 0.96);
+      box-shadow: 0 0 24px rgba(255, 236, 220, 0.42), 0 12px 24px rgba(67, 17, 12, 0.25);
+      transition: transform 180ms ease, opacity 180ms ease, box-shadow 180ms ease;
+    }
+
+    .round-btn:hover,
+    .round-btn:focus-visible {
+      transform: translateY(-2px) scale(1.03);
+      outline: 0;
+      box-shadow: 0 0 28px rgba(255, 236, 220, 0.58), 0 16px 30px rgba(67, 17, 12, 0.28);
+    }
+
+    .round-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+      transform: none;
+    }
+
+    .btn-label {
+      font-size: clamp(14px, 1.2vw, 18px);
+      color: rgba(232, 193, 121, 0.9);
+      text-align: center;
+    }
+
+    .mini-actions {
+      position: absolute;
+      right: clamp(20px, 3.6%, 54px);
+      top: clamp(20px, 5%, 56px);
+      z-index: 32;
+      display: flex;
+      gap: 10px;
+    }
+
+    .mini {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(246, 225, 186, 0.14);
+      color: rgba(248, 224, 180, 0.88);
+      box-shadow: inset 0 0 0 1px rgba(255, 226, 184, 0.16);
+      backdrop-filter: blur(8px);
+      transition: background 180ms ease, transform 180ms ease;
+    }
+
+    .mini:hover { background: rgba(246, 225, 186, 0.23); transform: translateY(-1px); }
+
+    .hint-bubble,
+    /* 临时操作提示，用于告知用户下一步应做什么 */
+    .toast {
+      position: absolute;
+      left: 50%;
+      z-index: 80;
+      width: min(440px, 86%);
+      padding: 15px 18px;
+      border-radius: 8px;
+      color: #5d2821;
+      background: rgba(247, 229, 199, 0.95);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translate(-50%, 8px);
+      pointer-events: none;
+      transition: opacity 220ms ease, transform 220ms ease;
+      text-align: center;
+      line-height: 1.55;
+    }
+
+    .hint-bubble {
+      top: 17%;
+    }
+
+    .toast {
+      bottom: 7%;
+    }
+
+    .hint-bubble.is-visible,
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* 步骤切换时短暂出现的加载动画 */
+    .loading {
+      position: absolute;
+      inset: 0;
+      z-index: 90;
+      display: grid;
+      place-items: center;
+      background: rgba(92, 27, 22, 0.1);
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+    }
+
+    .loading.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 4px solid rgba(239, 213, 164, 0.2);
+      border-top-color: var(--gold);
+      animation: spin 760ms linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 完成弹窗：展示演奏动画、诗句介绍和重新开始按钮 */
+    .modal {
+      position: absolute;
+      inset: 0;
+      z-index: 95;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(82, 21, 17, 0.48);
+      opacity: 0;
+      pointer-events: none;
+      backdrop-filter: blur(0);
+      transition: opacity 520ms ease, backdrop-filter 720ms ease;
+    }
+
+    .modal.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      backdrop-filter: blur(8px);
+    }
+
+    .result {
+      width: min(520px, 90vw);
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      color: #5f2b24;
+      background-color: rgba(247, 231, 203, 0.96);
+      background-image: linear-gradient(rgba(238, 223, 199, 0.8), rgba(238, 223, 199, 0.8)), url("arabesque.png");
+      background-position: center;
+      background-repeat: repeat;
+      background-size: 150px 150px;
+      box-shadow: var(--shadow);
+      transform: translateY(26px) scale(.94);
+      filter: blur(8px);
+      opacity: 0.1;
+      transition:
+        transform 760ms cubic-bezier(.16,.84,.24,1),
+        filter 680ms ease,
+        opacity 520ms ease;
+    }
+
+    .modal.is-visible .result {
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+      opacity: 1;
+    }
+
+    .result img {
+      display: block;
+      width: min(310px, 74%);
+      margin: 0 auto 14px;
+      filter: drop-shadow(0 12px 18px rgba(80, 35, 18, 0.2));
+    }
+
+    .result-gif {
+      position: relative;
+      width: min(420px, 95%);
+      aspect-ratio: 1318 / 1193;
+      margin: 0 auto 14px;
+    }
+
+    .result-gif img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform-origin: 50% 50%;
+      opacity: 0;
+      animation: gif-flicker 1.05s steps(1, end) infinite;
+    }
+
+    .result-gif img:nth-child(2) {
+      animation-delay: .525s;
+      transform: translate(-0.35%, 0.2%) scale(1.006);
+    }
+
+    .result h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .result .result-quote {
+      margin: 6px 0 3px;
+      color: #682f27;
+      font-size: clamp(18px, 1.55vw, 22px);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .result .result-source {
+      margin: 0 0 9px;
+      color: #946641;
+      font-size: 12px;
+    }
+
+    .result #resultText {
+      max-width: 440px;
+      margin: 0 auto 15px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .result p {
+      margin: 0 0 18px;
+      line-height: 1.65;
+    }
+
+    .result .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      min-width: 118px;
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 999px;
+      color: #6e332b;
+      background: rgba(226, 189, 112, 0.62);
+      box-shadow: inset 0 0 0 1px rgba(128, 73, 42, 0.14);
+    }
+
+    .pill.secondary {
+      background: rgba(143, 85, 65, 0.14);
+    }
+
+    .sr {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      clip: rect(0, 0, 0, 0);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    /* ===== 7. 移动端布局适配 ===== */
+    @media (max-width: 760px) {
+      .nav-dots {
+        top: 24px;
+        left: 50%;
+        gap: 11px;
+        transform: translateX(-50%);
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+      }
+
+      .dot-label {
+        font-size: 10px;
+        letter-spacing: 1px;
+      }
+
+      .stage {
+        width: 100vw;
+        height: 100vh;
+        aspect-ratio: auto;
+      }
+
+      .hide-wide {
+        left: -28%;
+        bottom: 6%;
+        width: 128%;
+      }
+
+      .hud {
+        width: 46%;
+        left: 20px;
+        bottom: 24px;
+      }
+
+      .controls {
+        right: 22px;
+        bottom: 28px;
+      }
+
+      .corner-nav {
+        top: 19px;
+        right: 3%;
+        gap: 8px;
+      }
+
+      .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 26px;
+      }
+
+      .final-drum {
+        left: -7%;
+        top: 23%;
+        width: 52%;
+      }
+
+      .final-gif {
+        right: -1%;
+        bottom: 5%;
+        width: 31%;
+      }
+
+      .final-story {
+        top: 35%;
+        left: 30%;
+        width: 49%;
+        padding: 9px 8px;
+      }
+
+      .final-quote {
+        font-size: 16px;
+        letter-spacing: 1px;
+      }
+
+      .final-source {
+        margin-top: 9px;
+        font-size: 10px;
+      }
+
+      .final-description {
+        margin-top: 6px;
+        font-size: 9px;
+        line-height: 1.5;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 页面主体：单个舞台承载完整的四步制作流程 -->
+  <main class="app" aria-label="鼓制作互动小游戏">
+    <section class="stage" id="stage">
+      <!-- 顶部步骤进度栏 -->
+      <nav class="nav-dots" id="progress-nav" aria-label="制作步骤"></nav>
+
+      <!-- 右上角上一步、下一步按钮 -->
+      <nav class="corner-nav" aria-label="步骤导航">
+        <button class="nav-btn" id="prevStepBtn" type="button" aria-label="上一步">‹</button>
+        <button class="nav-btn" id="nextStepBtn" type="button" aria-label="下一步">›</button>
+      </nav>
+
+      <!-- JavaScript 会按当前步骤动态生成这里的图片和交互层 -->
+      <div class="scene" id="scene"></div>
+
+      <!-- 左下角任务文字与完成进度 -->
+      <aside class="hud" aria-live="polite">
+        <p class="task-label" id="taskLabel"></p>
+        <div class="progress" aria-label="当前任务进度"><span id="progressBar"></span></div>
+      </aside>
+
+      <!-- 右下角当前步骤的主要操作按钮 -->
+      <div class="controls">
+        <button class="round-btn" id="actionBtn" type="button"></button>
+        <div class="btn-label" id="actionLabel"></div>
+      </div>
+
+      <!-- 提示、轻提示和转场加载状态 -->
+      <div class="hint-bubble" id="hintBubble"></div>
+      <div class="toast" id="toast"></div>
+      <div class="loading" id="loading" aria-hidden="true"><div class="spinner"></div></div>
+
+      <!-- 全部制作完成后显示的结果卡片 -->
+      <div class="modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+        <div class="result">
+          <div class="result-gif" aria-label="鼓乐演奏小动效">
+            <img src="ChatGPT Image 2026年6月8日 17_34_07.png" alt="鼓乐演奏第一帧" />
+            <img src="ChatGPT Image 2026年6月8日 20_34_51.png" alt="鼓乐演奏第二帧" />
+          </div>
+          <h2 id="resultTitle">鼓制作完成</h2>
+          <p class="result-quote">“鼍鼓逢逢，蒙瞍奏公。”</p>
+          <p class="result-source">出自《诗经·大雅·灵台》</p>
+          <p id="resultText">“鼍鼓”指以鼍皮制成的鼓，“逢逢”形容鼓声深沉而连续。鼓曾与祭祀、礼仪及雷鸣崇拜相连，也象征声音的力量，以及人与自然、神灵和集体之间的连接。</p>
+          <div class="modal-actions">
+            <button class="pill" id="playAgainBtn" type="button">再做一次</button>
+            <button class="pill secondary" id="closeModalBtn" type="button">留在成品</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* ===== 1. 素材路径配置：替换图片或音频时主要修改这里 ===== */
+    const assets = {
+      hairyHide: "image 110.png",
+      cleanHide: "image 89.png",
+      roundHide: "image 113 1.png",
+      openShell: "image 115.png",
+      plank: "image 114.png",
+      body: "image 97.png",
+      mounted: "image 121.png",
+      looseMounted: "image 112.png",
+      nailed: "image 122.png",
+      painted: "image 123.png",
+      final: "image 124.png",
+      hammer: "image 125.png",
+      brush: "image 126.png",
+      scraperTool: "刮刀.png",
+      drumSound: "The_Sound_of_Chinese_%234-1781160583108.mp3",
+      finalScene: "鼓-9.png",
+      finalGifA: "ChatGPT Image 2026年6月8日 17_34_07.png",
+      finalGifB: "ChatGPT Image 2026年6月8日 20_34_51.png"
+    };
+
+    /* 四个步骤的名称及操作提示 */
+    const steps = [
+      {
+        title: "加工鼓皮",
+        hint: "按住鼠标左键在牛皮任意位置拖动刮毛，露出足够多的光滑鼓皮后点击虚线圆裁切。"
+      },
+      {
+        title: "制作鼓腔",
+        hint: "拖动右侧木板到鼓腔缺口处，松手后会自动拼接成中空共鸣腔。"
+      },
+      {
+        title: "蒙皮绷紧",
+        hint: "拖动鼓皮边缘的光点自由拉伸，达到大小后覆盖鼓腔，再点击鼓面绷紧。"
+      },
+      {
+        title: "钉皮装饰",
+        hint: "点击鼓皮边缘逐颗钉上鼓钉，然后拖动刷子给鼓身上漆。"
+      }
+    ];
+
+    /* 游戏状态：记录当前步骤和每项操作的完成程度 */
+    const state = {
+      step: 0,
+      completed: [false, false, false, false],
+      skin: { scrape: 0, cut: false, dabs: [], cells: new Set(), allClean: false },
+      shell: { assembled: false, plankX: 69, plankY: 40, plankR: -4 },
+      tension: { sx: 1, sy: 1, skew: 0, mounted: false, taps: 0 },
+      decor: { nails: 0, paint: 0, phase: "nail", brushX: 74, brushY: 39, done: false, strokes: [], cells: new Set() }
+    };
+
+    /* 缓存常用页面元素，避免反复查询 DOM */
+    const els = {
+      stage: document.querySelector("#stage"),
+      scene: document.querySelector("#scene"),
+      progressNav: document.querySelector("#progress-nav"),
+      label: document.querySelector("#taskLabel"),
+      progress: document.querySelector("#progressBar"),
+      action: document.querySelector("#actionBtn"),
+      actionLabel: document.querySelector("#actionLabel"),
+      hint: document.querySelector("#hintBubble"),
+      toast: document.querySelector("#toast"),
+      loading: document.querySelector("#loading"),
+      modal: document.querySelector("#resultModal"),
+      prevStep: document.querySelector("#prevStepBtn"),
+      nextStep: document.querySelector("#nextStepBtn")
+    };
+
+    let toastTimer = 0;
+    let autoTimer = 0;
+    let scrapeImage = null;
+    let paintImage = null;
+    let finalDrumAudio = null;
+    let audioFadeTimer = 0;
+    let resultModalTimer = 0;
+
+    /* ===== 2. 音效控制：绷皮点击声和最终循环鼓声 ===== */
+    function playTensionDrum() {
+      const hit = new Audio(assets.drumSound);
+      hit.preload = "auto";
+      hit.volume = 0.26;
+      hit.playbackRate = 0.94 + Math.random() * 0.1;
+      hit.play().catch(() => {});
+      setTimeout(() => {
+        const start = hit.volume;
+        let frame = 0;
+        const fade = setInterval(() => {
+          frame += 1;
+          hit.volume = Math.max(0, start * (1 - frame / 6));
+          if (frame >= 6) {
+            clearInterval(fade);
+            hit.pause();
+          }
+        }, 70);
+      }, 520);
+    }
+
+    function stopFinalDrum() {
+      clearInterval(audioFadeTimer);
+      if (!finalDrumAudio) return;
+      finalDrumAudio.pause();
+      finalDrumAudio.currentTime = 0;
+      finalDrumAudio = null;
+    }
+
+    function playFinalDrum() {
+      stopFinalDrum();
+      finalDrumAudio = new Audio(assets.drumSound);
+      finalDrumAudio.preload = "auto";
+      finalDrumAudio.volume = 0;
+      finalDrumAudio.play().catch(() => {});
+      let frame = 0;
+      audioFadeTimer = setInterval(() => {
+        if (!finalDrumAudio) return clearInterval(audioFadeTimer);
+        frame += 1;
+        finalDrumAudio.volume = Math.min(0.46, frame * 0.046);
+        if (frame >= 10) clearInterval(audioFadeTimer);
+      }, 55);
+    }
+
+    /* ===== 3. 通用工具函数：数值限制、坐标换算、提示和图片模板 ===== */
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function pctFromPointer(event) {
+      const rect = els.stage.getBoundingClientRect();
+      return {
+        x: ((event.clientX - rect.left) / rect.width) * 100,
+        y: ((event.clientY - rect.top) / rect.height) * 100
+      };
+    }
+
+    function setProgress(value) {
+      els.progress.style.setProperty("--progress", `${clamp(value, 0, 100)}%`);
+    }
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      els.toast.textContent = message;
+      els.toast.classList.add("is-visible");
+      toastTimer = setTimeout(() => els.toast.classList.remove("is-visible"), 1800);
+    }
+
+    function showLoading(done) {
+      els.loading.classList.add("is-visible");
+      setTimeout(() => {
+        els.loading.classList.remove("is-visible");
+        done();
+      }, 520);
+    }
+
+    function img(src, className, alt = "") {
+      return `<img class="layer ${className}" src="${src}" alt="${alt}" draggable="false">`;
+    }
+
+    /* ===== 4. 页面导航与场景切换 ===== */
+    function renderDots() {
+      els.progressNav.innerHTML = steps.map((step, index) => {
+        const wrapperClasses = ["dot-wrapper"];
+        const dotClasses = ["dot"];
+        if (index < state.step || state.completed[index]) {
+          wrapperClasses.push("completed");
+          dotClasses.push("completed");
+        }
+        if (index === state.step) {
+          wrapperClasses.push("active");
+          dotClasses.push("active");
+        }
+        return `
+          <button class="${wrapperClasses.join(" ")}" type="button" data-step="${index}" aria-label="${step.title}">
+            <span class="${dotClasses.join(" ")}"></span>
+            <span class="dot-label">${step.title}</span>
+          </button>
+        `;
+      }).join("");
+
+      els.progressNav.querySelectorAll(".dot-wrapper").forEach(item => {
+        item.addEventListener("click", () => {
+          const target = Number(item.dataset.step);
+          if (target <= state.step || state.completed[target - 1]) {
+            goStep(target);
+          } else {
+            showToast("请先完成前一个制作步骤。");
+          }
+        });
+      });
+
+      updateStepNavigation();
+    }
+
+    function updateStepNavigation() {
+      els.prevStep.disabled = state.step === 0;
+      els.nextStep.disabled = state.step === steps.length - 1 || !state.completed[state.step];
+    }
+
+    function render() {
+      clearInterval(autoTimer);
+      els.hint.textContent = steps[state.step].hint;
+      renderDots();
+
+      if (state.step === 0) renderSkin();
+      if (state.step === 1) renderShell();
+      if (state.step === 2) renderTension();
+      if (state.step === 3) renderDecor();
+    }
+
+    function goStep(index) {
+      if (index === state.step) return;
+      if (state.decor.done && index !== 3) stopFinalDrum();
+      els.scene.classList.add("is-swapping");
+      showLoading(() => {
+        state.step = index;
+        els.scene.classList.remove("is-swapping");
+        els.scene.classList.add("is-entering");
+        els.scene.classList.add("step-arrival");
+        render();
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => els.scene.classList.remove("is-entering"));
+        });
+        setTimeout(() => els.scene.classList.remove("step-arrival"), 680);
+      });
+    }
+
+    function completeStep(index) {
+      state.completed[index] = true;
+      renderDots();
+    }
+
+    /* ===== 5. 第一步：自由刮毛、一键刮毛和圆形裁切 ===== */
+    function renderSkin() {
+      const progress = state.skin.cut ? 100 : state.skin.scrape;
+      els.label.textContent = state.skin.cut ? "圆形鼓皮已裁好，可以进入鼓腔制作。" : "按住鼠标左键在牛皮上拖动，拖过的地方会被自然刮净。";
+      setProgress(progress);
+      els.action.textContent = state.skin.cut ? "→" : state.skin.scrape >= 94 ? "裁" : "刮";
+      els.actionLabel.textContent = state.skin.cut ? "下一步" : state.skin.scrape >= 94 ? "切割鼓皮" : "一键刮毛";
+      els.action.disabled = false;
+
+      if (state.skin.cut) {
+        els.scene.innerHTML = img(assets.roundHide, "round-hide", "裁好的圆形鼓皮");
+      } else {
+        const cleanedClass = state.skin.scrape >= 94 ? "is-cleaned" : "";
+        els.scene.innerHTML = `
+          <div class="skin-workspace ${cleanedClass}" id="skinWorkspace">
+            ${img(assets.hairyHide, "hide-wide soft-glow", "带毛牛皮")}
+            <canvas class="scrape-canvas" id="scrapeCanvas" aria-label="按住鼠标左键拖动刮毛"></canvas>
+            <button class="cut-guide ${state.skin.scrape >= 94 ? "is-visible" : ""}" type="button" aria-label="切割鼓皮"></button>
+          </div>
+          <img class="scraper" id="scraperTool" src="${assets.scraperTool}" alt="" draggable="false">
+        `;
+        const guide = els.scene.querySelector(".cut-guide");
+        guide?.addEventListener("click", cutSkin);
+        setupScrapeCanvas();
+        bindScrapeDrag();
+      }
+
+      els.action.onclick = () => {
+        if (state.skin.cut) return goStep(1);
+        if (state.skin.scrape >= 94) return cutSkin();
+        autoScrape();
+      };
+    }
+
+    function loadScrapeImage(callback) {
+      if (scrapeImage?.complete) return callback(scrapeImage);
+      scrapeImage = new Image();
+      scrapeImage.onload = () => callback(scrapeImage);
+      scrapeImage.src = assets.cleanHide;
+    }
+
+    function setupScrapeCanvas() {
+      const canvas = els.scene.querySelector("#scrapeCanvas");
+      const hide = els.scene.querySelector(".hide-wide");
+      const dpr = window.devicePixelRatio || 1;
+      const media = hideImageRect();
+      canvas.width = Math.round(media.width * dpr);
+      canvas.height = Math.round(media.height * dpr);
+      canvas.style.left = `${media.x}px`;
+      canvas.style.top = `${media.y}px`;
+      canvas.style.width = `${media.width}px`;
+      canvas.style.height = `${media.height}px`;
+      if (hide) {
+        hide.style.left = `${media.x}px`;
+        hide.style.top = `${media.y}px`;
+        hide.style.bottom = "auto";
+        hide.style.width = `${media.width}px`;
+        hide.style.height = `${media.height}px`;
+      }
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      loadScrapeImage(() => redrawScrapes());
+    }
+
+    function hideImageRect() {
+      const stage = els.stage.getBoundingClientRect();
+      const naturalRatio = 2958 / 1665;
+      const mobile = stage.width <= 760;
+      const width = stage.width * (mobile ? 1.28 : 1.16);
+      const height = width / naturalRatio;
+      return {
+        x: stage.width * (mobile ? -0.23 : -0.13),
+        y: stage.height * (mobile ? 0.94 : 1.1) - height,
+        width,
+        height
+      };
+    }
+
+    function redrawScrapes() {
+      const canvas = els.scene.querySelector("#scrapeCanvas");
+      if (!canvas || !scrapeImage?.complete) return;
+      const ctx = canvas.getContext("2d");
+      const stage = els.stage.getBoundingClientRect();
+      const rect = hideImageRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      if (state.skin.allClean) {
+        ctx.drawImage(scrapeImage, 0, 0, rect.width, rect.height);
+        return;
+      }
+
+      for (const dab of state.skin.dabs) {
+        const x = (dab.x / 100) * stage.width - rect.x;
+        const y = (dab.y / 100) * stage.height - rect.y;
+        const rx = (dab.rx / 100) * stage.width;
+        const ry = (dab.ry / 100) * stage.height;
+        ctx.save();
+        ctx.globalAlpha = dab.alpha;
+        ctx.beginPath();
+        ctx.ellipse(x, y, rx, ry, dab.angle, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(scrapeImage, 0, 0, rect.width, rect.height);
+        ctx.restore();
+      }
+    }
+
+    function markScrapedCells(x, y, radiusX, radiusY) {
+      const cell = 3.5;
+      for (let gx = x - radiusX; gx <= x + radiusX; gx += cell) {
+        for (let gy = y - radiusY; gy <= y + radiusY; gy += cell) {
+          const dx = (gx - x) / radiusX;
+          const dy = (gy - y) / radiusY;
+          if (dx * dx + dy * dy <= 1) {
+            state.skin.cells.add(`${Math.floor(gx / cell)}:${Math.floor(gy / cell)}`);
+          }
+        }
+      }
+      state.skin.scrape = clamp(Math.round((state.skin.cells.size / 255) * 100), 0, 100);
+    }
+
+    function isOnHide(x, y) {
+      const stage = els.stage.getBoundingClientRect();
+      const rect = hideImageRect();
+      const px = (x / 100) * stage.width;
+      const py = (y / 100) * stage.height;
+      return px >= rect.x && px <= rect.x + rect.width && py >= rect.y && py <= rect.y + rect.height;
+    }
+
+    function addScrapeDab(x, y, pressure = 1, angle = 0) {
+      if (!isOnHide(x, y)) return;
+      const radiusX = 5.2 + pressure * 1.8;
+      const radiusY = 0.72 + pressure * 0.42;
+      const normalX = -Math.sin(angle);
+      const normalY = Math.cos(angle);
+      for (let i = -2; i <= 2; i += 1) {
+        const offset = i * radiusY * 0.72 + (Math.random() - 0.5) * 0.45;
+        state.skin.dabs.push({
+          x: clamp(x + normalX * offset + (Math.random() - 0.5) * 0.55, 0, 100),
+          y: clamp(y + normalY * offset + (Math.random() - 0.5) * 0.4, 0, 100),
+          rx: radiusX * (0.82 + Math.random() * 0.3),
+          ry: radiusY * (0.72 + Math.random() * 0.45),
+          angle: angle + (Math.random() - 0.5) * 0.12,
+          alpha: 0.48 + Math.random() * 0.34
+        });
+      }
+      markScrapedCells(x, y, radiusX, radiusY * 3.4);
+    }
+
+    function updateScrapeUi(x, y, angle = 0, visible = true) {
+      const guide = els.scene.querySelector(".cut-guide");
+      const scraper = els.scene.querySelector("#scraperTool");
+      const workspace = els.scene.querySelector("#skinWorkspace");
+      guide?.classList.toggle("is-visible", state.skin.scrape >= 94);
+      if (scraper) {
+        scraper.style.setProperty("--scrape-x", `${x}%`);
+        scraper.style.setProperty("--scrape-y", `${y}%`);
+        const angleDeg = clamp((angle * 180 / Math.PI) * .32 - 18, -44, 16);
+        scraper.style.setProperty("--scrape-r", `${angleDeg}deg`);
+        scraper.style.setProperty("--scrape-opacity", visible && state.skin.scrape < 94 ? "1" : "0");
+      }
+      workspace?.classList.toggle("is-cleaned", state.skin.scrape >= 94);
+      els.action.textContent = state.skin.scrape >= 94 ? "裁" : "刮";
+      els.actionLabel.textContent = state.skin.scrape >= 94 ? "切割鼓皮" : "一键刮毛";
+      setProgress(state.skin.scrape);
+    }
+
+    function bindScrapeDrag() {
+      const canvas = els.scene.querySelector("#scrapeCanvas");
+      let dragging = false;
+      let last = null;
+
+      const addStroke = event => {
+        const p = pctFromPointer(event);
+        if (!last) last = p;
+        const dx = p.x - last.x;
+        const dy = p.y - last.y;
+        const stage = els.stage.getBoundingClientRect();
+        const angle = Math.atan2(dy * stage.height, dx * stage.width);
+        const distance = Math.hypot(dx, dy);
+        const steps = Math.max(1, Math.ceil(distance / 1.35));
+        for (let i = 1; i <= steps; i += 1) {
+          const t = i / steps;
+          addScrapeDab(last.x + dx * t, last.y + dy * t, event.pressure || 1, angle);
+        }
+        last = p;
+        redrawScrapes();
+        updateScrapeUi(p.x, p.y, angle, true);
+      };
+
+      canvas.addEventListener("pointerdown", event => {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        dragging = true;
+        last = null;
+        canvas.setPointerCapture?.(event.pointerId);
+        addStroke(event);
+      });
+
+      canvas.addEventListener("pointermove", event => {
+        const p = pctFromPointer(event);
+        if (!dragging) {
+          updateScrapeUi(p.x, p.y, 0, true);
+          return;
+        }
+        addStroke(event);
+      });
+
+      const stop = () => {
+        dragging = false;
+        last = null;
+        const scraper = els.scene.querySelector("#scraperTool");
+        scraper?.style.setProperty("--scrape-opacity", "0");
+      };
+
+      canvas.addEventListener("pointerup", stop);
+      canvas.addEventListener("pointercancel", stop);
+      canvas.addEventListener("pointerleave", () => {
+        if (!dragging) els.scene.querySelector("#scraperTool")?.style.setProperty("--scrape-opacity", "0");
+      });
+    }
+
+    function autoScrape() {
+      clearInterval(autoTimer);
+      state.skin.allClean = false;
+      autoTimer = setInterval(() => {
+        const sweep = state.skin.scrape;
+        for (let i = 0; i < 12; i += 1) {
+          addScrapeDab(
+            clamp(-4 + sweep * 0.96 + Math.random() * 14, -8, 88),
+            18 + Math.random() * 76,
+            1,
+            (Math.random() - .5) * .16
+          );
+        }
+        state.skin.scrape = clamp(Math.max(state.skin.scrape + 4, state.skin.scrape), 0, 100);
+        redrawScrapes();
+        setProgress(state.skin.scrape);
+        if (state.skin.scrape >= 100) {
+          clearInterval(autoTimer);
+          state.skin.allClean = true;
+          redrawScrapes();
+          els.scene.querySelector("#skinWorkspace")?.classList.add("is-cleaned");
+          els.scene.querySelector("#scraperTool")?.style.setProperty("--scrape-opacity", "0");
+          els.scene.querySelector(".cut-guide")?.classList.add("is-visible");
+          els.action.textContent = "裁";
+          els.actionLabel.textContent = "切割鼓皮";
+        }
+      }, 45);
+    }
+
+    function cutSkin() {
+      state.skin.scrape = 100;
+      state.skin.cut = true;
+      completeStep(0);
+      showToast("鼓皮裁切完成。");
+      renderSkin();
+    }
+
+    /* ===== 6. 第二步：拖动木板并自动拼合鼓腔 ===== */
+    function renderShell() {
+      const progress = state.shell.assembled ? 100 : 0;
+      els.label.textContent = state.shell.assembled ? "木板已经拼成中空鼓腔。" : "把木板移动到缺口处，组合成鼓身。";
+      setProgress(progress);
+      els.action.textContent = state.shell.assembled ? "→" : "移";
+      els.actionLabel.textContent = state.shell.assembled ? "下一步" : "移动组合鼓身";
+      els.action.disabled = false;
+
+      if (state.shell.assembled) {
+        els.scene.innerHTML = img(assets.body, "drum-body large soft-glow", "拼好的鼓腔");
+      } else {
+        els.scene.innerHTML = `
+          ${img(assets.openShell, "shell-open soft-glow", "半开放木质鼓腔")}
+          <img class="layer plank" src="${assets.plank}" alt="待拼接木板" draggable="false" style="--plank-x:${state.shell.plankX}%; --plank-y:${state.shell.plankY}%; --plank-r:${state.shell.plankR}deg">
+          <svg class="arc-arrow" viewBox="0 0 480 190" aria-hidden="true">
+            <defs><marker id="arcArrow" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto"><path d="M0,0 L12,7 L0,14 Z" fill="rgba(225,210,170,.78)"/></marker></defs>
+            <path d="M420 130 C275 170 175 150 50 35" fill="none" stroke="rgba(225,210,170,.78)" stroke-width="6" marker-end="url(#arcArrow)"/>
+          </svg>
+        `;
+        bindPlankDrag();
+      }
+
+      els.action.onclick = () => {
+        if (state.shell.assembled) return goStep(2);
+        animateAssembly();
+      };
+    }
+
+    function bindPlankDrag() {
+      const plank = els.scene.querySelector(".plank");
+      let active = false;
+      plank.addEventListener("pointerdown", event => {
+        active = true;
+        plank.setPointerCapture(event.pointerId);
+      });
+      plank.addEventListener("pointermove", event => {
+        if (!active) return;
+        const p = pctFromPointer(event);
+        state.shell.plankX = clamp(p.x - 6.75, 5, 84);
+        state.shell.plankY = clamp(p.y - 16.2, 10, 68);
+        state.shell.plankR = -4;
+        plank.style.setProperty("--plank-x", `${state.shell.plankX}%`);
+        plank.style.setProperty("--plank-y", `${state.shell.plankY}%`);
+        plank.style.setProperty("--plank-r", `${state.shell.plankR}deg`);
+      });
+      plank.addEventListener("pointerup", () => {
+        active = false;
+        const near = Math.abs(state.shell.plankX - 29.1) + Math.abs(state.shell.plankY - 34);
+        if (near < 34) animateAssembly();
+        else showToast("再靠近鼓腔缺口一些。");
+      });
+    }
+
+    function animateAssembly() {
+      state.shell.plankX = 29.1;
+      state.shell.plankY = 34;
+      state.shell.plankR = -8;
+      const plank = els.scene.querySelector(".plank");
+      const arrow = els.scene.querySelector(".arc-arrow");
+      if (plank) {
+        plank.classList.add("is-snapping");
+        plank.style.setProperty("--plank-x", `${state.shell.plankX}%`);
+        plank.style.setProperty("--plank-y", `${state.shell.plankY}%`);
+        plank.style.setProperty("--plank-r", `${state.shell.plankR}deg`);
+      }
+      if (arrow) arrow.style.opacity = "0";
+      setTimeout(() => {
+        state.shell.assembled = true;
+        completeStep(1);
+        showToast("鼓腔拼接完成。");
+        renderShell();
+      }, 580);
+    }
+
+    /* ===== 7. 第三步：拉伸鼓皮、覆盖鼓腔并点击绷紧 ===== */
+    function renderTension() {
+      if (!state.tension.mounted) renderStretchSkin();
+      else renderMountedSkin();
+    }
+
+    function stretchProgress() {
+      return clamp(((state.tension.sx + state.tension.sy - 2) / 0.7) * 100, 0, 100);
+    }
+
+    function renderStretchSkin() {
+      const progress = stretchProgress();
+      els.label.textContent = "拉扯牛皮边缘，把鼓皮撑到能覆盖鼓腔的大小。";
+      setProgress(progress);
+      els.action.textContent = "蒙";
+      els.actionLabel.textContent = progress >= 66 ? "覆盖鼓腔" : "继续拉伸";
+      els.action.disabled = false;
+      els.scene.innerHTML = `
+        <div class="stretch-wrap" id="stretchWrap" style="--sx:${state.tension.sx}; --sy:${state.tension.sy}; --skew:${state.tension.skew}deg">
+          <img class="stretch-hide" src="${assets.roundHide}" alt="可拉伸鼓皮" draggable="false">
+        </div>
+        <svg class="arc-arrow" style="left:66%;top:22%;width:20%;height:20%;transform:rotate(-10deg)" viewBox="0 0 300 160" aria-hidden="true">
+          <defs><marker id="pullArrow" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto"><path d="M0,0 L12,7 L0,14 Z" fill="rgba(225,210,170,.78)"/></marker></defs>
+          <path d="M25 130 L255 25" stroke="rgba(225,210,170,.78)" stroke-width="6" marker-end="url(#pullArrow)"/>
+        </svg>
+      `;
+      bindStretchDrag();
+      els.action.onclick = () => {
+        if (stretchProgress() < 66) {
+          state.tension.sx = clamp(state.tension.sx + 0.12, 1, 1.42);
+          state.tension.sy = clamp(state.tension.sy + 0.1, 1, 1.36);
+          state.tension.skew = clamp(state.tension.skew + 1.2, -4, 4);
+          return renderStretchSkin();
+        }
+        mountSkin();
+      };
+    }
+
+    function bindStretchDrag() {
+      const wrap = document.querySelector("#stretchWrap");
+      let active = false;
+      let startX = 0;
+      let startY = 0;
+      let startSx = 1;
+      let startSy = 1;
+      wrap.addEventListener("pointerdown", event => {
+        active = true;
+        startX = event.clientX;
+        startY = event.clientY;
+        startSx = state.tension.sx;
+        startSy = state.tension.sy;
+        wrap.setPointerCapture(event.pointerId);
+      });
+      wrap.addEventListener("pointermove", event => {
+        if (!active) return;
+        const dx = Math.abs(event.clientX - startX);
+        const dy = Math.abs(event.clientY - startY);
+        const sign = event.clientX > startX ? 1 : -1;
+        state.tension.sx = clamp(startSx + dx / 360, 1, 1.48);
+        state.tension.sy = clamp(startSy + dy / 340, 1, 1.4);
+        state.tension.skew = clamp(sign * dx / 42, -5, 5);
+        wrap.style.setProperty("--sx", state.tension.sx);
+        wrap.style.setProperty("--sy", state.tension.sy);
+        wrap.style.setProperty("--skew", `${state.tension.skew}deg`);
+        setProgress(stretchProgress());
+        els.actionLabel.textContent = stretchProgress() >= 66 ? "覆盖鼓腔" : "继续拉伸";
+      });
+      wrap.addEventListener("pointerup", () => { active = false; });
+    }
+
+    function mountSkin() {
+      state.tension.mounted = true;
+      showToast("鼓皮已覆盖到鼓腔上。");
+      renderMountedSkin();
+    }
+
+    function renderMountedSkin() {
+      const progress = clamp(state.tension.taps * 25, 0, 100);
+      els.label.textContent = state.tension.taps >= 4 ? "鼓皮张力已经调好。" : "点击鼓面，让鼓皮一点点绷紧。";
+      setProgress(progress);
+      els.action.textContent = state.tension.taps >= 4 ? "→" : "紧";
+      els.actionLabel.textContent = state.tension.taps >= 4 ? "下一步" : "点击绷紧";
+      els.scene.innerHTML = `
+        ${img(assets.mounted, `mounted-drum soft-glow ${state.tension.taps >= 4 ? "is-tight" : ""}`, "蒙皮后的鼓")}
+        <div class="rim-hit" id="rimHit"></div>
+      `;
+      const drum = els.scene.querySelector(".mounted-drum");
+      drum.addEventListener("click", tightenSkin);
+      els.action.onclick = () => {
+        if (state.tension.taps >= 4) return goStep(3);
+        tightenSkin();
+      };
+      if (state.tension.taps >= 4) completeStep(2);
+    }
+
+    function tightenSkin() {
+      state.tension.taps = clamp(state.tension.taps + 1, 0, 4);
+      const hit = document.querySelector("#rimHit");
+      const drum = els.scene.querySelector(".mounted-drum");
+      playTensionDrum();
+      setProgress(state.tension.taps * 25);
+      els.label.textContent = state.tension.taps >= 4 ? "鼓皮张力已经调好。" : "点击鼓面，让鼓皮一点点绷紧。";
+      els.action.textContent = state.tension.taps >= 4 ? "→" : "紧";
+      els.actionLabel.textContent = state.tension.taps >= 4 ? "下一步" : "点击绷紧";
+      if (state.tension.taps >= 4) {
+        drum?.classList.add("is-tight");
+        completeStep(2);
+      }
+      hit?.classList.remove("pulse");
+      drum?.classList.remove("is-struck");
+      requestAnimationFrame(() => {
+        hit?.classList.add("pulse");
+        drum?.classList.add("is-struck");
+      });
+      setTimeout(() => drum?.classList.remove("is-struck"), 440);
+    }
+
+    /* ===== 8. 第四步：一键钉钉子，再拖动刷子完成上漆 ===== */
+    function renderDecor() {
+      if (state.decor.done) return renderFinal();
+      if (state.decor.phase === "paint") return renderPainting();
+      renderNailing();
+    }
+
+    function renderNailing() {
+      const nailProgress = clamp(state.decor.nails, 0, 100);
+      els.label.textContent = "点击一键钉完，让鼓钉沿着鼓皮边缘依次固定。";
+      setProgress(nailProgress);
+      els.action.textContent = "钉";
+      els.actionLabel.textContent = nailProgress >= 100 ? "开始刷漆" : "一键钉钉子";
+      els.scene.innerHTML = `
+        <div class="nail-fade">
+          ${img(assets.looseMounted, "decor-drum-loose soft-glow", "等待钉皮的鼓")}
+          <img class="layer decor-drum soft-glow nail-fade-top" src="${assets.nailed}" alt="钉好鼓钉的鼓" draggable="false" style="--nail-opacity:${nailProgress / 100}; --nail-scale:${nailProgress >= 100 ? 1 : .94}">
+        </div>
+        ${nailProgress > 0 && nailProgress < 100 ? `<img class="tool-img hammer nail-hammer" src="${assets.hammer}" alt="" draggable="false" style="--hammer-opacity:1; --hammer-x:${62 + nailProgress * 0.16}%; --hammer-y:${23 + Math.sin(nailProgress / 12) * 1.8}%">` : ""}
+      `;
+      els.action.onclick = () => {
+        if (nailProgress >= 100) {
+          state.decor.phase = "paint";
+          return renderPainting();
+        }
+        autoNailAll();
+      };
+    }
+
+    function placeNail() {
+      autoNailAll();
+    }
+
+    function autoNailAll() {
+      clearInterval(autoTimer);
+      els.action.disabled = true;
+      if (state.decor.nails <= 0) {
+        state.decor.nails = 1;
+        renderNailing();
+      }
+      autoTimer = setInterval(() => {
+        state.decor.nails = clamp(state.decor.nails + 8, 0, 100);
+        const top = els.scene.querySelector(".nail-fade-top");
+        const hammer = els.scene.querySelector(".nail-hammer");
+        top?.style.setProperty("--nail-opacity", state.decor.nails / 100);
+        if (state.decor.nails >= 100) top?.style.setProperty("--nail-scale", "1");
+        if (hammer) {
+          hammer.style.setProperty("--hammer-x", `${62 + state.decor.nails * 0.16}%`);
+          hammer.style.setProperty("--hammer-y", `${23 + Math.sin(state.decor.nails / 12) * 1.8}%`);
+        }
+        setProgress(state.decor.nails);
+        if (state.decor.nails >= 100) {
+          clearInterval(autoTimer);
+          els.scene.querySelector(".nail-hammer")?.remove();
+          els.action.textContent = "钉";
+          els.actionLabel.textContent = "开始刷漆";
+          showToast("鼓钉已经全部固定，开始手动刷漆。");
+          setTimeout(() => {
+            state.decor.phase = "paint";
+            renderPainting();
+          }, 520);
+        }
+      }, 85);
+    }
+
+    function renderPainting() {
+      els.label.textContent = "按住刷子拖动给鼓身上红漆，笔触会保留刷毛纹理。";
+      setProgress(state.decor.paint);
+      els.action.textContent = state.decor.paint >= 100 ? "✓" : "刷";
+      els.actionLabel.textContent = state.decor.paint >= 100 ? "完成展示" : "拖动刷漆";
+      els.action.disabled = false;
+      els.scene.innerHTML = `
+        ${img(assets.nailed, "decor-drum soft-glow", "钉好鼓钉的鼓")}
+        <canvas class="paint-canvas" id="paintCanvas" aria-label="刷漆笔触"></canvas>
+        <img class="tool-img brush" src="${assets.brush}" alt="刷子" draggable="false" style="--brush-x:${state.decor.brushX}%; --brush-y:${state.decor.brushY}%">
+      `;
+      setupPaintCanvas();
+      bindBrushDrag();
+      els.action.onclick = () => {
+        if (state.decor.paint >= 100) return finishDecor();
+        showToast("请按住刷子拖动，把红漆刷满鼓身。");
+      };
+    }
+
+    function bindBrushDrag() {
+      const brush = els.scene.querySelector(".brush");
+      const surface = els.scene.querySelector("#paintCanvas");
+      let active = false;
+      let last = null;
+      surface.addEventListener("pointerdown", event => {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        active = true;
+        last = null;
+        surface.setPointerCapture(event.pointerId);
+        addPaintStroke(event);
+      });
+      surface.addEventListener("pointermove", event => {
+        if (!active) return;
+        addPaintStroke(event);
+      });
+      surface.addEventListener("pointerup", () => { active = false; last = null; });
+      surface.addEventListener("pointercancel", () => { active = false; last = null; });
+
+      function addPaintStroke(event) {
+        const p = pctFromPointer(event);
+        state.decor.brushX = clamp(p.x - 6, 6, 88);
+        state.decor.brushY = clamp(p.y - 10, 18, 72);
+        brush.style.setProperty("--brush-x", `${state.decor.brushX}%`);
+        brush.style.setProperty("--brush-y", `${state.decor.brushY}%`);
+
+        if (!last) last = p;
+        const distance = Math.hypot(p.x - last.x, p.y - last.y);
+        const steps = Math.max(1, Math.ceil(distance / 2.4));
+        for (let i = 1; i <= steps; i += 1) {
+          const t = i / steps;
+          addPaintDab(last.x + (p.x - last.x) * t, last.y + (p.y - last.y) * t);
+        }
+        last = p;
+        redrawPaint();
+        setProgress(state.decor.paint);
+        if (state.decor.paint >= 100) {
+          els.action.textContent = "✓";
+          els.actionLabel.textContent = "完成展示";
+        }
+      }
+    }
+
+    function loadPaintImage(callback) {
+      if (paintImage?.complete) return callback(paintImage);
+      paintImage = new Image();
+      paintImage.onload = () => callback(paintImage);
+      paintImage.src = assets.painted;
+    }
+
+    function setupPaintCanvas() {
+      const canvas = els.scene.querySelector("#paintCanvas");
+      const dpr = window.devicePixelRatio || 1;
+      const rect = els.stage.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      loadPaintImage(() => redrawPaint());
+    }
+
+    function drumImageRect() {
+      const stage = els.stage.getBoundingClientRect();
+      const width = stage.width * 0.51;
+      const height = width;
+      return {
+        x: stage.width * 0.255,
+        y: stage.height * 0.15,
+        width,
+        height
+      };
+    }
+
+    function paintedImageRect() {
+      const rect = drumImageRect();
+      const scale = rect.width / 1254;
+      return {
+        x: rect.x + 78 * scale,
+        y: rect.y,
+        width: 1097 * scale,
+        height: 1254 * scale
+      };
+    }
+
+    function redrawPaint() {
+      const canvas = els.scene.querySelector("#paintCanvas");
+      if (!canvas || !paintImage?.complete) return;
+      const ctx = canvas.getContext("2d");
+      const stage = els.stage.getBoundingClientRect();
+      const rect = paintedImageRect();
+      ctx.clearRect(0, 0, stage.width, stage.height);
+
+      for (const stroke of state.decor.strokes) {
+        const x = (stroke.x / 100) * stage.width;
+        const y = (stroke.y / 100) * stage.height;
+        const w = (stroke.w / 100) * stage.width;
+        const h = (stroke.h / 100) * stage.height;
+
+        ctx.save();
+        ctx.globalAlpha = stroke.alpha;
+        ctx.translate(x, y);
+        ctx.rotate(stroke.angle);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, w, h, 0, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.rotate(-stroke.angle);
+        ctx.translate(-x, -y);
+        ctx.drawImage(paintImage, rect.x, rect.y, rect.width, rect.height);
+        ctx.restore();
+
+        ctx.save();
+        ctx.globalAlpha = 0.22;
+        ctx.strokeStyle = "rgba(86, 16, 13, 0.8)";
+        ctx.lineWidth = Math.max(1, stage.width * 0.0012);
+        ctx.translate(x, y);
+        ctx.rotate(stroke.angle);
+        for (let i = -3; i <= 3; i += 1) {
+          ctx.beginPath();
+          ctx.moveTo(-w * 0.72, i * h * 0.23);
+          ctx.lineTo(w * 0.72, i * h * 0.23 + Math.sin(stroke.seed + i) * h * 0.12);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    function isOnDrumBody(x, y) {
+      const stage = els.stage.getBoundingClientRect();
+      const rect = drumImageRect();
+      const px = (x / 100) * stage.width;
+      const py = (y / 100) * stage.height;
+      return px >= rect.x + rect.width * 0.1 &&
+        px <= rect.x + rect.width * 0.9 &&
+        py >= rect.y + rect.height * 0.32 &&
+        py <= rect.y + rect.height * 0.88;
+    }
+
+    function markPaintCells(x, y) {
+      const cell = 3.8;
+      const rx = 8;
+      const ry = 5;
+      for (let gx = x - rx; gx <= x + rx; gx += cell) {
+        for (let gy = y - ry; gy <= y + ry; gy += cell) {
+          const dx = (gx - x) / rx;
+          const dy = (gy - y) / ry;
+          if (dx * dx + dy * dy <= 1) {
+            state.decor.cells.add(`${Math.floor(gx / cell)}:${Math.floor(gy / cell)}`);
+          }
+        }
+      }
+      state.decor.paint = clamp(Math.round((state.decor.cells.size / 72) * 100), 0, 100);
+    }
+
+    function addPaintDab(x, y) {
+      if (!isOnDrumBody(x, y)) return;
+      for (let i = 0; i < 2; i += 1) {
+        state.decor.strokes.push({
+          x: clamp(x + (Math.random() - 0.5) * 1.2, 0, 100),
+          y: clamp(y + (Math.random() - 0.5) * 1.2, 0, 100),
+          w: 4.6 + Math.random() * 1.8,
+          h: 1.55 + Math.random() * 0.9,
+          angle: -0.28 + Math.random() * 0.56,
+          alpha: 0.64 + Math.random() * 0.2,
+          seed: Math.random() * 20
+        });
+      }
+      markPaintCells(x, y);
+    }
+
+    /* ===== 9. 成品展示：播放鼓声、显示诗句并延迟弹出完成卡片 ===== */
+    function finishDecor() {
+      state.decor.done = true;
+      completeStep(3);
+      renderFinal();
+      playFinalDrum();
+      clearTimeout(resultModalTimer);
+      resultModalTimer = setTimeout(() => els.modal.classList.add("is-visible"), 2600);
+    }
+
+    function renderFinal() {
+      els.label.textContent = "成品鼓已完成，结果展示区会显示最终作品。";
+      setProgress(100);
+      els.action.textContent = "↺";
+      els.actionLabel.textContent = "重新开始";
+      els.scene.innerHTML = `
+        ${img(assets.final, "final-drum", "完成后的红漆鼓")}
+        <article class="final-story" aria-label="鼓的诗句与文化介绍">
+          <p class="final-quote">“鼍鼓逢逢，蒙瞍奏公。”</p>
+          <p class="final-source">这句诗出自《诗经·大雅·灵台》。</p>
+          <p class="final-description">“鼍鼓”指以鼍皮制成的鼓，“逢逢”形容鼓声深沉而连续。早期的鼓常与祭祀、礼仪和自然崇拜相连，人们把鼓声想象为雷鸣。鼓不仅是一件乐器，也象征声音的力量，以及人与自然、神灵和集体之间的连接。</p>
+        </article>
+        <div class="final-gif" aria-hidden="true">
+          <img src="${assets.finalGifA}" alt="">
+          <img src="${assets.finalGifB}" alt="">
+        </div>
+      `;
+      els.action.onclick = resetAll;
+    }
+
+    /* ===== 10. 重置与事件绑定 ===== */
+    function resetCurrent() {
+      if (state.step === 0) state.skin = { scrape: 0, cut: false, dabs: [], cells: new Set(), allClean: false };
+      if (state.step === 1) state.shell = { assembled: false, plankX: 69, plankY: 40, plankR: -4 };
+      if (state.step === 2) state.tension = { sx: 1, sy: 1, skew: 0, mounted: false, taps: 0 };
+      if (state.step === 3) {
+        stopFinalDrum();
+        state.decor = { nails: 0, paint: 0, phase: "nail", brushX: 74, brushY: 39, done: false, strokes: [], cells: new Set() };
+      }
+      state.completed[state.step] = false;
+      render();
+      showToast("当前步骤已重置。");
+    }
+
+    function resetAll() {
+      clearTimeout(resultModalTimer);
+      stopFinalDrum();
+      state.step = 0;
+      state.completed = [false, false, false, false];
+      state.skin = { scrape: 0, cut: false, dabs: [], cells: new Set(), allClean: false };
+      state.shell = { assembled: false, plankX: 69, plankY: 40, plankR: -4 };
+      state.tension = { sx: 1, sy: 1, skew: 0, mounted: false, taps: 0 };
+      state.decor = { nails: 0, paint: 0, phase: "nail", brushX: 74, brushY: 39, done: false, strokes: [], cells: new Set() };
+      els.modal.classList.remove("is-visible");
+      render();
+    }
+
+    els.prevStep.addEventListener("click", () => {
+      if (state.step > 0) goStep(state.step - 1);
+    });
+
+    els.nextStep.addEventListener("click", () => {
+      if (state.step < steps.length - 1 && state.completed[state.step]) {
+        goStep(state.step + 1);
+      } else if (!state.completed[state.step]) {
+        showToast("请先完成当前制作步骤。");
+      }
+    });
+
+    document.querySelector("#playAgainBtn").addEventListener("click", resetAll);
+    document.querySelector("#closeModalBtn").addEventListener("click", () => els.modal.classList.remove("is-visible"));
+
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape") els.modal.classList.remove("is-visible");
+      if (event.key === "ArrowRight" && state.completed[state.step] && state.step < 3) goStep(state.step + 1);
+      if (event.key === "ArrowLeft" && state.step > 0) goStep(state.step - 1);
+    });
+
+    render();
+  </script>
+</body>
+</html>

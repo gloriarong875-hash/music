@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>鼓制作完成卡片</title>
+  <link rel="stylesheet" href="完成卡片.css">
+</head>
+<body>
+  <main class="preview-page">
+    <button class="preview-button" id="previewOpenBtn" type="button">查看完成卡片</button>
+  </main>
+
+  <div
+    class="completion-modal"
+    id="resultModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="resultTitle"
+    aria-hidden="true"
+  >
+    <div class="completion-card">
+      <div class="completion-animation" aria-label="鼓乐演奏动画">
+        <img src="ChatGPT Image 2026年6月8日 17_34_07.png" alt="鼓乐演奏第一帧">
+        <img src="ChatGPT Image 2026年6月8日 20_34_51.png" alt="鼓乐演奏第二帧">
+      </div>
+
+      <h2 id="resultTitle">鼓制作完成</h2>
+      <p>
+        中国鼓以空心木腔和兽皮蒙面为基本结构。古人将鼓声联想到雷声，
+        使鼓承载了雷神崇拜、礼乐文化与天人合一的象征意义。
+      </p>
+
+      <div class="completion-actions">
+        <button class="completion-button" id="playAgainBtn" type="button">再做一次</button>
+        <button class="completion-button secondary" id="closeModalBtn" type="button">留在成品</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="完成卡片.js"></script>
+</body>
+</html>
