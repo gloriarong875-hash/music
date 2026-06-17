@@ -25,6 +25,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: 金声玉振/3.1地域流派/package-lock.json
+
+      - name: Build regional map
+        working-directory: 金声玉振/3.1地域流派
+        run: |
+          npm ci
+          npm run build
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
