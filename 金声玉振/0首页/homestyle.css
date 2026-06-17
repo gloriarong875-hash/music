@@ -785,6 +785,46 @@ body.home-ready .home-shell {
   margin-top: 10px;
 }
 
+.home-bgm-start {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(24px, 5vh, 54px);
+  z-index: 24000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 128px;
+  min-height: 42px;
+  padding: 10px 22px;
+  border: 1px solid rgba(239, 214, 125, .68);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 240, 184, .22), transparent 45%),
+    rgba(5, 6, 5, .62);
+  color: var(--home-paper);
+  box-shadow: 0 0 22px rgba(239, 214, 125, .16), inset 0 0 12px rgba(255, 240, 184, .08);
+  cursor: pointer;
+  font-family: var(--home-font);
+  font-size: 16px;
+  letter-spacing: .2em;
+  transform: translateX(-50%);
+  transition: opacity .35s ease, visibility .35s ease, transform .22s ease, background .22s ease;
+}
+
+.home-bgm-start:hover,
+.home-bgm-start:focus-visible {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 240, 184, .32), transparent 45%),
+    rgba(42, 33, 20, .7);
+  transform: translateX(-50%) scale(1.05);
+}
+
+.home-bgm-start.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 @keyframes titleFadeIn {
   to {
     opacity: 1;

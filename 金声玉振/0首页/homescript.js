@@ -455,3 +455,21 @@ renderInstruments();
 initTypeCards();
 /* 中文脚注：首页不再显示加载页，初始化完成后直接播放 page1 视频。 */
 playHeroVideo();
+
+const homeBgmStart = document.getElementById("homeBgmStart");
+if (homeBgmStart) {
+  const hideHomeBgmStart = () => homeBgmStart.classList.add("is-hidden");
+  homeBgmStart.addEventListener("click", () => {
+    const playPromise = window.JSYZBgm?.play?.();
+    if (playPromise && typeof playPromise.then === "function") {
+      playPromise.then(hideHomeBgmStart).catch(() => {});
+    } else {
+      hideHomeBgmStart();
+    }
+  });
+  window.setTimeout(() => {
+    if (window.JSYZBgm?.audio && !window.JSYZBgm.audio.paused) {
+      hideHomeBgmStart();
+    }
+  }, 600);
+}

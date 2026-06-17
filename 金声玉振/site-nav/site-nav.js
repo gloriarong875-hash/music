@@ -153,7 +153,7 @@
     window.__JSYZGlobalBgmInstalled = true;
 
     const bgmUrl = new URL("assets/bgm.m4a", getCurrentScriptUrl()).href;
-    const normalVolume = 0.28;
+    const normalVolume = 0.42;
     const duckVolume = 0.025;
     const fadeMs = 420;
     const retryDelays = [250, 800, 1600, 3200];
@@ -163,6 +163,7 @@
     let restoreTimer = 0;
     let hasUserGesture = false;
     let manualDuckUntil = 0;
+    let lastSavedAt = 0;
 
     const bgm = document.createElement("audio");
     const preloadLink = document.createElement("link");
@@ -182,27 +183,90 @@
     bgm.setAttribute("aria-hidden", "true");
     bgm.style.display = "none";
 
-    function getSavedBgmTime() {
+    function getTransferredBgmTime() {
+      const params = new URLSearchParams(window.location.search);
+      const value = Number(params.get("__bgmTime") || "0");
+      return Number.isFinite(value) && value > 0 ? value : 0;
+    }
+
+    const transferredBgmTime = getTransferredBgmTime();
+
+    function cleanBgmTransferParams() {
+      const url = new URL(window.location.href);
+      if (!url.searchParams.has("__bgmTime") && !url.searchParams.has("__bgmPlaying")) return;
+      url.searchParams.delete("__bgmTime");
+      url.searchParams.delete("__bgmPlaying");
       try {
-        return Number(sessionStorage.getItem("jsyz-bgm-time") || "0");
+        window.history.replaceState(window.history.state, "", url.href);
+      } catch (error) {
+        // Some file:// contexts can reject history updates; the transfer still works.
+      }
+    }
+
+    function readStoredNumber(storage, key) {
+      try {
+        const value = Number(storage.getItem(key) || "0");
+        return Number.isFinite(value) ? value : 0;
       } catch (error) {
         return 0;
       }
     }
 
-    function saveBgmTime() {
+    function writeStoredValue(storage, key, value) {
       try {
-        const savedTime = Number(sessionStorage.getItem("jsyz-bgm-time") || "0");
-        sessionStorage.setItem("jsyz-bgm-time", String(bgm.currentTime || savedTime || 0));
+        storage.setItem(key, String(value));
       } catch (error) {
         // Ignore storage issues in privacy-restricted browsers.
       }
     }
 
+    function getSavedBgmTime() {
+      if (transferredBgmTime > 0) return transferredBgmTime;
+      const sessionUpdatedAt = readStoredNumber(sessionStorage, "jsyz-bgm-updated-at");
+      const localUpdatedAt = readStoredNumber(localStorage, "jsyz-bgm-updated-at");
+      if (localUpdatedAt > sessionUpdatedAt) {
+        return readStoredNumber(localStorage, "jsyz-bgm-time");
+      }
+      return readStoredNumber(sessionStorage, "jsyz-bgm-time") || readStoredNumber(localStorage, "jsyz-bgm-time");
+    }
+
+    function saveBgmTime(force = false) {
+      const now = Date.now();
+      if (!force && now - lastSavedAt < 900) return;
+      lastSavedAt = now;
+
+      const fallbackTime = getSavedBgmTime();
+      const currentTime = Number.isFinite(bgm.currentTime) && bgm.currentTime > 0
+        ? bgm.currentTime
+        : fallbackTime;
+
+      [sessionStorage, localStorage].forEach((storage) => {
+        writeStoredValue(storage, "jsyz-bgm-time", currentTime || 0);
+        writeStoredValue(storage, "jsyz-bgm-updated-at", now);
+      });
+    }
+
+    function addBgmTransferParams(href) {
+      const url = new URL(href, window.location.href);
+      const currentTime = Number.isFinite(bgm.currentTime) && bgm.currentTime > 0
+        ? bgm.currentTime
+        : getSavedBgmTime();
+      if (currentTime > 0) {
+        url.searchParams.set("__bgmTime", currentTime.toFixed(3));
+      }
+      if (!bgm.paused) {
+        url.searchParams.set("__bgmPlaying", "1");
+      }
+      return url.href;
+    }
+
     function applySavedBgmTime() {
       const savedTime = getSavedBgmTime();
       if (Number.isFinite(savedTime) && savedTime > 0 && Math.abs(bgm.currentTime - savedTime) > 1) {
-        bgm.currentTime = savedTime;
+        const safeTime = bgm.duration && Number.isFinite(bgm.duration)
+          ? savedTime % bgm.duration
+          : savedTime;
+        bgm.currentTime = safeTime;
       }
     }
 
@@ -219,6 +283,8 @@
         // Some browsers reject early seeking until enough media metadata is available.
       }
     });
+
+    window.setTimeout(cleanBgmTransferParams, 0);
 
     function isBgmMedia(media) {
       return media && media.dataset && media.dataset.globalBgm === "true";
@@ -324,6 +390,13 @@
       tryPlayBgm();
     }
 
+    function prepareTopbarNavigation(event) {
+      const link = event.target.closest && event.target.closest(".site-topbar__link");
+      if (!link) return;
+      saveBgmTime(true);
+      link.href = addBgmTransferParams(link.href);
+    }
+
     function observePageMedia() {
       scanPageMedia();
 
@@ -368,11 +441,13 @@
 
     document.addEventListener(
       "pointerdown",
-      (event) => {
-        if (event.target.closest && event.target.closest(".site-topbar__link")) {
-          saveBgmTime();
-        }
-      },
+      prepareTopbarNavigation,
+      true
+    );
+
+    document.addEventListener(
+      "click",
+      prepareTopbarNavigation,
       true
     );
 
@@ -427,9 +502,10 @@
       return result;
     };
 
-    window.setInterval(saveBgmTime, 1800);
-    window.addEventListener("pagehide", saveBgmTime);
-    window.addEventListener("beforeunload", saveBgmTime);
+    bgm.addEventListener("timeupdate", () => saveBgmTime());
+    window.setInterval(() => saveBgmTime(true), 1800);
+    window.addEventListener("pagehide", () => saveBgmTime(true));
+    window.addEventListener("beforeunload", () => saveBgmTime(true));
 
     document.body.appendChild(bgm);
     bgm.load();
