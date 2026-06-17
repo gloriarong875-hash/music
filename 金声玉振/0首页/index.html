@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -6,7 +6,7 @@
   <title>金声玉振 · 首页</title>
   <!--
     中文脚注（首页结构说明）
-    - page-hero：第一页，直接播放 1视频.mp4，播放结束后切换到 1切换背景图。
+    - page-hero：第一页，直接播放 首页播放视频.mp4，播放结束后切换到 1切换背景图。
     - page-instruments：第二页，十大乐器横向滑动，一屏显示五个，居中项放大。
     - page-types-1 / page-types-2：第三、四页，各展示两个画作类型，hover 图片显示介绍。
     - page-final：第五页，居中显示总结文字。
@@ -17,7 +17,7 @@
 <body class="home-ready">
   <main class="home-shell" id="homeShell" aria-label="金声玉振首页">
     <section class="home-section page-hero is-active" data-page="0" aria-label="首页第一屏">
-      <video class="hero-video" id="heroVideo" src="首页assets/1视频.mp4" muted playsinline preload="auto"></video>
+      <video class="hero-video" id="heroVideo" src="首页assets/首页播放视频.mp4" muted playsinline preload="auto"></video>
       <div class="hero-panorama" id="heroPanorama" aria-hidden="true"></div>
       <div class="section-shade"></div>
       <!-- 中文脚注：重播按钮位于 page1 左上角，样式在 homestyle.css 的 `.replay-video-btn` 中修改。 -->
@@ -97,9 +97,6 @@
   <aside class="type-float-card" id="typeFloatCard" aria-live="polite"></aside>
 
   <script src="homescript.js"></script>
-  <script src="../site-nav/site-map.js"></script>
   <script src="../site-nav/site-nav.js"></script>
 </body>
 </html>
-
-

@@ -102,6 +102,14 @@
       <img class="sheng-performer" src="" alt="" hidden />
       <div class="mobile-message"><span>乐</span><p>请横置设备或使用更宽的屏幕观看编年地图。</p></div>
     </main>
+    <script>
+      (function () {
+        var script = document.createElement("script");
+        var isDist = /\/dist\/index\.html$/i.test(window.location.pathname);
+        script.src = isDist ? "../../site-nav/site-nav.js" : "../site-nav/site-nav.js";
+        document.head.appendChild(script);
+      })();
+    </script>
     <script type="module" src="./app.js"></script>
 </body>
 </html>

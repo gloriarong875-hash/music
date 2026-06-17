@@ -258,14 +258,11 @@ body.home-ready .home-shell {
   opacity: 0;
   transform: translateX(28px);
   filter: drop-shadow(0 8px 22px rgba(0, 0, 0, .55));
-  animation: titleFadeIn 1.1s ease forwards;
 }
 
-.hero-title-stack img:nth-child(1) { animation-delay: 3.55s; }
-.hero-title-stack img:nth-child(2) { animation-delay: 4.05s; }
-.hero-title-stack img:nth-child(3) { animation-delay: 4.55s; }
-.hero-title-stack img:nth-child(4) { animation-delay: 5.05s; }
-.hero-title-stack img:nth-child(5) { animation-delay: 5.55s; }
+.hero-title-stack img.is-visible {
+  animation: titleFadeIn 1.1s ease forwards;
+}
 
 .hero-title-stack img:nth-child(1) {
   width: var(--hero-title-1-width);
@@ -321,8 +318,15 @@ body.home-ready .home-shell {
   font-size: 15px;
   letter-spacing: .18em;
   cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
   box-shadow: 0 0 18px rgba(239, 214, 125, .14);
-  transition: transform .22s ease, background .22s ease, border-color .22s ease;
+  transition: opacity .35s ease, transform .22s ease, background .22s ease, border-color .22s ease;
+}
+
+.page-hero.video-ended .replay-video-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .replay-video-btn:hover {

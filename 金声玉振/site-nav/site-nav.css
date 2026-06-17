@@ -126,6 +126,47 @@ body.has-site-topbar.site-section-make .nav-btn {
   height: calc(clamp(38px, 3vw, 58px) * .95) !important;
 }
 
+body.has-site-topbar.site-section-make .nav-dots,
+body.has-site-topbar.site-section-make .process {
+  position: fixed !important;
+  top: calc(var(--site-topbar-height) + 5.51vh + 18px) !important;
+  left: 50% !important;
+  z-index: 10010 !important;
+  width: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transform: translateX(-50%) !important;
+}
+
+body.has-site-topbar.site-section-make .top:has(.nav-dots) {
+  position: static !important;
+  width: auto !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+body.has-site-topbar.site-section-make .completion-modal,
+body.has-site-topbar.site-section-make .result-modal,
+body.has-site-topbar.site-section-make #complete-overlay,
+body.has-site-topbar.site-section-make #resultModal.modal,
+body.has-site-topbar.site-section-make .modal#resultModal {
+  position: fixed !important;
+  z-index: 12050 !important;
+}
+
+body.has-site-topbar.site-section-make .completion-card,
+body.has-site-topbar.site-section-make .result-card,
+body.has-site-topbar.site-section-make #complete-overlay .completion-card,
+body.has-site-topbar.site-section-make #resultModal .result {
+  position: relative !important;
+  z-index: 12060 !important;
+}
+
+body.has-site-topbar.site-section-make .completion-backdrop,
+body.has-site-topbar.site-section-make .result-backdrop {
+  z-index: 12051 !important;
+}
+
 body.has-site-topbar .panel-head .kicker,
 body.has-site-topbar .page-mark small,
 body.has-site-topbar .timeline__heading small {

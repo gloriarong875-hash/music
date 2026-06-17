@@ -130,6 +130,8 @@ const replayVideoBtn = document.getElementById("replayVideoBtn");
 const instrumentTrack = document.getElementById("instrumentTrack");
 const instrumentCopy = document.getElementById("instrumentCopy");
 const sections = [...document.querySelectorAll(".home-section")];
+const heroSection = sections[0];
+const heroTitleImages = [...document.querySelectorAll(".hero-title-stack img")];
 
 let currentPage = 0;
 let wheelLocked = false;
@@ -139,29 +141,55 @@ let instrumentTimer = null;
 let lightboxZoom = 1;
 let lightboxPanX = 0;
 let lightboxPanY = 0;
+let heroTitleTimers = [];
 const lightboxPan = { dragging: false, lastX: 0, lastY: 0 };
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
+function clearHeroTitleTimers() {
+  heroTitleTimers.forEach((timer) => window.clearTimeout(timer));
+  heroTitleTimers = [];
+}
+
+function resetHeroTitles() {
+  clearHeroTitleTimers();
+  heroTitleImages.forEach((img) => {
+    img.classList.remove("is-visible");
+  });
+}
+
+function scheduleHeroTitles() {
+  clearHeroTitleTimers();
+  heroTitleImages.forEach((img, index) => {
+    const timer = window.setTimeout(() => {
+      img.classList.add("is-visible");
+    }, 9000 + index * 1000);
+    heroTitleTimers.push(timer);
+  });
+}
+
 function playHeroVideo() {
   if (!heroVideo) return;
   heroReady = false;
-  sections[0].classList.remove("video-ended");
+  heroSection.classList.remove("video-ended");
+  resetHeroTitles();
   heroVideo.currentTime = 0;
   const playPromise = heroVideo.play();
-  if (playPromise && playPromise.catch) {
-    playPromise.catch(() => {
+  if (playPromise && playPromise.then) {
+    playPromise.then(scheduleHeroTitles).catch(() => {
       /* 中文脚注：如果浏览器阻止自动播放，直接进入背景图状态。 */
       finishHeroVideo();
     });
+  } else {
+    scheduleHeroTitles();
   }
 }
 
 function finishHeroVideo() {
   heroReady = true;
-  sections[0].classList.add("video-ended");
+  heroSection.classList.add("video-ended");
 }
 
 if (heroVideo) {

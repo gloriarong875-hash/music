@@ -30,6 +30,14 @@ import { averageRange, loadImage, smoothstep } from './utils.js';
       const particleIntro = document.querySelector('.card-particle');
       const continueLink = document.getElementById('continue-link');
 
+      function duckGlobalBgm() {
+        window.JSYZBgm?.duck?.();
+      }
+
+      function restoreGlobalBgm() {
+        window.JSYZBgm?.restore?.();
+      }
+
       function applyTheme() {
         document.title = theme.pageTitle;
         if (theme.backgroundUrl) {
@@ -735,6 +743,7 @@ import { averageRange, loadImage, smoothstep } from './utils.js';
         setStatus('Audio Error');
       });
       audio.addEventListener('play', () => {
+        duckGlobalBgm();
         playButton.textContent = '暂停';
         playButton.classList.add('is-playing');
         playButton.setAttribute('aria-label', '暂停');
@@ -742,11 +751,13 @@ import { averageRange, loadImage, smoothstep } from './utils.js';
         if (audio.currentTime < .55) setStatus('Particle Painting');
       });
       audio.addEventListener('pause', () => {
+        restoreGlobalBgm();
         if (!ended) playButton.textContent = '播放';
         playButton.classList.remove('is-playing');
         playButton.setAttribute('aria-label', '播放');
       });
       audio.addEventListener('ended', () => {
+        restoreGlobalBgm();
         ended = true;
         playButton.textContent = '重播';
         playButton.classList.remove('is-playing');

@@ -148,6 +148,314 @@
     return new URL(href, rootUrl).href;
   }
 
+  function installGlobalBgm() {
+    if (window.__JSYZGlobalBgmInstalled) return;
+    window.__JSYZGlobalBgmInstalled = true;
+
+    const bgmUrl = new URL("assets/bgm.m4a", getCurrentScriptUrl()).href;
+    const normalVolume = 0.28;
+    const duckVolume = 0.025;
+    const fadeMs = 420;
+    const retryDelays = [250, 800, 1600, 3200];
+    const activePageMedia = new Set();
+    const watchedMedia = new WeakSet();
+    let fadeFrame = 0;
+    let restoreTimer = 0;
+    let hasUserGesture = false;
+    let manualDuckUntil = 0;
+
+    const bgm = document.createElement("audio");
+    const preloadLink = document.createElement("link");
+    preloadLink.rel = "preload";
+    preloadLink.as = "audio";
+    preloadLink.href = bgmUrl;
+    document.head.appendChild(preloadLink);
+
+    bgm.src = bgmUrl;
+    bgm.autoplay = true;
+    bgm.loop = true;
+    bgm.preload = "auto";
+    bgm.volume = normalVolume;
+    bgm.setAttribute("autoplay", "");
+    bgm.setAttribute("playsinline", "");
+    bgm.dataset.globalBgm = "true";
+    bgm.setAttribute("aria-hidden", "true");
+    bgm.style.display = "none";
+
+    function getSavedBgmTime() {
+      try {
+        return Number(sessionStorage.getItem("jsyz-bgm-time") || "0");
+      } catch (error) {
+        return 0;
+      }
+    }
+
+    function saveBgmTime() {
+      try {
+        const savedTime = Number(sessionStorage.getItem("jsyz-bgm-time") || "0");
+        sessionStorage.setItem("jsyz-bgm-time", String(bgm.currentTime || savedTime || 0));
+      } catch (error) {
+        // Ignore storage issues in privacy-restricted browsers.
+      }
+    }
+
+    function applySavedBgmTime() {
+      const savedTime = getSavedBgmTime();
+      if (Number.isFinite(savedTime) && savedTime > 0 && Math.abs(bgm.currentTime - savedTime) > 1) {
+        bgm.currentTime = savedTime;
+      }
+    }
+
+    try {
+      applySavedBgmTime();
+    } catch (error) {
+      // Ignore storage issues in privacy-restricted browsers.
+    }
+
+    bgm.addEventListener("loadedmetadata", () => {
+      try {
+        applySavedBgmTime();
+      } catch (error) {
+        // Some browsers reject early seeking until enough media metadata is available.
+      }
+    });
+
+    function isBgmMedia(media) {
+      return media && media.dataset && media.dataset.globalBgm === "true";
+    }
+
+    function isAudibleMedia(media) {
+      return (
+        media &&
+        !isBgmMedia(media) &&
+        !media.paused &&
+        !media.ended &&
+        !media.muted &&
+        media.volume > 0
+      );
+    }
+
+    function getTargetVolume() {
+      const hasManualDuck = Date.now() < manualDuckUntil;
+      const hasPageSound = Array.from(activePageMedia).some(isAudibleMedia);
+      return hasManualDuck || hasPageSound ? duckVolume : normalVolume;
+    }
+
+    function fadeBgmTo(targetVolume) {
+      window.cancelAnimationFrame(fadeFrame);
+      if (Math.abs(bgm.volume - targetVolume) < 0.004) {
+        bgm.volume = targetVolume;
+        return;
+      }
+
+      const startVolume = bgm.volume;
+      const startedAt = performance.now();
+
+      function step(now) {
+        const progress = Math.min(1, (now - startedAt) / fadeMs);
+        bgm.volume = startVolume + (targetVolume - startVolume) * progress;
+        if (progress >= 1) {
+          bgm.volume = targetVolume;
+          return;
+        }
+        fadeFrame = window.requestAnimationFrame(step);
+      }
+
+      fadeFrame = window.requestAnimationFrame(step);
+    }
+
+    function refreshDuckState() {
+      activePageMedia.forEach((media) => {
+        if (!isAudibleMedia(media)) activePageMedia.delete(media);
+      });
+      fadeBgmTo(getTargetVolume());
+    }
+
+    function scheduleRestoreCheck(duration) {
+      window.clearTimeout(restoreTimer);
+      restoreTimer = window.setTimeout(refreshDuckState, duration + 80);
+    }
+
+    function scanPageMedia() {
+      document.querySelectorAll("audio, video").forEach((media) => {
+        if (isBgmMedia(media)) return;
+        watchMedia(media);
+        if (isAudibleMedia(media)) {
+          activePageMedia.add(media);
+          manualDuckUntil = Math.max(manualDuckUntil, Date.now() + 900);
+          scheduleRestoreCheck(900);
+        } else {
+          activePageMedia.delete(media);
+        }
+      });
+      refreshDuckState();
+    }
+
+    function watchMedia(media) {
+      if (!media || isBgmMedia(media) || watchedMedia.has(media)) return;
+      watchedMedia.add(media);
+      ["play", "playing"].forEach((eventName) => {
+        media.addEventListener(eventName, handleMediaPlay);
+      });
+      ["pause", "ended", "emptied", "abort"].forEach((eventName) => {
+        media.addEventListener(eventName, handleMediaQuiet);
+      });
+      media.addEventListener("volumechange", refreshDuckState);
+    }
+
+    function tryPlayBgm(force) {
+      if (!force && !hasUserGesture) return;
+      if (bgm.readyState === 0) {
+        bgm.load();
+      }
+      bgm.play().catch(() => {
+        // Browsers may still block autoplay; the next gesture will retry.
+      });
+    }
+
+    function retryPlayBgm() {
+      retryDelays.forEach((delay) => {
+        window.setTimeout(() => tryPlayBgm(true), delay);
+      });
+    }
+
+    function unlockBgm() {
+      hasUserGesture = true;
+      tryPlayBgm();
+    }
+
+    function observePageMedia() {
+      scanPageMedia();
+
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType !== 1) return;
+            if (node.matches && node.matches("audio, video")) {
+              watchMedia(node);
+            }
+            if (node.querySelectorAll) {
+              node.querySelectorAll("audio, video").forEach(watchMedia);
+            }
+          });
+        });
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    function handleMediaPlay(event) {
+      const media = event.target;
+      if (isBgmMedia(media)) return;
+      watchMedia(media);
+      activePageMedia.add(media);
+      manualDuckUntil = Math.max(manualDuckUntil, Date.now() + 1200);
+      scheduleRestoreCheck(1200);
+      unlockBgm();
+      refreshDuckState();
+    }
+
+    function handleMediaQuiet(event) {
+      const media = event.target;
+      if (isBgmMedia(media)) return;
+      activePageMedia.delete(media);
+      refreshDuckState();
+    }
+
+    ["pointerdown", "click", "keydown", "touchstart"].forEach((eventName) => {
+      document.addEventListener(eventName, unlockBgm, { passive: true });
+    });
+
+    document.addEventListener(
+      "pointerdown",
+      (event) => {
+        if (event.target.closest && event.target.closest(".site-topbar__link")) {
+          saveBgmTime();
+        }
+      },
+      true
+    );
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) tryPlayBgm(true);
+    });
+
+    window.addEventListener("pageshow", () => tryPlayBgm(true));
+
+    ["play", "playing"].forEach((eventName) => {
+      document.addEventListener(eventName, handleMediaPlay, true);
+    });
+
+    ["pause", "ended", "emptied", "abort"].forEach((eventName) => {
+      document.addEventListener(eventName, handleMediaQuiet, true);
+    });
+
+    document.addEventListener(
+      "volumechange",
+      (event) => {
+        if (!isBgmMedia(event.target)) refreshDuckState();
+      },
+      true
+    );
+
+    const nativePlay = HTMLMediaElement.prototype.play;
+    const nativePause = HTMLMediaElement.prototype.pause;
+
+    HTMLMediaElement.prototype.play = function (...args) {
+      if (!isBgmMedia(this)) {
+        watchMedia(this);
+        activePageMedia.add(this);
+        unlockBgm();
+        refreshDuckState();
+      }
+      const result = nativePlay.apply(this, args);
+      if (result && typeof result.catch === "function") {
+        result.catch(() => {
+          activePageMedia.delete(this);
+          refreshDuckState();
+        });
+      }
+      return result;
+    };
+
+    HTMLMediaElement.prototype.pause = function (...args) {
+      const result = nativePause.apply(this, args);
+      if (!isBgmMedia(this)) {
+        activePageMedia.delete(this);
+        refreshDuckState();
+      }
+      return result;
+    };
+
+    window.setInterval(saveBgmTime, 1800);
+    window.addEventListener("pagehide", saveBgmTime);
+    window.addEventListener("beforeunload", saveBgmTime);
+
+    document.body.appendChild(bgm);
+    bgm.load();
+    window.JSYZBgm = {
+      audio: bgm,
+      play: () => {
+        hasUserGesture = true;
+        return bgm.play();
+      },
+      pause: () => bgm.pause(),
+      duck: (duration = 3000) => {
+        manualDuckUntil = Math.max(manualDuckUntil, Date.now() + duration);
+        scheduleRestoreCheck(duration);
+        fadeBgmTo(duckVolume);
+      },
+      restore: () => {
+        manualDuckUntil = 0;
+        refreshDuckState();
+      }
+    };
+    tryPlayBgm(true);
+    window.setTimeout(() => tryPlayBgm(true), 0);
+    retryPlayBgm();
+    observePageMedia();
+  }
+
   function ensureHost() {
     let host = document.getElementById("siteNav");
 
@@ -161,7 +469,11 @@
   }
 
   function mountTopbar() {
-    if (!document.body || document.querySelector(".site-topbar")) return;
+    if (!document.body) return;
+    if (document.querySelector(".site-topbar")) {
+      installGlobalBgm();
+      return;
+    }
 
     const rootUrl = getRootUrl();
     const pageRelativePath = getPageRelativePath(rootUrl);
@@ -196,6 +508,7 @@
     }
     host.innerHTML = "";
     host.appendChild(bar);
+    installGlobalBgm();
   }
 
   installInstrumentHelpers();
