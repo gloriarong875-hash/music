@@ -1602,6 +1602,10 @@ body.sheng-page .page-heading time {
 body.sheng-page .page-heading::after {
   margin: 0 0 7px 8px !important;
 }
+body.sheng-page .page-eastward .page-heading,
+body.sheng-page .page-song-transition .page-heading {
+  margin-top: calc(clamp(14px, 2vh, 24px) + 12px) !important;
+}
 
 /* 最终 hover 统一锁：移开可见像素后，同步恢复普通态滤镜、放大和阴影。 */
 body.sheng-page .artifact {
