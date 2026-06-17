@@ -71,15 +71,10 @@ trackAudio.preload = 'metadata'
 let isSeeking = false
 
 const pageOrder = ['sound', 'painting', 'chronicle']
-
-function isLocalTopbarPreview() {
-  const protocol = window.location.protocol || ''
-  const hostname = window.location.hostname || ''
-  return protocol === 'file:' || hostname === '127.0.0.1' || hostname === 'localhost'
-}
+const isDevServerPreview = Boolean(import.meta.env?.DEV)
 
 function configureTopbarLinks() {
-  const linkMap = isLocalTopbarPreview()
+  const linkMap = isDevServerPreview
     ? {
         brand: 'http://127.0.0.1:8765/0首页/index.html',
         home: 'http://127.0.0.1:8765/0首页/index.html',

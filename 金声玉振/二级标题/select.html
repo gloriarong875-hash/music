@@ -482,8 +482,7 @@
 
     const isLocalRegionPreview = () => {
       const protocol = window.location.protocol || "";
-      const hostname = window.location.hostname || "";
-      return protocol === "file:" || hostname === "127.0.0.1" || hostname === "localhost";
+      return protocol === "file:";
     };
 
     const getInstrumentTarget = (sectionKey, instrumentKey) => {

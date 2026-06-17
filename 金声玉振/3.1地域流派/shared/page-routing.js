@@ -49,10 +49,8 @@ function getCurrentInstrument() {
   return normalizeInstrumentKey(instrument)
 }
 
-function isLocalPreview() {
-  const protocol = window.location.protocol || ""
-  const hostname = window.location.hostname || ""
-  return protocol === "file:" || hostname === "127.0.0.1" || hostname === "localhost"
+function isDevServerPreview() {
+  return Boolean(import.meta.env?.DEV)
 }
 
 export function resolveChronicleRoute(page, instrument = getCurrentInstrument()) {
@@ -64,7 +62,7 @@ export function resolveChronicleRoute(page, instrument = getCurrentInstrument())
   }
 
   if (page === "painting") {
-    if (isLocalPreview()) {
+    if (isDevServerPreview()) {
       return `http://127.0.0.1:8765/3.2\u753b\u4f5c\u6570\u636e/${config.folder}/index.html?instrument=${encodeURIComponent(instrumentKey)}`
     }
 
@@ -72,7 +70,7 @@ export function resolveChronicleRoute(page, instrument = getCurrentInstrument())
   }
 
   if (page === "chronicle") {
-    if (isLocalPreview()) {
+    if (isDevServerPreview()) {
       return `http://127.0.0.1:8765/3.3\u5927\u4e8b\u7eaa\u5e74/${config.folder}/index.html?instrument=${encodeURIComponent(instrumentKey)}`
     }
 
