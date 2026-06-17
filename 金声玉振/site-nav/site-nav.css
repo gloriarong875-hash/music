@@ -60,7 +60,8 @@ body.has-site-topbar .app {
   transform: none !important;
 }
 
-body.has-site-topbar .cornerNav {
+body.has-site-topbar .cornerNav,
+body.has-site-topbar .corner-nav {
   /* 中文脚注：全站右上角“前进/后退”按钮位置统一参考 3.1 观象页面。
      想整体调整位置，只改这里的 top/right；top 越大越往下，right 越大越靠左。 */
   position: fixed !important;
@@ -71,11 +72,13 @@ body.has-site-topbar .cornerNav {
   gap: 16px !important;
 }
 
-body.has-site-topbar .navBtn {
+body.has-site-topbar .navBtn,
+body.has-site-topbar .nav-btn {
   /* 中文脚注：全站右上角“前进/后退”按钮大小统一参考 3.1 观象页面。 */
   position: relative !important;
   width: clamp(38px, 3vw, 58px) !important;
   height: clamp(38px, 3vw, 58px) !important;
+  padding: 0 0 3px !important;
   border-radius: 50% !important;
   border: 1px solid rgba(229, 198, 132, .7) !important;
   background: radial-gradient(circle at 35% 30%, rgba(255, 241, 196, .9), rgba(180, 130, 62, .5) 58%, rgba(22, 17, 13, .38)) !important;
@@ -87,15 +90,96 @@ body.has-site-topbar .navBtn {
   transition: transform .22s ease, opacity .22s ease, filter .22s ease !important;
 }
 
-body.has-site-topbar .navBtn:hover {
+body.has-site-topbar .navBtn:hover,
+body.has-site-topbar .nav-btn:hover,
+body.has-site-topbar .nav-btn:focus-visible {
   transform: scale(1.08) !important;
   filter: brightness(1.12) !important;
 }
 
-body.has-site-topbar .navBtn.disabled {
+body.has-site-topbar .navBtn.disabled,
+body.has-site-topbar .nav-btn.disabled,
+body.has-site-topbar .nav-btn:disabled {
   opacity: .34 !important;
   pointer-events: none !important;
 }
+
+body.has-site-topbar.site-section-make .cornerNav,
+body.has-site-topbar.site-section-make .corner-nav {
+  top: calc(var(--site-topbar-height) + 5.51vh) !important;
+  gap: 15.2px !important;
+}
+
+body.has-site-topbar.site-section-make .navBtn,
+body.has-site-topbar.site-section-make .nav-btn {
+  width: calc(clamp(38px, 3vw, 58px) * .95) !important;
+  height: calc(clamp(38px, 3vw, 58px) * .95) !important;
+}
+
+body.has-site-topbar .panel-head .kicker,
+body.has-site-topbar .page-mark small,
+body.has-site-topbar .timeline__heading small {
+  display: block !important;
+  margin: 0 0 6px !important;
+  color: #c9a96e !important;
+  font-family: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  letter-spacing: 5px !important;
+  line-height: 1.3 !important;
+  text-shadow: 0 4px 14px rgba(0, 0, 0, .82) !important;
+}
+
+body.has-site-topbar .panel-head h1,
+body.has-site-topbar .panel-head .panel-title,
+body.has-site-topbar .page-mark h1,
+body.has-site-topbar .timeline__heading h1 {
+  margin: 0 !important;
+  color: #eee7cb !important;
+  font-family: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif !important;
+  font-size: 32px !important;
+  font-weight: 400 !important;
+  letter-spacing: 4px !important;
+  line-height: 1.14 !important;
+  text-shadow: 0 4px 14px rgba(0, 0, 0, .82) !important;
+}
+
+body.has-site-topbar .page-mark,
+body.has-site-topbar .story-head,
+body.has-site-topbar .scene > .panel-head,
+body.has-site-topbar .timeline__heading {
+  z-index: 20 !important;
+}
+
+body.has-site-topbar .page-mark {
+  position: absolute !important;
+  top: calc(var(--site-topbar-height) + clamp(18px, 2.2vw, 34px)) !important;
+  left: clamp(18px, 2.2vw, 34px) !important;
+  pointer-events: none !important;
+  text-shadow: none !important;
+}
+
+body.has-site-topbar .story-head {
+  top: clamp(18px, 2.2vw, 34px) !important;
+  left: clamp(18px, 2.2vw, 34px) !important;
+}
+
+body.has-site-topbar .scene > .panel-head {
+  position: absolute !important;
+  top: clamp(18px, 2.2vw, 34px) !important;
+  left: clamp(18px, 2.2vw, 34px) !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 18px !important;
+}
+
+body.has-site-topbar .timeline__heading {
+  position: absolute !important;
+  top: clamp(18px, 2.2vw, 34px) !important;
+  left: clamp(18px, 2.2vw, 34px) !important;
+  text-shadow: none !important;
+}
+
 
 body.has-site-topbar .story-section {
   /* 中文脚注：故事页面保持原来的 100vh 版式，由外层 .page 统一缩放，减少内部错位。 */

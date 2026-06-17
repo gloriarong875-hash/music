@@ -191,6 +191,9 @@
     updateScale();
     window.addEventListener("resize", updateScale);
     document.body.classList.add("has-site-topbar");
+    if (pageRelativePath.startsWith("1.1\u5236\u4f5c/")) {
+      document.body.classList.add("site-section-make");
+    }
     host.innerHTML = "";
     host.appendChild(bar);
   }

@@ -88,7 +88,7 @@
     .hero-inner:has(.circle-sidebar:hover),
     .hero-inner:has(.circle-sidebar:focus-within),
     .hero-inner.is-expanded {
-      grid-template-columns: min(430px, 34vw) minmax(0, 1fr);
+      grid-template-columns: min(470px, 36vw) minmax(0, 1fr);
     }
 
     /* 中间文案，字号比上一版更小一些 */
@@ -144,8 +144,8 @@
       position: absolute;
       left: 0;
       top: 50%;
-      width: 260px;
-      height: 430px;
+      width: 290px;
+      height: 470px;
       transform: translateY(-50%);
       transform-origin: 90px 215px;
       animation: wheelRotate 18s linear infinite;
@@ -155,7 +155,7 @@
     .circle-sidebar:hover .circle-wheel,
     .circle-sidebar:focus-within .circle-wheel,
     .circle-sidebar.is-expanded .circle-wheel {
-      left: -110px;
+      left: -126px;
     }
 
     .circle-sidebar:has(.instrument-card:hover) .circle-wheel,
@@ -202,8 +202,8 @@
     .circle-sidebar.is-expanded .instrument-card {
       left: var(--open-x);
       top: var(--open-y);
-      width: 104px;
-      height: 104px;
+      width: 122px;
+      height: 122px;
       background: #a6968e;
       box-shadow:
         0 0 0 1px rgba(255, 232, 178, 0.18),
@@ -221,6 +221,9 @@
     }
 
     .instrument-card img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
       display: block;
       width: 82%;
       height: 82%;
@@ -255,32 +258,32 @@
     }
 
     .instrument-card.qin img {
-      --img-x: 2px;
-      --img-y: 6px;
+      --img-x: 0px;
+      --img-y: 0px;
     }
 
     .instrument-card.sheng img {
       width: 72%;
       height: 88%;
       --img-x: 0px;
-      --img-y: -2px;
+      --img-y: 0px;
     }
 
     .instrument-card.drum img {
       width: 90%;
       height: 90%;
-      --img-y: -1px;
+      --img-y: 0px;
     }
 
     .instrument-card.xun img {
       width: 86%;
       height: 96%;
-      --img-y: 1px;
+      --img-y: 0px;
     }
 
     .instrument-card.di img {
-      --img-x: 1px;
-      --img-y: 1px;
+      --img-x: 0px;
+      --img-y: 0px;
     }
 
     @keyframes wheelRotate {
@@ -294,10 +297,10 @@
 
     @keyframes imageKeepUpright {
       from {
-        transform: translate(var(--img-x), var(--img-y)) rotate(0deg);
+        transform: translate(-50%, -50%) translate(var(--img-x), var(--img-y)) rotate(0deg);
       }
       to {
-        transform: translate(var(--img-x), var(--img-y)) rotate(360deg);
+        transform: translate(-50%, -50%) translate(var(--img-x), var(--img-y)) rotate(360deg);
       }
     }
 
@@ -344,12 +347,12 @@
       .hero-inner:has(.circle-sidebar:hover),
       .hero-inner:has(.circle-sidebar:focus-within),
       .hero-inner.is-expanded {
-        grid-template-columns: 190px minmax(0, 1fr);
+        grid-template-columns: 210px minmax(0, 1fr);
       }
 
       .circle-wheel {
-        width: 190px;
-        height: 330px;
+        width: 210px;
+        height: 360px;
       }
 
       .instrument-card {
@@ -360,8 +363,8 @@
       .circle-sidebar:hover .instrument-card,
       .circle-sidebar:focus-within .instrument-card,
       .circle-sidebar.is-expanded .instrument-card {
-        width: 74px;
-        height: 74px;
+        width: 82px;
+        height: 82px;
       }
 
       .intro {
@@ -382,7 +385,7 @@
         <div class="circle-wheel">
           <a
             class="instrument-card qin"
-            style="--small-x: 90px; --small-y: 183px; --open-x: 143px; --open-y: 51px;"
+            style="--small-x: 90px; --small-y: 183px; --open-x: 152px; --open-y: 30px;"
             href="../1.1制作/琴/index.html"
             aria-label="进入琴制作页面"
           >
@@ -392,7 +395,7 @@
 
           <a
             class="instrument-card sheng"
-            style="--small-x: 120px; --small-y: 205px; --open-x: 262px; --open-y: 215px;"
+            style="--small-x: 120px; --small-y: 205px; --open-x: 286px; --open-y: 215px;"
             href="../1.1制作/笙/index.html"
             aria-label="进入笙制作页面"
           >
@@ -402,7 +405,7 @@
 
           <a
             class="instrument-card drum"
-            style="--small-x: 109px; --small-y: 241px; --open-x: 143px; --open-y: 379px;"
+            style="--small-x: 109px; --small-y: 241px; --open-x: 152px; --open-y: 400px;"
             href="../1.1制作/鼓/index.html"
             aria-label="进入鼓制作页面"
           >
@@ -412,7 +415,7 @@
 
           <a
             class="instrument-card xun"
-            style="--small-x: 71px; --small-y: 241px; --open-x: -49px; --open-y: 316px;"
+            style="--small-x: 71px; --small-y: 241px; --open-x: -68px; --open-y: 328px;"
             href="../1.1制作/埙/index.html"
             aria-label="进入埙制作页面"
           >
@@ -422,7 +425,7 @@
 
           <a
             class="instrument-card di"
-            style="--small-x: 60px; --small-y: 205px; --open-x: -49px; --open-y: 114px;"
+            style="--small-x: 60px; --small-y: 205px; --open-x: -68px; --open-y: 102px;"
             href="../1.1制作/笛/index.html"
             aria-label="进入笛制作页面"
           >

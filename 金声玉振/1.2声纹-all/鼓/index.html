@@ -69,6 +69,13 @@
 
   <audio id="audio" preload="metadata" src=""></audio>
   <script src="./assets/inline-images.js"></script>
+  <script>
+    const drumBackgroundUrl = new URL("./assets/2.2背景图.jpg", window.location.href).href;
+    document.documentElement.style.setProperty(
+      "--scene-background",
+      `url("${drumBackgroundUrl}")`
+    );
+  </script>
   <script src="../shared/app.bundle.js"></script>
 
   <script src="../../site-nav/site-nav.js"></script>

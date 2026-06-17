@@ -72,6 +72,36 @@ let isSeeking = false
 
 const pageOrder = ['sound', 'painting', 'chronicle']
 
+function isLocalTopbarPreview() {
+  const protocol = window.location.protocol || ''
+  const hostname = window.location.hostname || ''
+  return protocol === 'file:' || hostname === '127.0.0.1' || hostname === 'localhost'
+}
+
+function configureTopbarLinks() {
+  const linkMap = isLocalTopbarPreview()
+    ? {
+        brand: 'http://127.0.0.1:8765/0首页/index.html',
+        home: 'http://127.0.0.1:8765/0首页/index.html',
+        study: 'http://127.0.0.1:8765/二级标题/select.html?section=yanwu',
+        observe: 'http://127.0.0.1:8765/二级标题/select.html?section=guanxiang',
+        chronicle: 'http://127.0.0.1:8765/二级标题/select.html?section=biannian',
+      }
+    : {
+        brand: '../../0首页/index.html',
+        home: '../../0首页/index.html',
+        study: '../../二级标题/select.html?section=yanwu',
+        observe: '../../二级标题/select.html?section=guanxiang',
+        chronicle: '../../二级标题/select.html?section=biannian',
+      }
+
+  document.querySelector('.brand')?.setAttribute('href', linkMap.brand)
+  document.querySelector('#siteNavHome')?.setAttribute('href', linkMap.home)
+  document.querySelector('#siteNavStudy')?.setAttribute('href', linkMap.study)
+  document.querySelector('#siteNavObserve')?.setAttribute('href', linkMap.observe)
+  document.querySelector('#siteNavChronicle')?.setAttribute('href', linkMap.chronicle)
+}
+
 function updateRailPageSwitcher(page = 'sound', emit = false) {
   document.querySelectorAll('.rail-switch-item').forEach(button => {
     const itemIndex = pageOrder.indexOf(button.dataset.page)
@@ -463,6 +493,7 @@ window.addEventListener('keydown', event => {
 })
 
 applySiteConfig()
+configureTopbarLinks()
 renderEraButtons()
 updateRailPageSwitcher('sound')
 const requestedEra = Number(new URLSearchParams(window.location.search).get('era'))
