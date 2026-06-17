@@ -538,7 +538,7 @@ button {
 
 .clay-stage {
   position: absolute;
-  top: 47%;
+  top: 51%;
   left: 50%;
   width: min(118vw, 1780px);
   height: min(84vh, 880px);
@@ -847,9 +847,9 @@ button {
   position: absolute;
   bottom: 0;
   left: 50%;
-  width: min(170vw, 280vh, 2100px);
+  width: min(154vw, 254vh, 1900px);
   aspect-ratio: 2245 / 1587;
-  transform: translate(-50%, 40%);
+  transform: translate(-50%, 47%);
   transform-origin: 50% 50%;
 }
 
@@ -1136,6 +1136,8 @@ button {
 .hole-stage {
   position: absolute;
   inset: 0;
+  transform: scale(0.88);
+  transform-origin: 50% 55%;
 }
 
 .hole-xun {
@@ -2296,6 +2298,7 @@ button {
   }
 
   .clay-stage {
+    top: 50%;
     width: 146vw;
     height: 72vh;
   }
@@ -2322,8 +2325,8 @@ button {
   }
 
   .throwing-assembly {
-    width: min(230vw, 190vh, 1600px);
-    transform: translate(-50%, 10%);
+    width: min(210vw, 174vh, 1460px);
+    transform: translate(-50%, 17%);
   }
 
   .throwing-control {
@@ -2456,7 +2459,7 @@ button {
   }
 
   .clay-stage {
-    top: 48%;
+    top: 51%;
     width: min(124vw, 1500px);
     height: 82vh;
   }
@@ -2467,8 +2470,8 @@ button {
   }
 
   .throwing-assembly {
-    width: min(170vw, 280vh, 1900px);
-    transform: translate(-50%, 40%);
+    width: min(154vw, 254vh, 1720px);
+    transform: translate(-50%, 47%);
   }
 }
 

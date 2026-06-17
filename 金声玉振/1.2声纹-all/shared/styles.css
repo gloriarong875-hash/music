@@ -92,6 +92,8 @@
     .monitor-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 7px; }
     .monitor-value { min-width: 0; color: rgba(243,234,211,.68); font-size: var(--type-small); letter-spacing: 1px; text-align: center; }
     .monitor-value b { display: block; margin-top: 2px; overflow: hidden; color: #f3ead3; font-size: clamp(17px, 1.12vw, 20px); font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+    html[data-instrument="xun"] #spectrum { height: 42px; margin-top: 4px; }
+    html[data-instrument="xun"] .monitor-values { margin-top: 3px; }
 
     .panel {
       position: absolute; z-index: 12; right: 3.2%; bottom: 3.8%; width: min(390px, 34vw);

@@ -60,6 +60,15 @@ body.has-site-topbar .app {
   transform: none !important;
 }
 
+body.has-site-topbar .experience {
+  /* 中文脚注：独立制作体验页使用 .experience 作为满屏舞台，同样需要让出上边栏高度。 */
+  margin-top: var(--site-topbar-height) !important;
+  width: 100vw !important;
+  height: calc(100vh - var(--site-topbar-height)) !important;
+  min-height: 0 !important;
+  transform: none !important;
+}
+
 body.has-site-topbar .cornerNav,
 body.has-site-topbar .corner-nav {
   /* 中文脚注：全站右上角“前进/后退”按钮位置统一参考 3.1 观象页面。
@@ -107,6 +116,7 @@ body.has-site-topbar .nav-btn:disabled {
 body.has-site-topbar.site-section-make .cornerNav,
 body.has-site-topbar.site-section-make .corner-nav {
   top: calc(var(--site-topbar-height) + 5.51vh) !important;
+  z-index: 10020 !important;
   gap: 15.2px !important;
 }
 
@@ -206,6 +216,11 @@ body.has-site-topbar .story-section {
   box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
   isolation: isolate;
   overflow: hidden;
+}
+
+body.has-site-topbar.site-section-make .site-topbar {
+  border-bottom: 0;
+  box-shadow: none;
 }
 
 .site-topbar::before {
