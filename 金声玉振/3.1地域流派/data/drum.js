@@ -1,4 +1,4 @@
-const assetUrl = (path) => new URL(`./鼓地图/assets/${path}`, window.location.href).href;
+const assetUrl = (path) => new URL(`./鼓/assets/${path}`, window.location.href).href;
 
 const drumAssets = {
   background: assetUrl('background.png'),

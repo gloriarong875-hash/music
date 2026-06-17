@@ -3,11 +3,11 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const folders = [
-  String.fromCodePoint(0x7b19, 0x5730, 0x56fe),
-  String.fromCodePoint(0x9f13, 0x5730, 0x56fe),
-  String.fromCodePoint(0x7b1b, 0x5730, 0x56fe),
-  String.fromCodePoint(0x7434, 0x5730, 0x56fe),
-  String.fromCodePoint(0x57d9, 0x5730, 0x56fe),
+  String.fromCodePoint(0x7b19),
+  String.fromCodePoint(0x9f13),
+  String.fromCodePoint(0x7b1b),
+  String.fromCodePoint(0x7434),
+  String.fromCodePoint(0x57d9),
 ];
 
 for (const folder of folders) {

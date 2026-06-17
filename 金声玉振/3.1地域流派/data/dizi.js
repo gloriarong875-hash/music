@@ -1,4 +1,4 @@
-const assetUrl = (path) => new URL(`./笛地图/assets/${path}`, window.location.href).href;
+const assetUrl = (path) => new URL(`./笛/assets/${path}`, window.location.href).href;
 
 const diziAssets = {
   background: assetUrl('background.jpg'),

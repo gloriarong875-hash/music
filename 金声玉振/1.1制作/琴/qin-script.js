@@ -682,7 +682,7 @@ function resetCompletion(){
 
 document.getElementById('btn-restart').addEventListener('click',()=>location.reload());
 document.getElementById('btn-back').addEventListener('click',()=>{
-    window.location.href='../../index.html?instrument=%E7%90%B4';
+    goNextPage('make');
 });
 
 // ── 右上角 cornerNav 前进/后退按钮 ──

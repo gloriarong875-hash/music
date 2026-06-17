@@ -804,7 +804,7 @@ showcaseFigureButton.addEventListener("click", soundscape.playXunPhrase);
 navPrevButton.addEventListener("click", () => viewUnlockedStep(viewedStepIndex - 1));
 navNextButton.addEventListener("click", () => viewUnlockedStep(viewedStepIndex + 1));
 playAgainButton?.addEventListener("click", () => window.location.reload());
-closeModalButton?.addEventListener("click", closeResultCard);
+closeModalButton?.addEventListener("click", () => goNextPage("make"));
 completionBackdrop?.addEventListener("click", closeResultCard);
 soundToggle.addEventListener("click", () => {
   const muted = soundscape.setMuted(!soundscape.isMuted());

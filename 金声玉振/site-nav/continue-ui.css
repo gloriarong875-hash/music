@@ -1,0 +1,72 @@
+.flow-next-link {
+  position: fixed;
+  z-index: 140;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 124px;
+  padding: 10px 22px;
+  border: 1px solid rgba(223, 205, 152, 0.5);
+  border-radius: 999px;
+  background: rgba(24, 21, 17, 0.46);
+  color: rgba(241, 231, 201, 0.96);
+  font-family: "FZLiShu", "LiSu", "STLiti", "Microsoft YaHei", serif;
+  font-size: 15px;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+  transition: opacity 280ms ease, transform 280ms ease, background-color 220ms ease, border-color 220ms ease;
+}
+
+.flow-next-link:hover {
+  background: rgba(43, 37, 29, 0.62);
+  border-color: rgba(239, 214, 125, 0.72);
+}
+
+.flow-next-link.flow-next-center {
+  left: 50%;
+  bottom: 4vh;
+  transform: translate(-50%, 14px);
+}
+
+.flow-next-link.flow-next-right {
+  right: 4vw;
+  bottom: 4vh;
+  transform: translateY(14px);
+}
+
+.flow-next-link.is-visible {
+  opacity: 0.95;
+  pointer-events: auto;
+}
+
+.flow-next-link.flow-next-center.is-visible {
+  transform: translate(-50%, 0);
+}
+
+.flow-next-link.flow-next-right.is-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 960px) {
+  .flow-next-link {
+    min-width: 108px;
+    padding: 9px 18px;
+    font-size: 14px;
+    letter-spacing: 0.14em;
+  }
+
+  .flow-next-link.flow-next-right {
+    right: 50%;
+    bottom: 3.5vh;
+    transform: translate(50%, 14px);
+  }
+
+  .flow-next-link.flow-next-right.is-visible {
+    transform: translate(50%, 0);
+  }
+}

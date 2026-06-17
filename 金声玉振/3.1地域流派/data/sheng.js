@@ -1,4 +1,4 @@
-const assetUrl = (path) => new URL(`./笙地图/assets/${path}`, window.location.href).href;
+const assetUrl = (path) => new URL(`./笙/assets/${path}`, window.location.href).href;
 
 export const shengChronicle = [
   {

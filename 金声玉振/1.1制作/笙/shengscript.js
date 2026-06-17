@@ -158,5 +158,5 @@
     function openResultCard(){ if(!resultModalEl) return; resultModalEl.classList.add('is-visible'); resultModalEl.setAttribute('aria-hidden','false'); }
     function closeResultCard(){ if(!resultModalEl) return; resultModalEl.classList.remove('is-visible'); resultModalEl.setAttribute('aria-hidden','true'); }
     playAgainBtn?.addEventListener('click', ()=>{ closeResultCard(); go('pick'); });
-    closeModalBtn?.addEventListener('click', ()=>{ closeResultCard(); });
+    closeModalBtn?.addEventListener('click', ()=>{ goNextPage('make'); });
  

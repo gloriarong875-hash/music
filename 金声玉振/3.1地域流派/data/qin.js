@@ -1,4 +1,4 @@
-const assetUrl = (path) => new URL(`./琴地图/${path}`, window.location.href).href;
+const assetUrl = (path) => new URL(`./琴/${path}`, window.location.href).href;
 
 const qinAssets = {
   background: assetUrl('background.png'),

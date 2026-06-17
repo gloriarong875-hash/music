@@ -11,6 +11,7 @@
 <!-- ============================================================================ -->
 <link rel="stylesheet" href="xunyanbian.css" />
 <link rel="stylesheet" href="../../site-nav/site-nav.css" />
+<link rel="stylesheet" href="../../site-nav/continue-ui.css" />
 </head>
 <body>
 <main class="page">
@@ -135,6 +136,18 @@
 </main>
 <script src="xunyanbian.js"></script>
 <script src="../../site-nav/site-nav.js"></script>
+<script src="../../site-nav/next-flow.js"></script>
+<script src="../../site-nav/continue-ui.js"></script>
+<script>
+  setupFloatingNext({
+    pageKey: "evolution",
+    finalSelector: ".scene:last-of-type",
+    activeClass: "active",
+    position: "right",
+    text: "点击继续",
+    buttonId: "evolutionContinueButton"
+  });
+</script>
 </body>
 </html>
 

@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="generalcomponent.css" />
   <link rel="stylesheet" href="flutestyle.css" />
   <link rel="stylesheet" href="../../site-nav/site-nav.css" />
+  <link rel="stylesheet" href="../../site-nav/continue-ui.css" />
 </head>
 <body>
   <main class="page" aria-label="名画中的笛">
@@ -75,5 +76,17 @@
 
   <script src="flutescript.js"></script>
   <script src="../../site-nav/site-nav.js"></script>
+  <script src="../../site-nav/next-flow.js"></script>
+  <script src="../../site-nav/continue-ui.js"></script>
+  <script>
+    setupFloatingNext({
+      pageKey: "story",
+      finalSelector: ".story-section:last-of-type",
+      activeClass: "is-active",
+      position: "center",
+      text: "点击继续",
+      buttonId: "storyContinueButton"
+    });
+  </script>
 </body>
 </html>

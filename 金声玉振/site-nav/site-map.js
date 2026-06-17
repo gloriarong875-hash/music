@@ -11,17 +11,17 @@
       {
         key: "study",
         label: "\u7814\u7269",
-        href: "1.1\u5236\u4f5c/\u7b19/index.html"
+        href: "\u4e8c\u7ea7\u6807\u9898/select.html?section=yanwu"
       },
       {
         key: "observe",
         label: "\u89c2\u8c61",
-        href: "2.1\u90e8\u4ef6\u6851\u57fa\u56fe/\u7b19/index.html"
+        href: "\u4e8c\u7ea7\u6807\u9898/select.html?section=guanxiang"
       },
       {
         key: "chronicle",
         label: "\u7f16\u5e74",
-        href: "3.3\u5927\u4e8b\u7eaa\u5e74/\u7b19/index.html"
+        href: "\u4e8c\u7ea7\u6807\u9898/select.html?section=biannian"
       }
     ],
     sectionRules: [

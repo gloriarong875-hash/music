@@ -1107,13 +1107,14 @@
           <p id="resultText">“鼍鼓”指以鼍皮制成的鼓，“逢逢”形容鼓声深沉而连续。鼓曾与祭祀、礼仪及雷鸣崇拜相连，也象征声音的力量，以及人与自然、神灵和集体之间的连接。</p>
           <div class="modal-actions">
             <button class="pill" id="playAgainBtn" type="button">再做一次</button>
-            <button class="pill secondary" id="closeModalBtn" type="button">留在成品</button>
+            <button class="pill secondary" id="closeModalBtn" type="button">继续探索</button>
           </div>
         </div>
       </div>
     </section>
   </main>
 
+  <script src="../../site-nav/next-flow.js"></script>
   <script>
     /* ===== 1. 素材路径配置：替换图片或音频时主要修改这里 ===== */
     const assets = {
@@ -2119,7 +2120,7 @@
     });
 
     document.querySelector("#playAgainBtn").addEventListener("click", resetAll);
-    document.querySelector("#closeModalBtn").addEventListener("click", () => els.modal.classList.remove("is-visible"));
+    document.querySelector("#closeModalBtn").addEventListener("click", () => goNextPage("make"));
 
     window.addEventListener("keydown", event => {
       if (event.key === "Escape") els.modal.classList.remove("is-visible");

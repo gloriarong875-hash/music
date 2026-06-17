@@ -1,6 +1,7 @@
 import { geoMercator, geoPath } from 'd3-geo'
 import { gsap } from 'gsap'
 import { getSiteConfig } from './data/instruments.js'
+import { resolveChronicleRoute } from './shared/page-routing.js'
 import { formatAudioTime, normalizeFeature } from './shared/utils.js'
 
 const siteConfig = getSiteConfig()
@@ -376,6 +377,11 @@ const railPageSwitcher = document.querySelector('#railPageSwitcher')
 railPageSwitcher?.addEventListener('click', event => {
   const button = event.target.closest('.rail-switch-item')
   if (!button) return
+  const target = resolveChronicleRoute(button.dataset.page)
+  if (target) {
+    window.location.href = target
+    return
+  }
   updateRailPageSwitcher(button.dataset.page, true)
 })
 railPageSwitcher?.querySelectorAll('.rail-switch-item').forEach(button => {
@@ -388,6 +394,11 @@ railPageSwitcher?.querySelectorAll('.rail-switch-item').forEach(button => {
     const currentIndex = pageOrder.indexOf(button.dataset.page)
     const direction = event.key === 'ArrowRight' ? 1 : -1
     const nextPage = pageOrder[(currentIndex + direction + pageOrder.length) % pageOrder.length]
+    const target = resolveChronicleRoute(nextPage)
+    if (target) {
+      window.location.href = target
+      return
+    }
     const nextButton = railPageSwitcher.querySelector(`[data-page="${nextPage}"]`)
     updateRailPageSwitcher(nextPage, true)
     nextButton?.focus()

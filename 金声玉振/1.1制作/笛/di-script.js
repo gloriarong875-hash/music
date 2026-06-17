@@ -1229,7 +1229,7 @@ finalPlayHoles.forEach((hole, index) => {
 
 resultRestartBtn?.addEventListener('click', () => location.reload());
 resultExploreBtn?.addEventListener('click', () => {
-    window.location.href = '../../index.html?instrument=%E7%AC%9B';
+    goNextPage('make');
 });
 
 // ============================================================

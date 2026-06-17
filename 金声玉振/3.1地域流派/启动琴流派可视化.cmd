@@ -11,6 +11,12 @@ if not exist "node_modules\.bin\vite.cmd" (
   )
 )
 
+netstat -ano | findstr /r /c:":8765 .*LISTENING" >nul
+if errorlevel 1 (
+  start "JSYZ Static" /min cmd.exe /c "cd /d \"%~dp0\" && node scripts\\serve-project-root.cjs"
+  timeout /t 2 /nobreak >nul
+)
+
 netstat -ano | findstr /r /c:":4173 .*LISTENING" >nul
 if errorlevel 1 (
   echo Starting Qin visualization...
@@ -18,6 +24,6 @@ if errorlevel 1 (
   timeout /t 3 /nobreak >nul
 )
 
-start "" "http://127.0.0.1:4173/?site=qin"
+start "" "http://127.0.0.1:4173/?instrument=qin"
 echo Opened Qin visualization.
 timeout /t 2 /nobreak >nul

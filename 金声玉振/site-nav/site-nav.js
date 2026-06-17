@@ -1,17 +1,55 @@
 (function () {
-  /*
-    中文脚注：全站上边栏注入脚本。
-    - 修改导航文字：改 navItems 的 label。
-    - 修改跳转目标：改 navItems 的 href。
-    - 当前上边栏保留首页、研物、观象、编年四个板块。
-    - 视觉样式保持 site-nav 原版，只把路径判断改成当前项目结构可用的写法。
-  */
-  const navItems = [
-    { key: "home", label: "首页", href: "0首页/index.html" },
-    { key: "study", label: "研物", href: "1.1制作/笙/index.html" },
-    { key: "observe", label: "观象", href: "2.1部件桑基图/笙/index.html" },
-    { key: "chronicle", label: "编年", href: "3.3大事纪年/笙/index.html" }
+  const INSTRUMENTS = [
+    { key: "sheng", label: "\u7b19" },
+    { key: "gu", label: "\u9f13" },
+    { key: "qin", label: "\u7434" },
+    { key: "di", label: "\u7b1b" },
+    { key: "xun", label: "\u57d9" }
   ];
+
+  const navItems = [
+    { key: "home", label: "\u9996\u9875", href: "0\u9996\u9875/index.html" },
+    {
+      key: "study",
+      label: "\u7814\u7269",
+      href: "\u4e8c\u7ea7\u6807\u9898/select.html?section=yanwu"
+    },
+    {
+      key: "observe",
+      label: "\u89c2\u8c61",
+      href: "\u4e8c\u7ea7\u6807\u9898/select.html?section=guanxiang"
+    },
+    {
+      key: "chronicle",
+      label: "\u7f16\u5e74",
+      href: "\u4e8c\u7ea7\u6807\u9898/select.html?section=biannian"
+    }
+  ];
+
+  function installInstrumentHelpers() {
+    window.INSTRUMENTS = INSTRUMENTS.slice();
+
+    window.getCurrentInstrument = function () {
+      const params = new URLSearchParams(window.location.search);
+      const instrument = params.get("instrument");
+      const matched = INSTRUMENTS.find((item) => item.key === instrument);
+      return matched ? matched.key : "sheng";
+    };
+
+    window.getCurrentInstrumentLabel = function () {
+      const currentInstrument = window.getCurrentInstrument();
+      const matched = INSTRUMENTS.find((item) => item.key === currentInstrument);
+      return matched ? matched.label : "\u7b19";
+    };
+
+    window.addInstrumentParam = function (path, instrument) {
+      const instrumentKey = INSTRUMENTS.some((item) => item.key === instrument)
+        ? instrument
+        : window.getCurrentInstrument();
+      const separator = path.includes("?") ? "&" : "?";
+      return `${path}${separator}instrument=${encodeURIComponent(instrumentKey)}`;
+    };
+  }
 
   function getCurrentScriptUrl() {
     if (document.currentScript && document.currentScript.src) {
@@ -47,34 +85,60 @@
     return pagePath.slice(rootPath.length).replace(/^\/+/, "");
   }
 
+  function getSelectorActiveKey() {
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get("section") || "yanwu";
+
+    if (section === "guanxiang") return "observe";
+    if (section === "biannian") return "chronicle";
+    return "study";
+  }
+
   function getActiveKey(pageRelativePath) {
-    /* 中文脚注：这里根据当前目录前缀判断当前属于哪个板块，用于高亮当前导航文字。 */
-    if (!pageRelativePath || pageRelativePath.startsWith("0首页/")) return "home";
+    if (!pageRelativePath || pageRelativePath.startsWith("0\u9996\u9875/")) return "home";
+
     if (
-      pageRelativePath.startsWith("1.1制作/") ||
-      pageRelativePath.startsWith("1.2声纹-all/") ||
-      pageRelativePath.startsWith("1.3音画故事/")
-    ) return "study";
+      pageRelativePath.startsWith("\u4e8c\u7ea7\u6807\u9898/select.html") ||
+      pageRelativePath.startsWith("\u4e8c\u7ea7\u6807\u9898/yanwu.html") ||
+      pageRelativePath.startsWith("\u4e8c\u7ea7\u6807\u9898/guanxiang.html") ||
+      pageRelativePath.startsWith("\u4e8c\u7ea7\u6807\u9898/biannian.html")
+    ) {
+      if (pageRelativePath.startsWith("\u4e8c\u7ea7\u6807\u9898/guanxiang.html")) return "observe";
+      if (pageRelativePath.startsWith("\u4e8c\u7ea7\u6807\u9898/biannian.html")) return "chronicle";
+      return getSelectorActiveKey();
+    }
+
     if (
-      pageRelativePath.startsWith("2.1部件桑基图/") ||
-      pageRelativePath.startsWith("2.2形制演变/") ||
-      pageRelativePath.startsWith("3.1地域流派/")
-    ) return "observe";
+      pageRelativePath.startsWith("1.1\u5236\u4f5c/") ||
+      pageRelativePath.startsWith("1.2\u58f0\u7eb9-all/") ||
+      pageRelativePath.startsWith("1.3\u97f3\u753b\u6545\u4e8b/")
+    ) {
+      return "study";
+    }
+
     if (
-      pageRelativePath.startsWith("3.2画作数据/") ||
-      pageRelativePath.startsWith("3.3大事纪年/")
-    ) return "chronicle";
+      pageRelativePath.startsWith("2.1\u90e8\u4ef6\u6851\u57fa\u56fe/") ||
+      pageRelativePath.startsWith("2.2\u5f62\u5236\u6f14\u53d8/")
+    ) {
+      return "observe";
+    }
+
+    if (
+      pageRelativePath.startsWith("3.1\u5730\u57df\u6d41\u6d3e/") ||
+      pageRelativePath.startsWith("3.2\u753b\u4f5c\u6570\u636e/") ||
+      pageRelativePath.startsWith("3.3\u5927\u4e8b\u7eaa\u5e74/")
+    ) {
+      return "chronicle";
+    }
+
     return "";
   }
 
   function updateScale() {
-    /*
-      中文脚注：这里自动计算“加上边栏后页面整体缩放比例”。
-      上边栏高度来自 site-nav.css 的 --site-topbar-height，页面会按剩余高度轻微缩放，避免底部超出屏幕。
-    */
-    const topbarHeight = parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue("--site-topbar-height")
-    ) || 44;
+    const topbarHeight =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--site-topbar-height")
+      ) || 44;
     const scale = Math.max(0.82, (window.innerHeight - topbarHeight) / window.innerHeight);
     document.documentElement.style.setProperty("--site-page-scale", scale.toFixed(4));
     document.documentElement.style.setProperty("--site-page-width", `${(100 / scale).toFixed(4)}%`);
@@ -106,14 +170,21 @@
 
     const bar = document.createElement("header");
     bar.className = "site-topbar";
-    bar.setAttribute("aria-label", "全站索引");
+    bar.setAttribute("aria-label", "\u5168\u7ad9\u7d22\u5f15");
     bar.innerHTML = `
-      <nav class="site-topbar__nav" aria-label="首页、研物、观象、编年">
-        ${navItems.map((item) => `
-          <a class="site-topbar__link${item.key === activeKey ? " active" : ""}" href="${buildHref(rootUrl, item.href)}" ${item.key === activeKey ? 'aria-current="page"' : ""}>
+      <nav class="site-topbar__nav" aria-label="\u9996\u9875\u3001\u7814\u7269\u3001\u89c2\u8c61\u3001\u7f16\u5e74">
+        ${navItems
+          .map(
+            (item) => `
+          <a class="site-topbar__link${item.key === activeKey ? " active" : ""}" href="${buildHref(
+              rootUrl,
+              item.href
+            )}" ${item.key === activeKey ? 'aria-current="page"' : ""}>
             <h2>${item.label}</h2>
           </a>
-        `).join("")}
+        `
+          )
+          .join("")}
       </nav>
     `;
 
@@ -123,6 +194,8 @@
     host.innerHTML = "";
     host.appendChild(bar);
   }
+
+  installInstrumentHelpers();
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", mountTopbar, { once: true });
