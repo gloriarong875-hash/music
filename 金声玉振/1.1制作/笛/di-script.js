@@ -345,8 +345,8 @@ stepDots.forEach(d => {
 backBtn.addEventListener('click', () => {
     switch (currentNavStage) {
         case 0:
-            // Parallax is the first step — exit to main page
-            window.location.href = '../../index.html?instrument=%E7%AC%9B';
+            // First step: stay on this page. The button is disabled by setNavStage().
+            setNavStage(0);
             break;
         case 1:
             // From bake → back to parallax
@@ -420,8 +420,8 @@ nextBtn.addEventListener('click', () => {
             }
             break;
         case 3:
-            // From tone → exit to main page
-            window.location.href = '../../index.html?instrument=%E7%AC%9B';
+            // Last step: stay on this page. Continue exploration uses the final card.
+            setNavStage(3);
             break;
     }
 });
@@ -572,6 +572,7 @@ function setMainText(text) {
 }
 
 function setNavStage(index) {
+    currentNavStage = index;
     navDotWrappers.forEach((dot, i) => {
         dot.classList.remove('active', 'completed');
         dot.removeAttribute('aria-current');
@@ -586,6 +587,11 @@ function setNavStage(index) {
             dot.setAttribute('aria-current', 'step');
         }
     });
+
+    backBtn.disabled = index <= 0;
+    nextBtn.disabled = index >= 3;
+    backBtn.classList.toggle('disabled', index <= 0);
+    nextBtn.classList.toggle('disabled', index >= 3);
 }
 
 function showBakeStage() {

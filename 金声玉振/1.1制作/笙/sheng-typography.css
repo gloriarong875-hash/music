@@ -1,0 +1,104 @@
+:root {
+  --brown: #5a4a3a;
+  --type-lg: clamp(24px, 1.85vw, 36px);
+  --type-sm: clamp(18px, 1.34vw, 27px);
+}
+
+body {
+  font-family: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif;
+}
+
+.title {
+  color: var(--gold);
+  font-size: clamp(18px, 1.25vw, 24px);
+  letter-spacing: 4px;
+  margin-bottom: 14px;
+}
+
+.copy {
+  z-index: 20;
+  color: rgba(255, 255, 255, .92);
+  font-size: var(--type-lg);
+  letter-spacing: 2px;
+  white-space: nowrap;
+  text-shadow: 0 3px 10px #000;
+}
+
+.hint {
+  z-index: 30;
+  color: #d9c7a4;
+  font-family: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", "PingFang SC", serif;
+  font-size: var(--type-sm);
+  letter-spacing: 2px;
+  text-align: center;
+  text-shadow: 0 2px 8px #000;
+  animation: hintPulse 1.8s ease-in-out infinite;
+  will-change: opacity, transform, text-shadow;
+}
+
+@keyframes hintPulse {
+  0% {
+    opacity: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .6);
+  }
+
+  45% {
+    opacity: .72;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, .55);
+  }
+
+  60% {
+    opacity: .86;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .6);
+  }
+
+  100% {
+    opacity: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .6);
+  }
+}
+
+.completion-card {
+  color: #361E19 !important;
+  font-family: FZLiShu, "LiSu", "隶书", "Microsoft YaHei", serif !important;
+}
+
+.completion-card h2 {
+  margin: 10px 0 8px !important;
+  color: #361E19 !important;
+  font-size: 26px !important;
+}
+
+.completion-card p,
+.completion-card .completion-text {
+  color: #361E19 !important;
+}
+
+.completion-card .completion-actions {
+  justify-content: center !important;
+}
+
+.completion-card .completion-button,
+.completion-card .completion-button.secondary,
+.completion-card .completion-actions .completion-button {
+  flex: 0 1 44% !important;
+  min-width: 120px !important;
+  max-width: 220px !important;
+  margin: 0 8px !important;
+  border: none !important;
+  border-radius: 22px !important;
+  background: #D6C481 !important;
+  color: #361E19 !important;
+  font-family: FZLiShu, "LiSu", "隶书", serif !important;
+  font-size: 18px !important;
+}
+
+@media (max-width: 480px) {
+  .completion-card h2 {
+    font-size: 16px !important;
+  }
+
+  .completion-card .completion-button {
+    font-size: 15px !important;
+  }
+}
